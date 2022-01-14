@@ -15,7 +15,7 @@ UCodeBlockCPP::UCodeBlockCPP(const FObjectInitializer& init):UCodeBlockBaseCPP(i
 void UCodeBlockCPP::Resize()
 {
 	//reset the scale
-	const float scaleFactor = 0.98;
+	const float scaleFactor = 0.99;
 	SetRenderScale(FVector2D(1));
 	//Stage 1: Reconfigurate the grids base on the information provided now
 	//1) Whenever it do not have child, there are no extra grids just make it a simple [canvas>grid>grid>scale>text]
