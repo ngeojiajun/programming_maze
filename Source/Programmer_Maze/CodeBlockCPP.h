@@ -34,6 +34,8 @@ public:
 		class UNamedSlot* UI_Expression;
 	UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
 		class UBorder* UI_ExpressionBlock;
+	UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
+		class UScrollBox* UI_Childs;
 	/*
 	*Core APIs
 	*/

@@ -7,6 +7,7 @@
 #include "Components/GridPanel.h"
 #include "Components/Border.h"
 #include "Components/NamedSlot.h"
+#include "Components/ScrollBox.h"
 
 UCodeBlockCPP::UCodeBlockCPP(const FObjectInitializer& init):UCodeBlockBaseCPP(init) {
 }
@@ -91,7 +92,46 @@ void UCodeBlockCPP::Resize()
 	}
 	controlSize.Y = textSize.Y;
 	if (havingChilds()) {
-		controlSize.Y *= 6;
+		//---------------------------------------------------------
+		//The height is computed based on these rules
+		//first he borders have 2 units (one for top and one for bottom)
+		//the content is based on the scroll box (min 100)
+		//using those we can calculate the desirable cofficient for both
+		//---------------------------------------------------------
+		const float heightBorder = textSize.Y * 2;
+		//next we calculate the height of the child slot (Note: extra 100px is for users to append)
+		const float slotHeight = UI_Childs->GetDesiredSize().Y + 100;
+		float AR = floor(slotHeight / heightBorder);
+		//adjust the ratio to avoid zero and round up
+		AR += AR < 1 ? 2 : 1;
+		//multiply it with two because the base is not one but two
+		AR *= 2;
+		//set it
+		UI_MainGrid->SetRowFill(1, AR);
+		//the height is sum of those
+		controlSize.Y = heightBorder + slotHeight;
+		//---------------------------------------------------------
+		//Width:
+		// It is found that the left border become too thick when the control's width are too wide
+		// So it is best for us to clamp those into at most 30px
+		// Also if the slots are filled then we have to adjust it too
+		//---------------------------------------------------------
+		const float currentWidth = controlSize.X;
+		float resolvedSlotWidth = UI_Childs->GetDesiredSize().X;
+		float minWidth = 30 + resolvedSlotWidth;
+		if (minWidth > currentWidth) {
+			//extend the control when it is not enough
+			controlSize.X = minWidth;
+		}
+		else {
+			resolvedSlotWidth = currentWidth - 30;
+		}
+		//now lets calculate the ratio
+		AR = floor(resolvedSlotWidth/30);
+		//adjust the ratio to avoid zero and round up
+		AR += AR < 1 ? 2 : 1;
+		UI_ChildGrid->SetColumnFill(1, AR);
+		
 	}
 	setControlSize(controlSize);
 }
