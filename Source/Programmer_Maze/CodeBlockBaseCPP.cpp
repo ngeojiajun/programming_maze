@@ -22,9 +22,9 @@ FLinearColor UCodeBlockBaseCPP::GetCurrentBGColor() const
 #define DEFINE_DIRECT_COLOR(r,g,b) FLinearColor((r)/255.0f,(g)/255.0f,(b)/255.0f);
 	switch (Type) {
 	case BlockType::Statement:
-		return DEFINE_DIRECT_COLOR(139, 148, 252);
+		return DEFINE_DIRECT_COLOR(0, 20, 255);
 	case BlockType::Conditional:
-		return DEFINE_DIRECT_COLOR(237, 45, 247);
+		return DEFINE_DIRECT_COLOR(148, 0, 156);
 	case BlockType::Iteration:
 		return DEFINE_DIRECT_COLOR(176, 179, 0);
 	case BlockType::Variable:
