@@ -43,4 +43,9 @@ public:
 	*Recompute the actual size of this control
 	*/
 	virtual void Resize();
+	/*
+	*Add a block as the child
+	*/
+	UFUNCTION(BlueprintCallable)
+	bool AddChildBlock(UCodeBlockBaseCPP* block);
 };

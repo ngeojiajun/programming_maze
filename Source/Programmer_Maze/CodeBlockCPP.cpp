@@ -8,6 +8,7 @@
 #include "Components/Border.h"
 #include "Components/NamedSlot.h"
 #include "Components/ScrollBox.h"
+#include "Components/CanvasPanel.h"
 
 UCodeBlockCPP::UCodeBlockCPP(const FObjectInitializer& init):UCodeBlockBaseCPP(init) {
 }
@@ -35,6 +36,8 @@ void UCodeBlockCPP::Resize()
 		//remove the holder from it
 		UI_ChildGrid->RemoveFromParent();
 		UI_ChildGrid->ClearChildren();
+		//clear the array except the first one for the slot
+		Childs.SetNumZeroed(1);
 	}
 	else {
 		//STEP three
@@ -134,4 +137,42 @@ void UCodeBlockCPP::Resize()
 		
 	}
 	setControlSize(controlSize);
+}
+
+bool UCodeBlockCPP::AddChildBlock(UCodeBlockBaseCPP* block)
+{
+	//fail direct on NULL
+	if (block == NULL)return false;
+	//fail is the block do not accept any child
+	if (!havingChilds())return false;
+	//only allow statement,iteration and iterative
+	if (block->Type == BlockType::Expression || block->Type == BlockType::Variable) {
+		return false;
+	}
+	//it must be detached from any slot
+	if (block->GetParent()) {
+		return false;
+	}
+	//
+	//Adding a child to the slot involves four steps at least
+	//1) Creating the canvas panel for holding the block
+	//2) Attach the target into the newly created canvas panel
+	//3) Attach the canvas panel into the list
+	//4) Call Resize() to recalculate the sizes
+	if (!Childs.Num()) {
+		Childs.Add(NULL); //In case the child is added before the slot is filled in
+	}
+	//create the root
+	UCanvasPanel* root = NewObject<UCanvasPanel>(this);
+	//attach to it
+	root->AddChildToCanvas(block);
+	//after that add this to the root
+	UI_Childs->AddChild(root);
+	//add those into the array too
+	Childs.Push(block);
+	//lets the block inherit the final render scale
+	block->setFinalRenderScale(finalRenderScale);
+	//ask the layout engine to recalculate the size of this control
+	Resize();
+	return true; //SUCCESS
 }
