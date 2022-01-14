@@ -63,16 +63,21 @@ public:
 	/*
 	*Set the final render scale
 	*/
-	void setFinalRenderScale(FVector2D);
+	UFUNCTION(BlueprintCallable)
+	void setFinalRenderScale(FVector2D scale);
 	/*
 	* Computed size of the control
 	*/
 	FVector2D size;
+	/*
+	*The render scale used finally in after the siz is calculated
+	*/
+	UPROPERTY(EditInstanceOnly,BlueprintReadWrite, BlueprintSetter=setFinalRenderScale)
+	FVector2D finalRenderScale;
 protected:
 	//The construction/init in CPP
 	virtual void NativeConstruct() override;
 	void setControlSize(const FVector2D size);
 	bool havingChilds() const;
 	bool havingSlots() const;
-	FVector2D finalRenderScale;
 };

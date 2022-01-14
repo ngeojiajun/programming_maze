@@ -44,6 +44,8 @@ void UCodeBlockBaseCPP::Resize()
 void UCodeBlockBaseCPP::setFinalRenderScale(FVector2D scale)
 {
 	finalRenderScale = scale;
+	//trigger the set event
+	this->SetRenderScale(finalRenderScale);
 }
 
 void UCodeBlockBaseCPP::NativeConstruct()
