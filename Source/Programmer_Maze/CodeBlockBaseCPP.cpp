@@ -45,7 +45,8 @@ void UCodeBlockBaseCPP::setFinalRenderScale(FVector2D scale)
 {
 	finalRenderScale = scale;
 	//trigger the set event
-	this->SetRenderScale(finalRenderScale);
+	//this->SetRenderScale(finalRenderScale);
+	Resize();
 }
 
 void UCodeBlockBaseCPP::NativeConstruct()
@@ -56,12 +57,12 @@ void UCodeBlockBaseCPP::NativeConstruct()
 
 void UCodeBlockBaseCPP::setControlSize(const FVector2D newSize)
 {
-	this->size = newSize;
-	this->SetRenderScale(finalRenderScale);
+	FVector2D finalSize = FVector2D(newSize.X * finalRenderScale.X, newSize.Y * finalRenderScale.Y);
+	this->size = finalSize;
 	if (Slot) {
 		UCanvasPanelSlot* Panel = Cast<UCanvasPanelSlot>(Slot);
 		if (Panel) {
-			Panel->SetSize(size);
+			Panel->SetSize(finalSize);
 			return;
 		}
 	}
