@@ -64,7 +64,7 @@ public:
 	*Set the final render scale
 	*/
 	UFUNCTION(BlueprintCallable)
-	void setFinalRenderScale(FVector2D scale = FVector2D(1.0));
+	void setFinalRenderScale(FVector2D scale);
 	/*
 	* Computed size of the control
 	*/
