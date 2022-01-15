@@ -95,6 +95,18 @@ void UCodeBlockCPP::Resize()
 	}
 	controlSize.Y = textSize.Y;
 	if (havingChilds()) {
+		//
+		//Broadcast the event to the childs
+		// 
+		for (int i = 1; i < Childs.Num(); i++) {
+			UCodeBlockBaseCPP* element = Childs[i];
+			if (element) {
+				//inherit the render scale
+				element->setFinalRenderScale(finalRenderScale);
+				//ask child to resize itself
+				element->Resize();
+			}
+		}
 		//---------------------------------------------------------
 		//The height is computed based on these rules
 		//first he borders have 2 units (one for top and one for bottom)
@@ -170,8 +182,6 @@ bool UCodeBlockCPP::AddChildBlock(UCodeBlockBaseCPP* block)
 	UI_Childs->AddChild(root);
 	//add those into the array too
 	Childs.Push(block);
-	//lets the block inherit the final render scale
-	block->setFinalRenderScale(finalRenderScale);
 	//ask the layout engine to recalculate the size of this control
 	Resize();
 	return true; //SUCCESS
