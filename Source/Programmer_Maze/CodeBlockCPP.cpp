@@ -95,9 +95,11 @@ void UCodeBlockCPP::Resize()
 	}
 	controlSize.Y = textSize.Y;
 	if (havingChilds()) {
-		//
-		//Broadcast the event to the childs
-		// 
+		//NOTE appearantly scroll box do not implement GetDesiredSize()
+		//we calculate the height of the child slot (Note: extra 100px is for users to append)
+		float slotHeight = 100;
+		//so we calculate that by our own
+		float resolvedSlotWidth = 0;
 		for (int i = 1; i < Childs.Num(); i++) {
 			UCodeBlockBaseCPP* element = Childs[i];
 			if (element) {
@@ -105,6 +107,9 @@ void UCodeBlockCPP::Resize()
 				element->setFinalRenderScale(finalRenderScale);
 				//ask child to resize itself
 				element->Resize();
+				//add its height into height
+				slotHeight += element->size.Y;
+				resolvedSlotWidth = std::max(resolvedSlotWidth, element->size.X);
 			}
 		}
 		//---------------------------------------------------------
@@ -114,8 +119,7 @@ void UCodeBlockCPP::Resize()
 		//using those we can calculate the desirable cofficient for both
 		//---------------------------------------------------------
 		const float heightBorder = textSize.Y * 2;
-		//next we calculate the height of the child slot (Note: extra 100px is for users to append)
-		const float slotHeight = UI_Childs->GetDesiredSize().Y + 100;
+		UE_LOG(LogTemp,Warning, TEXT("%s: slotHeight=%f"),*(GetName()),slotHeight);
 		float AR = floor(slotHeight / heightBorder);
 		//adjust the ratio to avoid zero and round up
 		AR += AR < 1 ? 2 : 1;
@@ -132,7 +136,6 @@ void UCodeBlockCPP::Resize()
 		// Also if the slots are filled then we have to adjust it too
 		//---------------------------------------------------------
 		const float currentWidth = controlSize.X;
-		float resolvedSlotWidth = UI_Childs->GetDesiredSize().X;
 		float minWidth = 30 + resolvedSlotWidth;
 		if (minWidth > currentWidth) {
 			//extend the control when it is not enough
@@ -148,6 +151,7 @@ void UCodeBlockCPP::Resize()
 		UI_ChildGrid->SetColumnFill(1, AR);
 		
 	}
+	UE_LOG(LogTemp, Warning, TEXT("%s: size=(%f,%f)"), *(GetName()), controlSize.X,controlSize.Y);
 	setControlSize(controlSize);
 }
 
