@@ -9,6 +9,9 @@
 #include "Components/NamedSlot.h"
 #include "Components/ScrollBox.h"
 #include "Components/CanvasPanel.h"
+#include "Components/CanvasPanelSlot.h"
+
+const float gapBetweenBlocks = 15;
 
 UCodeBlockCPP::UCodeBlockCPP(const FObjectInitializer& init):UCodeBlockBaseCPP(init) {
 }
@@ -96,8 +99,8 @@ void UCodeBlockCPP::Resize()
 	controlSize.Y = textSize.Y;
 	if (havingChilds()) {
 		//NOTE appearantly scroll box do not implement GetDesiredSize()
-		//we calculate the height of the child slot (Note: extra 20px is for users to append)
-		float slotHeight = 20;
+		//we calculate the height of the child slot (Note: extra 10px is for users to append)
+		float slotHeight = 10;
 		//so we calculate that by our own
 		float resolvedSlotWidth = 0;
 		for (int i = 1; i < Childs.Num(); i++) {
@@ -109,6 +112,9 @@ void UCodeBlockCPP::Resize()
 				element->Resize();
 				//add its height into height
 				slotHeight += element->size.Y;
+				if (i > 1) {
+					slotHeight += gapBetweenBlocks;
+				}
 				resolvedSlotWidth = std::max(resolvedSlotWidth, element->size.X);
 			}
 		}
@@ -159,7 +165,7 @@ bool UCodeBlockCPP::AddChildBlock(UCodeBlockBaseCPP* block)
 {
 	//fail direct on NULL
 	if (block == NULL)return false;
-	//fail is the block do not accept any child
+	//fail if the block do not accept any child
 	if (!havingChilds())return false;
 	//only allow statement,iteration and iterative
 	if (block->Type == BlockType::Expression || block->Type == BlockType::Variable) {
@@ -182,11 +188,38 @@ bool UCodeBlockCPP::AddChildBlock(UCodeBlockBaseCPP* block)
 	UCanvasPanel* root = NewObject<UCanvasPanel>(this);
 	//attach to it
 	root->AddChildToCanvas(block);
+	//set the offsets so it do not stick together
+	if (Childs.Num() > 1) {
+		Cast<UCanvasPanelSlot>(root->GetSlots()[0])->SetPosition(FVector2D(0, gapBetweenBlocks));
+	}
 	//after that add this to the root
 	UI_Childs->AddChild(root);
 	//add those into the array too
 	Childs.Push(block);
 	//ask the layout engine to recalculate the size of this control
-	Resize();
+	rootResize();
 	return true; //SUCCESS
+}
+
+bool UCodeBlockCPP::AddBlockIntoSlot(UCodeBlockBaseCPP* block)
+{
+	//fail direct on NULL
+	if (block == NULL)return false;
+	//fail if the block do not accept any child
+	if (!havingSlots())return false;
+	//only allow statement,iteration and iterative
+	if (block->Type == BlockType::Statement || block->Type == BlockType::Iteration || block->Type==BlockType::Iteration) {
+		return false;
+	}
+	//it must be detached from any slot
+	if (block->GetParent()) {
+		return false;
+	}
+	if ((Childs.Num() && Childs[0])||UI_Expression->GetChildrenCount()) {
+		//something is slotted there
+		return false;
+	}
+	//just add it as the children for the UI_Expression
+	UI_Expression->AddChild(block);
+	return true;
 }

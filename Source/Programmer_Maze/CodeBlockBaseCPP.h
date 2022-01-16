@@ -74,10 +74,20 @@ public:
 	*/
 	UPROPERTY(EditInstanceOnly,BlueprintReadWrite, BlueprintSetter=setFinalRenderScale)
 	FVector2D finalRenderScale;
+	/*
+	*Note this function must be implemented by call the blocks that can be cloned
+	*we cannot implement it simply by creating ourself because the settings and other.
+	*Childs are not cloned because the controls only created when it is attached.
+	*/
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
+	UCodeBlockBaseCPP* clone();
+	UCodeBlockBaseCPP* clone_Implementation();
 protected:
 	//The construction/init in CPP
 	virtual void NativeConstruct() override;
 	void setControlSize(const FVector2D size);
 	bool havingChilds() const;
 	bool havingSlots() const;
+	//For internal use only. used to allow the root object to resize for performance
+	void rootResize();
 };

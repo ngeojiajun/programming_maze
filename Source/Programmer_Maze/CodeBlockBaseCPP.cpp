@@ -48,6 +48,12 @@ void UCodeBlockBaseCPP::setFinalRenderScale(FVector2D scale)
 	Resize();
 }
 
+UCodeBlockBaseCPP* UCodeBlockBaseCPP::clone_Implementation()
+{
+	unimplemented();
+	return nullptr;
+}
+
 void UCodeBlockBaseCPP::NativeConstruct()
 {
 	ForceLayoutPrepass();
@@ -86,5 +92,27 @@ bool UCodeBlockBaseCPP::havingSlots() const
 		return false;
 	default:
 		return true;
+	}
+}
+
+void UCodeBlockBaseCPP::rootResize()
+{
+	//This function only work for the controls slotted under the child slot
+	if (Slot) {
+		//directly cast this to UCanvasPanelSlot to determine weather it is added through
+		//the similar approach
+		//We know that the outer oubject for the Canvas Panel is always instance of
+		//UCodeBlockCPP
+		UCanvasPanelSlot* slot = Cast<UCanvasPanelSlot>(Slot);
+		UCodeBlockBaseCPP* parent = slot ? Cast<UCodeBlockBaseCPP>(slot->Parent->GetOuter()) : NULL;
+		if (parent) {
+			parent->Resize();
+		}
+		else {
+			Resize();
+		}
+	}
+	else {
+		Resize();
 	}
 }
