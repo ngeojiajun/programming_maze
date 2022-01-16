@@ -96,8 +96,8 @@ void UCodeBlockCPP::Resize()
 	controlSize.Y = textSize.Y;
 	if (havingChilds()) {
 		//NOTE appearantly scroll box do not implement GetDesiredSize()
-		//we calculate the height of the child slot (Note: extra 100px is for users to append)
-		float slotHeight = 100;
+		//we calculate the height of the child slot (Note: extra 20px is for users to append)
+		float slotHeight = 20;
 		//so we calculate that by our own
 		float resolvedSlotWidth = 0;
 		for (int i = 1; i < Childs.Num(); i++) {
