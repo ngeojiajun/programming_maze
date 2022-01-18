@@ -4,19 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
+#include "CodeBlockDefs.h"
 #include "CodeBlockBaseCPP.generated.h"
-
-/*
-*The type of the block
-*/
-UENUM()
-enum BlockType{
-	Statement,
-	Conditional,
-	Iteration,
-	Expression,
-	Variable,
-};
 
 /**
  * This class define the common interface between the code blocks
@@ -36,11 +25,8 @@ public:
 	TEnumAsByte<BlockType> Type;
 	/*
 	*The child nodes associated with this block
-	* For iterative and conditional it have following layout
 	* [0] = Condition slot
 	* [1+] = child nodes
-	* 
-	*For expression it is literally a flat array of slots
 	*/
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly)
 	TArray<UCodeBlockBaseCPP*> Childs;
@@ -81,7 +67,13 @@ public:
 	*/
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
 	UCodeBlockBaseCPP* clone();
-	UCodeBlockBaseCPP* clone_Implementation();
+	virtual UCodeBlockBaseCPP* clone_Implementation();
+	/*
+	*Execute this block
+	*/
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
+	FEvalResult eval();
+	virtual FEvalResult eval_Implementation();
 protected:
 	//The construction/init in CPP
 	virtual void NativeConstruct() override;

@@ -31,6 +31,8 @@ FLinearColor UCodeBlockBaseCPP::GetCurrentBGColor() const
 		return DEFINE_DIRECT_COLOR(24, 179, 0);
 	case BlockType::Expression:
 		return DEFINE_DIRECT_COLOR(25, 0, 138);
+	case BlockType::Constant:
+		return DEFINE_DIRECT_COLOR(161, 0, 11);
 	}
 	//This should never happen
 	return FColor(0,0,0); //Fuck you
@@ -52,6 +54,37 @@ UCodeBlockBaseCPP* UCodeBlockBaseCPP::clone_Implementation()
 {
 	unimplemented();
 	return nullptr;
+}
+
+FEvalResult UCodeBlockBaseCPP::eval_Implementation()
+{
+	if (Type != BlockType::Constant) {
+		return UCodeBlockDefs::makeFailedResult("Unimplemented");
+	}
+	else {
+		//test if it is boolean
+		FEvalResult evalResult;
+		evalResult.hasRetValue = true;
+		evalResult.succeeded = true;
+		if (Name.EqualToCaseIgnored(FText::FromString(TEXT("TRUE")))) {
+			evalResult.boolVal = true;
+			evalResult.intVal = 1;
+			evalResult.strVal = "true";
+		}
+		else if (Name.EqualToCaseIgnored(FText::FromString(TEXT("FALSE")))) {
+			evalResult.boolVal = false;
+			evalResult.intVal = 0;
+			evalResult.strVal = "false";
+		}
+		else {
+			evalResult.boolVal = Name.ToString().Len() > 0;
+			evalResult.strVal = Name.ToString();
+			if (Name.IsNumeric()) {
+				evalResult.intVal = FCString::Atoi(*(Name.ToString()));
+			}
+		}
+		return evalResult;
+	}
 }
 
 void UCodeBlockBaseCPP::NativeConstruct()
@@ -89,6 +122,7 @@ bool UCodeBlockBaseCPP::havingSlots() const
 	switch (Type) {
 	case BlockType::Statement:
 	case BlockType::Variable:
+	case BlockType::Constant:
 		return false;
 	default:
 		return true;
