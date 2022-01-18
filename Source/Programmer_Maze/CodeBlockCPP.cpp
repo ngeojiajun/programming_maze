@@ -118,6 +118,9 @@ void UCodeBlockCPP::Resize()
 				resolvedSlotWidth = std::max(resolvedSlotWidth, element->size.X);
 			}
 		}
+		if (Childs.Num() < 1) {
+			slotHeight = 100;
+		}
 		//---------------------------------------------------------
 		//The height is computed based on these rules
 		//first he borders have 2 units (one for top and one for bottom)
@@ -125,7 +128,6 @@ void UCodeBlockCPP::Resize()
 		//using those we can calculate the desirable cofficient for both
 		//---------------------------------------------------------
 		const float heightBorder = textSize.Y * 2;
-		UE_LOG(LogTemp,Warning, TEXT("%s: slotHeight=%f"),*(GetName()),slotHeight);
 		float AR = floor(slotHeight / heightBorder);
 		//adjust the ratio to avoid zero and round up
 		AR += AR < 1 ? 2 : 1;
@@ -190,7 +192,10 @@ bool UCodeBlockCPP::AddChildBlock(UCodeBlockBaseCPP* block)
 	root->AddChildToCanvas(block);
 	//set the offsets so it do not stick together
 	if (Childs.Num() > 1) {
-		Cast<UCanvasPanelSlot>(root->GetSlots()[0])->SetPosition(FVector2D(0, gapBetweenBlocks));
+		Cast<UCanvasPanelSlot>(root->GetSlots()[0])->SetPosition(FVector2D(30, gapBetweenBlocks));
+	}
+	else {
+		Cast<UCanvasPanelSlot>(root->GetSlots()[0])->SetPosition(FVector2D(30, 0));
 	}
 	//after that add this to the root
 	UI_Childs->AddChild(root);
