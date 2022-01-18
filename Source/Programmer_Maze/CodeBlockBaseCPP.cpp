@@ -100,7 +100,7 @@ void UCodeBlockBaseCPP::rootResize()
 	//This function only work for the controls slotted under the child slot
 	if (Slot) {
 		//directly cast this to UCanvasPanelSlot to determine weather it is added through
-		//the similar approach
+		//the child slot
 		//We know that the outer oubject for the Canvas Panel is always instance of
 		//UCodeBlockCPP
 		UCanvasPanelSlot* slot = Cast<UCanvasPanelSlot>(Slot);
@@ -109,6 +109,26 @@ void UCodeBlockBaseCPP::rootResize()
 			parent->Resize();
 		}
 		else {
+			//if that failed lets try the slot mechanism
+			//the slot mechanism places the child element (this) inside the widget
+			//typed NamedSlot
+			//but this do not have any specific meanings to attempt to direct cast to UNamedSlotPanel
+			if (Slot->Parent) { //if the slot dont have parent then just ignore it
+				UObject* _parent = Slot->Parent->GetOuter(); //get the outer object that own the instance
+				while (_parent) {
+					//attempt a cast to the UCodeBlockBaseCPP and see weather is that possible
+					//if yes then break it off since we get our parent
+					parent = Cast<UCodeBlockBaseCPP>(_parent);
+					if (parent)break;
+					_parent = _parent->GetOuter();
+				}
+				if (parent) {
+					parent->Resize();
+				}
+				else {
+					Resize();
+				}
+			}
 			Resize();
 		}
 	}

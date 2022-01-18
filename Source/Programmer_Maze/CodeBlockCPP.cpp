@@ -207,8 +207,8 @@ bool UCodeBlockCPP::AddBlockIntoSlot(UCodeBlockBaseCPP* block)
 	if (block == NULL)return false;
 	//fail if the block do not accept any child
 	if (!havingSlots())return false;
-	//only allow statement,iteration and iterative
-	if (block->Type == BlockType::Statement || block->Type == BlockType::Iteration || block->Type==BlockType::Iteration) {
+	//dont allow statement,iteration and iterative
+	if (block->Type == BlockType::Statement || block->Type == BlockType::Iteration || block->Type==BlockType::Conditional) {
 		return false;
 	}
 	//it must be detached from any slot
@@ -221,5 +221,7 @@ bool UCodeBlockCPP::AddBlockIntoSlot(UCodeBlockBaseCPP* block)
 	}
 	//just add it as the children for the UI_Expression
 	UI_Expression->AddChild(block);
+	//adjust the block size as needed
+	rootResize();
 	return true;
 }
