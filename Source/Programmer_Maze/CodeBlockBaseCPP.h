@@ -38,6 +38,8 @@ public:
 	*/
 	UFUNCTION(BlueprintCallable)
 	FLinearColor GetCurrentBGColor() const;
+	UFUNCTION(BlueprintCallable)
+	FLinearColor GetSlotColor() const;
 	/*
 	*Some of core API
 	*/

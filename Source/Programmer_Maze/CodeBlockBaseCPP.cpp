@@ -39,6 +39,16 @@ FLinearColor UCodeBlockBaseCPP::GetCurrentBGColor() const
 #undef DEFINE_DIRECT_COLOR
 }
 
+FLinearColor UCodeBlockBaseCPP::GetSlotColor() const
+{
+	if (Childs.Num() > 1) {
+		return FLinearColor(0.0625, 0.0625, 0.0625);
+	}
+	else {
+		return FLinearColor(0.639216, 0.639216, 0.639216);
+	}
+}
+
 void UCodeBlockBaseCPP::Resize()
 {
 }
