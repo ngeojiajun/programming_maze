@@ -47,7 +47,7 @@ public:
 	*Add a block as the child
 	*/
 	UFUNCTION(BlueprintCallable)
-	bool AddChildBlock(UCodeBlockBaseCPP* block);
+	bool AddChildBlock(UCodeBlockBaseCPP* block,int at=-1);
 	/*
 	*Add a block into the slot
 	*/

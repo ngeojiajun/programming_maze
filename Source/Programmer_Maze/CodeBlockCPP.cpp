@@ -163,7 +163,7 @@ void UCodeBlockCPP::Resize()
 	setControlSize(controlSize);
 }
 
-bool UCodeBlockCPP::AddChildBlock(UCodeBlockBaseCPP* block)
+bool UCodeBlockCPP::AddChildBlock(UCodeBlockBaseCPP* block,int at)
 {
 	//fail direct on NULL
 	if (block == NULL)return false;
@@ -198,9 +198,26 @@ bool UCodeBlockCPP::AddChildBlock(UCodeBlockBaseCPP* block)
 		Cast<UCanvasPanelSlot>(root->GetSlots()[0])->SetPosition(FVector2D(30, 0));
 	}
 	//after that add this to the root
-	UI_Childs->AddChild(root);
-	//add those into the array too
-	Childs.Push(block);
+	if (at < 0) {
+		UI_Childs->AddChild(root);
+		//add those into the array too
+		Childs.Push(block);
+
+	}
+	else {
+		Childs.EmplaceAt(at, block);
+		//InsertChildAt dont works so need some hackery here
+		//copy the current array
+		TArray<UWidget*> currentList = UI_Childs->GetAllChildren();
+		//clear it
+		UI_Childs->ClearChildren();
+		//push the required one there
+		currentList.EmplaceAt(at, root);
+		//add all bacl
+		for (UWidget* widget : currentList) {
+			UI_Childs->AddChild(widget);
+		}
+	}
 	//ask the layout engine to recalculate the size of this control
 	rootResize();
 	return true; //SUCCESS
