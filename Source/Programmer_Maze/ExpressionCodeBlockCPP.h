@@ -30,6 +30,8 @@ public:
 	UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
 	class UTextBlock* UI_BlockNameBox;
 	UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
+	class UTextBlock* UI_Separator;
+	UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
 	class UNamedSlot* UI_ExpressionSlot1;
 	UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
 	class UNamedSlot* UI_ExpressionSlot2;
