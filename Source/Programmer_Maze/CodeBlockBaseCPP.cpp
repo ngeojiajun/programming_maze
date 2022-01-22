@@ -77,20 +77,21 @@ FEvalResult UCodeBlockBaseCPP::eval_Implementation()
 		evalResult.hasRetValue = true;
 		evalResult.succeeded = true;
 		if (Name.EqualToCaseIgnored(FText::FromString(TEXT("TRUE")))) {
+			evalResult.retType = Boolean;
 			evalResult.boolVal = true;
-			evalResult.intVal = 1;
-			evalResult.strVal = "true";
 		}
 		else if (Name.EqualToCaseIgnored(FText::FromString(TEXT("FALSE")))) {
+			evalResult.retType = Boolean;
 			evalResult.boolVal = false;
-			evalResult.intVal = 0;
-			evalResult.strVal = "false";
 		}
 		else {
-			evalResult.boolVal = Name.ToString().Len() > 0;
-			evalResult.strVal = Name.ToString();
 			if (Name.IsNumeric()) {
+				evalResult.retType = Integer;
 				evalResult.intVal = FCString::Atoi(*(Name.ToString()));
+			}
+			else {
+				evalResult.retType = String;
+				evalResult.strVal = Name.ToString();
 			}
 		}
 		return evalResult;
@@ -150,7 +151,7 @@ void UCodeBlockBaseCPP::rootResize()
 		UCanvasPanelSlot* slot = Cast<UCanvasPanelSlot>(Slot);
 		UCodeBlockBaseCPP* parent = slot ? Cast<UCodeBlockBaseCPP>(slot->Parent->GetOuter()) : NULL;
 		if (parent) {
-			parent->Resize();
+			parent->rootResize();
 		}
 		else {
 			//if that failed lets try the slot mechanism
@@ -167,7 +168,7 @@ void UCodeBlockBaseCPP::rootResize()
 					_parent = _parent->GetOuter();
 				}
 				if (parent) {
-					parent->Resize();
+					parent->rootResize();
 				}
 				else {
 					Resize();

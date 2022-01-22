@@ -28,6 +28,6 @@ FEvalResult::FEvalResult()
 	intVal = -1;
 	boolVal = false;
 	strVal = "";
-	retType = 0;
+	retType = Void;
 	errorMsg = "";
 }

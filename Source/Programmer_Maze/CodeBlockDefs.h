@@ -19,6 +19,17 @@ enum BlockType {
 };
 
 /*
+*Value type of the return value
+*/
+UENUM()
+enum ValueType {
+	Boolean,
+	String,
+	Integer,
+	Void
+};
+
+/*
 * The execution result of the block
 */
 USTRUCT(BlueprintType)
@@ -30,7 +41,7 @@ struct FEvalResult {
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Eval Result")
 	bool hasRetValue;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Eval Result")
-	int retType;
+	TEnumAsByte<ValueType> retType;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Eval Result")
 	int intVal;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Eval Result")
