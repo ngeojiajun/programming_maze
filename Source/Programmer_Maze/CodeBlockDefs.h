@@ -51,8 +51,24 @@ struct FEvalResult {
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Eval Result")
 	FString errorMsg;
 
-	//Constructor
+	//Constructors
 	FEvalResult();
+	FEvalResult(bool result);
+	FEvalResult(FString result);
+	FEvalResult(int result);
+	static FEvalResult AsVoidResult();
+	static FEvalResult AsError(FString err);
+
+	//operators
+	bool operator ==(const FEvalResult& rhs) const;
+	bool operator !=(const FEvalResult& rhs) const;
+	bool operator !() const;
+
+	//cast
+	FEvalResult AsStringValue() const;
+	FEvalResult AsBoolValue() const;
+	FEvalResult AsIntValue() const;
+
 };
 
 UENUM(BlueprintType)

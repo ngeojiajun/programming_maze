@@ -72,29 +72,20 @@ FEvalResult UCodeBlockBaseCPP::eval_Implementation()
 		return UCodeBlockDefs::makeFailedResult("Unimplemented");
 	}
 	else {
-		//test if it is boolean
-		FEvalResult evalResult;
-		evalResult.hasRetValue = true;
-		evalResult.succeeded = true;
 		if (Name.EqualToCaseIgnored(FText::FromString(TEXT("TRUE")))) {
-			evalResult.retType = Boolean;
-			evalResult.boolVal = true;
+			return FEvalResult(true);
 		}
 		else if (Name.EqualToCaseIgnored(FText::FromString(TEXT("FALSE")))) {
-			evalResult.retType = Boolean;
-			evalResult.boolVal = false;
+			return FEvalResult(false);
 		}
 		else {
 			if (Name.IsNumeric()) {
-				evalResult.retType = Integer;
-				evalResult.intVal = FCString::Atoi(*(Name.ToString()));
+				return FEvalResult(Name.ToString()).AsIntValue();
 			}
 			else {
-				evalResult.retType = String;
-				evalResult.strVal = Name.ToString();
+				return FEvalResult(Name.ToString());
 			}
 		}
-		return evalResult;
 	}
 }
 
