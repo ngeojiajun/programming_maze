@@ -2,6 +2,9 @@
 
 #pragma once
 
+
+#include <functional>
+
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
 #include "CodeBlockDefs.h"
@@ -40,6 +43,10 @@ public:
 	FLinearColor GetCurrentBGColor() const;
 	UFUNCTION(BlueprintCallable)
 	FLinearColor GetSlotColor() const;
+	/*
+	* Event handlers for native code outside the owning class
+	*/
+	std::function<bool(UCodeBlockBaseCPP*,FEvalResult&)> nativeEval;
 	/*
 	*Some of core API
 	*/
