@@ -69,7 +69,7 @@ void UCodeBlockCPP::Resize()
 	//When it is a simple block its size is the min between the text and the scale box
 	FVector2D controlSize;
 	FVector2D textSize = UI_BlockName->GetDesiredSize();
-	controlSize.X = textSize.X;
+	controlSize.X = std::min<float>(textSize.X, 70);
 	if (havingSlots()) {
 		//get the size of the child first
 		if (UI_Expression->GetChildrenCount()) {
@@ -156,9 +156,9 @@ void UCodeBlockCPP::Resize()
 		AR = floor(resolvedSlotWidth/30);
 		//adjust the ratio to avoid zero and round up
 		AR += AR < 1 ? 2 : 1;
-		UI_ChildGrid->SetColumnFill(1, AR);
-		
+		UI_ChildGrid->SetColumnFill(1, AR);	
 	}
+	controlSize.X += 25;
 	UE_LOG(LogTemp, Warning, TEXT("%s: size=(%f,%f)"), *(GetName()), controlSize.X,controlSize.Y);
 	setControlSize(controlSize);
 }

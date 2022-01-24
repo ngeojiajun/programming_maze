@@ -30,8 +30,8 @@ void UExpressionCodeBlockCPP::Resize()
 	//set initial size to the size oof the block name
 	FVector2D controlSize = UI_BlockNameBox->GetDesiredSize();
 	//calculate the width of the block name
-	const float textWidth = controlSize.X + UI_Separator->GetDesiredSize().X;
-	float Slot1_width = std::max<float>(controlSize.X,50), Slot2_width = Slot1_width;
+	const float textWidth = std::min<float>(controlSize.X, 70) + UI_Separator->GetDesiredSize().X;
+	float Slot1_width = std::max<float>(controlSize.X,70), Slot2_width = Slot1_width;
 	//check both slots and see weather it is sloted and take its measurements if
 	// it is true
 	if (UI_ExpressionSlot1->GetChildrenCount()) {
@@ -66,7 +66,8 @@ void UExpressionCodeBlockCPP::Resize()
 	//When it is not slotted
 	if (!(Slot && Slot->Parent->GetClass() == UNamedSlot::StaticClass()))
 		controlSize.X = std::max<float>(100, controlSize.X);
-	controlSize.X += 18; //offset the paddings
+	controlSize.X += 20; //offset the paddings
+	UE_LOG(LogTemp, Warning, TEXT("%s: size=(%f,%f)"), *(GetName()), controlSize.X, controlSize.Y);
 	setControlSize(controlSize);
 }
 
