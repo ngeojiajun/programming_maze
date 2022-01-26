@@ -170,7 +170,7 @@ bool UCodeBlockCPP::AddChildBlock(UCodeBlockBaseCPP* block,int at)
 	//fail if the block do not accept any child
 	if (!havingChilds())return false;
 	//only allow statement,iteration and iterative
-	if (block->Type == BlockType::Expression || block->Type == BlockType::Variable) {
+	if (block->Type == BlockType::Expression || block->Type == BlockType::Variable || block->Type == BlockType::Start) {
 		return false;
 	}
 	//it must be detached from any slot
@@ -230,7 +230,7 @@ bool UCodeBlockCPP::AddBlockIntoSlot(UCodeBlockBaseCPP* block)
 	//fail if the block do not accept any child
 	if (!havingSlots())return false;
 	//dont allow statement,iteration and iterative
-	if (block->Type == BlockType::Statement || block->Type == BlockType::Iteration || block->Type==BlockType::Conditional) {
+	if (block->Type == BlockType::Statement || block->Type == BlockType::Iteration || block->Type==BlockType::Conditional || block->Type == BlockType::Start) {
 		return false;
 	}
 	//it must be detached from any slot

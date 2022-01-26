@@ -16,6 +16,7 @@ enum BlockType {
 	Expression,
 	Variable,
 	Constant,
+	Start
 };
 
 /*

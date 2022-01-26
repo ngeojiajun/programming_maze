@@ -125,6 +125,7 @@ bool UCodeBlockBaseCPP::havingChilds() const
 	switch (Type) {
 	case BlockType::Conditional:
 	case BlockType::Iteration:
+	case BlockType::Start:
 		return true;
 	default:
 		return false;
@@ -137,6 +138,7 @@ bool UCodeBlockBaseCPP::havingSlots() const
 	case BlockType::Statement:
 	case BlockType::Variable:
 	case BlockType::Constant:
+	case BlockType::Start:
 		return false;
 	default:
 		return true;
