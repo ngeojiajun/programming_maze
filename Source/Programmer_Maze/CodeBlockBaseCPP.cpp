@@ -33,6 +33,8 @@ FLinearColor UCodeBlockBaseCPP::GetCurrentBGColor() const
 		return DEFINE_DIRECT_COLOR(25, 0, 138);
 	case BlockType::Constant:
 		return DEFINE_DIRECT_COLOR(161, 0, 11);
+	case BlockType::Start:
+		return DEFINE_DIRECT_COLOR(136, 84, 13);
 	}
 	//This should never happen
 	return FColor(0,0,0); //Fuck you
