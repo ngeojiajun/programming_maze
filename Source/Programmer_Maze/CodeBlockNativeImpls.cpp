@@ -57,6 +57,12 @@ FEvalResult UCodeBlockNativeImpls::ExitBlockImpl(UCodeBlockCPP* block)
 	return FEvalResult::AsVoidResult(); //never return
 }
 
+FEvalResult UCodeBlockNativeImpls::NopImpl(UCodeBlockCPP* block)
+{
+	//do nothing but return Void/
+	return FEvalResult::AsVoidResult();
+}
+
 FEvalResult UCodeBlockNativeImpls::runAll(UCodeBlockCPP* block)
 {
 	//This is just a utility function that simply run all the child blocks

@@ -27,6 +27,9 @@ public:
 	static FEvalResult StartBlockImpl(UCodeBlockCPP* block);
 	UFUNCTION(BlueprintCallable)
 	static FEvalResult ExitBlockImpl(UCodeBlockCPP* block);
+	//Just for the use by stubs
+	UFUNCTION(BlueprintCallable)
+	static FEvalResult NopImpl(UCodeBlockCPP* block);
 private:
 	static FEvalResult runAll(UCodeBlockCPP* block);
 };

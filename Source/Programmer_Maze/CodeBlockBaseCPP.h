@@ -10,6 +10,7 @@
 #include "CodeBlockDefs.h"
 #include "CodeBlockBaseCPP.generated.h"
 
+
 /**
  * This class define the common interface between the code blocks
  */
@@ -83,7 +84,7 @@ public:
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
 	FEvalResult eval();
 	virtual FEvalResult eval_Implementation();
-protected:
+	protected:
 	//The construction/init in CPP
 	virtual void NativeConstruct() override;
 	void setControlSize(const FVector2D size);
