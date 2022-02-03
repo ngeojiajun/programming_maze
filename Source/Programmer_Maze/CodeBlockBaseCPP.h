@@ -10,6 +10,7 @@
 #include "CodeBlockDefs.h"
 #include "CodeBlockBaseCPP.generated.h"
 
+class UNodeDragWidgetCPP;
 
 /**
  * This class define the common interface between the code blocks
@@ -23,9 +24,9 @@ public:
 	/*
 	*Properties
 	*/
-	UPROPERTY(EditInstanceOnly, BlueprintReadWrite)
+	UPROPERTY(EditInstanceOnly, BlueprintReadWrite, meta = (ExposeOnSpawn = "true"))
 	FText Name;
-	UPROPERTY(EditInstanceOnly, BlueprintReadWrite)
+	UPROPERTY(EditInstanceOnly, BlueprintReadWrite, meta = (ExposeOnSpawn = "true"))
 	TEnumAsByte<BlockType> Type;
 	/*
 	*The child nodes associated with this block
@@ -64,6 +65,7 @@ public:
 	/*
 	* Computed size of the control
 	*/
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly)
 	FVector2D size;
 	/*
 	*The render scale used finally in after the siz is calculated
@@ -92,4 +94,11 @@ public:
 	bool havingSlots() const;
 	//For internal use only. used to allow the root object to resize for performance
 	void rootResize();
+	//drag and drop
+	virtual FReply NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
+	virtual void NativeOnDragDetected(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent, UDragDropOperation*& OutOperation)override;
+private:
+	FVector2D DragOffset;
+	UNodeDragWidgetCPP* DraggedWidget;
+	TSubclassOf<UNodeDragWidgetCPP> DragWidgetClass;
 };

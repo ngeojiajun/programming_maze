@@ -9,12 +9,16 @@
 #include "Components/NamedSlot.h"
 #include "Components/GridSlot.h"
 #include "Components/Border.h"
+#include "NodeDragDropOperation.h"
+#include "UObject/ConstructorHelpers.h"
 
 UCodeBlockBaseCPP::UCodeBlockBaseCPP(const FObjectInitializer& initializer) :UUserWidget(initializer) {
 	Name = FText::FromString(TEXT("Eval"));
 	Type = BlockType::Statement;
 	finalRenderScale = FVector2D(1);
 	Childs.Empty();
+	static ConstructorHelpers::FClassFinder<UNodeDragWidgetCPP> WidgetClassFinder(TEXT("/Game/UI/DragAndDrop/NodeDragWidget.NodeDragWidget_C"));
+	DragWidgetClass = WidgetClassFinder.Class;
 }
 
 FLinearColor UCodeBlockBaseCPP::GetCurrentBGColor() const
@@ -105,6 +109,7 @@ FEvalResult UCodeBlockBaseCPP::eval_Implementation()
 
 void UCodeBlockBaseCPP::NativeConstruct()
 {
+	Super::NativeConstruct();
 	ForceLayoutPrepass();
 	Resize();
 }
@@ -187,4 +192,34 @@ void UCodeBlockBaseCPP::rootResize()
 	else {
 		Resize();
 	}
+}
+
+FReply UCodeBlockBaseCPP::NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
+{
+	DragOffset = InGeometry.AbsoluteToLocal(InMouseEvent.GetScreenSpacePosition());
+	//intentionally disallow moving of the start block
+	if (Type != BlockType::Start && (InMouseEvent.GetEffectingButton() == EKeys::LeftMouseButton || InMouseEvent.IsTouchEvent())) {
+		//try to get SWidget
+		TSharedPtr<SWidget> self = this->GetCachedWidget();
+		if (self.IsValid()) {
+			//if yes reply to the Slate framework that it should try to detect the drag
+			return FReply::Handled().DetectDrag(self.ToSharedRef(),EKeys::LeftMouseButton);
+		}
+	}
+	return FReply::Unhandled();
+}
+
+void UCodeBlockBaseCPP::NativeOnDragDetected(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent, UDragDropOperation*& OutOperation)
+{
+	UE_LOG(LogTemp, Warning, TEXT("Dragging now!"));
+	//create the widget
+	DraggedWidget = NewObject<UNodeDragWidgetCPP>(GetTransientPackage(),DragWidgetClass);
+	DraggedWidget->WidgetReference = this;
+	UE_LOG(LogTemp, Warning, TEXT("Dragging widget is up!"));
+	UNodeDragDropOperation* operation = NewObject<UNodeDragDropOperation>(GetTransientPackage());
+	operation->Pivot = EDragPivot::MouseDown; //pivot=MouseDown
+	operation->WidgetReference = this; //set the reference to this widget
+	operation->DefaultDragVisual = DraggedWidget; //the dummy widget for placeholder
+	operation->DragOffset = DragOffset;
+	OutOperation = operation; //return this to the caller
 }

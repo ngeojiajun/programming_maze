@@ -53,4 +53,5 @@ public:
 	*/
 	UFUNCTION(BlueprintCallable)
 	bool AddBlockIntoSlot(UCodeBlockBaseCPP* block);
+	virtual bool NativeOnDrop(const FGeometry& InGeometry, const FDragDropEvent& InDragDropEvent, UDragDropOperation* InOperation) override;
 };

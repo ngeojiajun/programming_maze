@@ -247,3 +247,8 @@ bool UCodeBlockCPP::AddBlockIntoSlot(UCodeBlockBaseCPP* block)
 	rootResize();
 	return true;
 }
+
+bool UCodeBlockCPP::NativeOnDrop(const FGeometry& InGeometry, const FDragDropEvent& InDragDropEvent, UDragDropOperation* InOperation)
+{
+	return false;
+}
