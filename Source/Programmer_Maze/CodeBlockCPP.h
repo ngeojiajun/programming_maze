@@ -49,9 +49,16 @@ public:
 	UFUNCTION(BlueprintCallable)
 	bool AddChildBlock(UCodeBlockBaseCPP* block,int at=-1);
 	/*
+	*Remove the child block provided the instance
+	*/
+	UFUNCTION(BlueprintCallable)
+	bool RemoveChildBlock(UCodeBlockBaseCPP* blockToRemove);
+	/*
 	*Add a block into the slot
 	*/
 	UFUNCTION(BlueprintCallable)
 	bool AddBlockIntoSlot(UCodeBlockBaseCPP* block);
+	UFUNCTION(BlueprintCallable)
+	bool ClearSlot();
 	virtual bool NativeOnDrop(const FGeometry& InGeometry, const FDragDropEvent& InDragDropEvent, UDragDropOperation* InOperation) override;
 };

@@ -86,6 +86,7 @@ public:
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
 	FEvalResult eval();
 	virtual FEvalResult eval_Implementation();
+	UCodeBlockBaseCPP* getParentBlock();
 	protected:
 	//The construction/init in CPP
 	virtual void NativeConstruct() override;

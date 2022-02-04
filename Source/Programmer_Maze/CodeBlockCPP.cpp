@@ -10,6 +10,7 @@
 #include "Components/ScrollBox.h"
 #include "Components/CanvasPanel.h"
 #include "Components/CanvasPanelSlot.h"
+#include "NodeDragDropOperation.h"
 
 const float gapBetweenBlocks = 15;
 
@@ -118,7 +119,8 @@ void UCodeBlockCPP::Resize()
 				resolvedSlotWidth = std::max(resolvedSlotWidth, element->size.X);
 			}
 		}
-		if (Childs.Num() < 1) {
+		//first one is the slot
+		if (Childs.Num() <= 1) {
 			slotHeight = 100;
 		}
 		//---------------------------------------------------------
@@ -223,6 +225,31 @@ bool UCodeBlockCPP::AddChildBlock(UCodeBlockBaseCPP* block,int at)
 	return true; //SUCCESS
 }
 
+bool UCodeBlockCPP::RemoveChildBlock(UCodeBlockBaseCPP* block)
+{
+	//fail direct on NULL
+	if (block == NULL)return false;
+	//fail if the block do not accept any child
+	if (!havingChilds())return false;
+	//only allow statement,iteration and iterative
+	if (block->Type == BlockType::Expression || block->Type == BlockType::Variable || block->Type == BlockType::Start) {
+		return false;
+	}
+	//try to search this block from the Childs array
+	int32 idx = -1;
+	if (!Childs.Find(block, idx)) {
+		return false; //not found
+	}
+	//remove it from the tree
+	Childs.RemoveAt(idx);
+	bool succeeded=UI_Expression->RemoveChildAt(idx);
+	//pop it from the parent
+	block->RemoveFromParent();
+	//adjust the block size as needed
+	rootResize();
+	return true;
+}
+
 bool UCodeBlockCPP::AddBlockIntoSlot(UCodeBlockBaseCPP* block)
 {
 	//fail direct on NULL
@@ -243,12 +270,45 @@ bool UCodeBlockCPP::AddBlockIntoSlot(UCodeBlockBaseCPP* block)
 	}
 	//just add it as the children for the UI_Expression
 	UI_Expression->AddChild(block);
+	Childs[0] = block;
 	//adjust the block size as needed
 	rootResize();
 	return true;
 }
 
+bool UCodeBlockCPP::ClearSlot()
+{
+	//fail if the block do not accept any child
+	if (!havingSlots())return false;
+	//remove the element front the slot
+	Childs[0]->RemoveFromParent();
+	Childs[0] = NULL;
+	return true;
+}
+
 bool UCodeBlockCPP::NativeOnDrop(const FGeometry& InGeometry, const FDragDropEvent& InDragDropEvent, UDragDropOperation* InOperation)
 {
-	return false;
+	//TODO: determine where the dropping point was !!!!
+	if (Type != Start)return false;
+	//try to cast the InOperation into UNodeDragDropOperation
+	UNodeDragDropOperation* operation = Cast<UNodeDragDropOperation>(InOperation);
+	if (!operation) {
+		return false;
+	}
+	//try remove from parent
+	UCodeBlockBaseCPP* block = operation->WidgetReference;
+	if (UCodeBlockBaseCPP* parent = block->getParentBlock()) {
+		UCodeBlockCPP* parentBlock = Cast<UCodeBlockCPP>(parent);
+		if (!parentBlock) {
+			//cannot cast but it have parent
+			//reject
+			return false;
+		}
+		else if (parentBlock == this) {
+			return false; //dont allow the move as the block it is NOP
+		}
+		parentBlock->RemoveChildBlock(block);
+	}
+	//now add the new block under this
+	return AddChildBlock(block);
 }

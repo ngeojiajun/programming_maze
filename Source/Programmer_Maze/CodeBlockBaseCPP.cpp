@@ -152,7 +152,7 @@ bool UCodeBlockBaseCPP::havingSlots() const
 	}
 }
 
-void UCodeBlockBaseCPP::rootResize()
+UCodeBlockBaseCPP* UCodeBlockBaseCPP::getParentBlock()
 {
 	//This function only work for the controls slotted under the child slot
 	if (Slot) {
@@ -163,7 +163,7 @@ void UCodeBlockBaseCPP::rootResize()
 		UCanvasPanelSlot* slot = Cast<UCanvasPanelSlot>(Slot);
 		UCodeBlockBaseCPP* parent = slot ? Cast<UCodeBlockBaseCPP>(slot->Parent->GetOuter()) : NULL;
 		if (parent) {
-			parent->rootResize();
+			return parent;
 		}
 		else {
 			//if that failed lets try the slot mechanism
@@ -176,18 +176,19 @@ void UCodeBlockBaseCPP::rootResize()
 					//attempt a cast to the UCodeBlockBaseCPP and see weather is that possible
 					//if yes then break it off since we get our parent
 					parent = Cast<UCodeBlockBaseCPP>(_parent);
-					if (parent)break;
+					if (parent)return parent;
 					_parent = _parent->GetOuter();
 				}
-				if (parent) {
-					parent->rootResize();
-				}
-				else {
-					Resize();
-				}
 			}
-			Resize();
 		}
+	}
+	return NULL;
+}
+
+void UCodeBlockBaseCPP::rootResize()
+{
+	if (UCodeBlockBaseCPP * parent = getParentBlock()) {
+		parent->rootResize();
 	}
 	else {
 		Resize();
