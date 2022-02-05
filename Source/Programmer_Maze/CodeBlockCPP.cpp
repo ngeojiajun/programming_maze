@@ -11,6 +11,7 @@
 #include "Components/CanvasPanel.h"
 #include "Components/CanvasPanelSlot.h"
 #include "NodeDragDropOperation.h"
+#include "GeneralUtilities.h"
 
 const float gapBetweenBlocks = 15;
 
@@ -161,7 +162,7 @@ void UCodeBlockCPP::Resize()
 		UI_ChildGrid->SetColumnFill(1, AR);	
 	}
 	controlSize.X += 25;
-	UE_LOG(LogTemp, Warning, TEXT("%s: size=(%f,%f)"), *(GetName()), controlSize.X,controlSize.Y);
+	GeneralUtilities::LogVector2D(this, controlSize, TEXT("size"));
 	setControlSize(controlSize);
 }
 
@@ -290,6 +291,16 @@ bool UCodeBlockCPP::NativeOnDrop(const FGeometry& InGeometry, const FDragDropEve
 {
 	//TODO: determine where the dropping point was !!!!
 	if (Type != Start)return false;
+	{
+		FVector2D posScroll = this->UI_Childs->GetCachedGeometry().GetAbsolutePosition();
+		FVector2D posRoot = InGeometry.GetAbsolutePosition();
+		GeneralUtilities::LogVector2D(this, posScroll, TEXT("Position of scroll box"));
+		GeneralUtilities::LogVector2D(this, posScroll, TEXT("Position of bounding box"));
+		//see is the pointer is on top of the valid range
+		FVector2D cursor = InDragDropEvent.GetScreenSpacePosition();
+		GeneralUtilities::LogVector2D(this, cursor, TEXT("Position of cursor"));
+		GeneralUtilities::LogBoolean(this, GeneralUtilities::insideGeometry(this->UI_Childs->GetCachedGeometry(),cursor-InOperation->Offset),TEXT("Valid drop?"));
+	}
 	//try to cast the InOperation into UNodeDragDropOperation
 	UNodeDragDropOperation* operation = Cast<UNodeDragDropOperation>(InOperation);
 	if (!operation) {

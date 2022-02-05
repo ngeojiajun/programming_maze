@@ -197,12 +197,12 @@ void UCodeBlockBaseCPP::rootResize()
 
 FReply UCodeBlockBaseCPP::NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
 {
-	DragOffset = InGeometry.AbsoluteToLocal(InMouseEvent.GetScreenSpacePosition());
 	//intentionally disallow moving of the start block
 	if (Type != BlockType::Start && (InMouseEvent.GetEffectingButton() == EKeys::LeftMouseButton || InMouseEvent.IsTouchEvent())) {
 		//try to get SWidget
 		TSharedPtr<SWidget> self = this->GetCachedWidget();
 		if (self.IsValid()) {
+			DragOffset = InGeometry.AbsoluteToLocal(InMouseEvent.GetScreenSpacePosition());
 			//if yes reply to the Slate framework that it should try to detect the drag
 			return FReply::Handled().DetectDrag(self.ToSharedRef(),EKeys::LeftMouseButton);
 		}
@@ -212,11 +212,9 @@ FReply UCodeBlockBaseCPP::NativeOnMouseButtonDown(const FGeometry& InGeometry, c
 
 void UCodeBlockBaseCPP::NativeOnDragDetected(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent, UDragDropOperation*& OutOperation)
 {
-	UE_LOG(LogTemp, Warning, TEXT("Dragging now!"));
 	//create the widget
 	DraggedWidget = NewObject<UNodeDragWidgetCPP>(GetTransientPackage(),DragWidgetClass);
 	DraggedWidget->WidgetReference = this;
-	UE_LOG(LogTemp, Warning, TEXT("Dragging widget is up!"));
 	UNodeDragDropOperation* operation = NewObject<UNodeDragDropOperation>(GetTransientPackage());
 	operation->Pivot = EDragPivot::MouseDown; //pivot=MouseDown
 	operation->WidgetReference = this; //set the reference to this widget
