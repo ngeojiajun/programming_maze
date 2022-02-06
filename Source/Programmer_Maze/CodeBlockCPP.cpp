@@ -173,7 +173,8 @@ bool UCodeBlockCPP::AddChildBlock(UCodeBlockBaseCPP* block,int at)
 	//fail if the block do not accept any child
 	if (!havingChilds())return false;
 	//only allow statement,iteration and iterative
-	if (block->Type == BlockType::Expression || block->Type == BlockType::Variable || block->Type == BlockType::Start) {
+	const BlockType disallowedTypes[] = { BlockType::Expression ,BlockType::Variable , BlockType::Start };
+	if (GeneralUtilities::either<BlockType>(block->Type, ARRAY_T(disallowedTypes))) {
 		return false;
 	}
 	//it must be detached from any slot
@@ -233,7 +234,8 @@ bool UCodeBlockCPP::RemoveChildBlock(UCodeBlockBaseCPP* block)
 	//fail if the block do not accept any child
 	if (!havingChilds())return false;
 	//only allow statement,iteration and iterative
-	if (block->Type == BlockType::Expression || block->Type == BlockType::Variable || block->Type == BlockType::Start) {
+	const BlockType disallowedTypes[] = { BlockType::Expression ,BlockType::Variable , BlockType::Start };
+	if (GeneralUtilities::either<BlockType>(block->Type, ARRAY_T(disallowedTypes))) {
 		return false;
 	}
 	//try to search this block from the Childs array
@@ -257,8 +259,9 @@ bool UCodeBlockCPP::AddBlockIntoSlot(UCodeBlockBaseCPP* block)
 	if (block == NULL)return false;
 	//fail if the block do not accept any child
 	if (!havingSlots())return false;
-	//dont allow statement,iteration and iterative
-	if (block->Type == BlockType::Statement || block->Type == BlockType::Iteration || block->Type==BlockType::Conditional || block->Type == BlockType::Start) {
+	//dont allow statement,iteration, start and iterative
+	const BlockType disallowedTypes[] = { BlockType::Expression ,BlockType::Variable};
+	if (GeneralUtilities::neither<BlockType>(block->Type, ARRAY_T(disallowedTypes))) {
 		return false;
 	}
 	//it must be detached from any slot

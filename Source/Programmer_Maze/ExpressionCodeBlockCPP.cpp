@@ -4,6 +4,7 @@
 #include "Components/TextBlock.h"
 #include "Components/NamedSlot.h"
 #include "Components/GridPanel.h"
+#include "GeneralUtilities.h"
 
 
 UExpressionCodeBlockCPP::UExpressionCodeBlockCPP(const FObjectInitializer& init) :UCodeBlockBaseCPP(init) {
@@ -80,7 +81,8 @@ bool UExpressionCodeBlockCPP::AddBlockIntoSlot(UCodeBlockBaseCPP* block, int at)
 		return false; //out of range
 	}
 	//dont allow statement,iteration and iterative
-	if (block->Type == BlockType::Statement || block->Type == BlockType::Iteration || block->Type == BlockType::Conditional) {
+	const BlockType disallowedTypes[] = { BlockType::Statement,BlockType::Iteration,BlockType::Conditional };
+	if (GeneralUtilities::either<BlockType>(block->Type, ARRAY_T(disallowedTypes))) {
 		return false;
 	}
 	//it must be detached from any slot
@@ -97,5 +99,5 @@ bool UExpressionCodeBlockCPP::AddBlockIntoSlot(UCodeBlockBaseCPP* block, int at)
 	Childs[at] = block;
 	//ask the root block to perform the resize operation
 	rootResize();
-	return false;
+	return true;
 }
