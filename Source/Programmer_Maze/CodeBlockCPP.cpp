@@ -147,13 +147,13 @@ void UCodeBlockCPP::Resize()
 		// Also if the slots are filled then we have to adjust it too
 		//---------------------------------------------------------
 		const float currentWidth = controlSize.X;
-		float minWidth = 30 + resolvedSlotWidth;
+		float minWidth = 40 + resolvedSlotWidth;
 		if (minWidth > currentWidth) {
 			//extend the control when it is not enough
 			controlSize.X = minWidth;
 		}
 		else {
-			resolvedSlotWidth = currentWidth - 30;
+			resolvedSlotWidth = currentWidth - 40;
 		}
 		//now lets calculate the ratio
 		AR = floor(resolvedSlotWidth/30);
@@ -284,6 +284,8 @@ bool UCodeBlockCPP::ClearSlot()
 {
 	//fail if the block do not accept any child
 	if (!havingSlots())return false;
+	//if the block is NULL also ignore it
+	if (!Childs[0])return false;
 	//remove the element front the slot
 	Childs[0]->RemoveFromParent();
 	Childs[0] = NULL;
@@ -299,6 +301,7 @@ bool UCodeBlockCPP::NativeOnDrop(const FGeometry& InGeometry, const FDragDropEve
 	}
 
 	if (havingChilds()){ //test on the scroll box
+		GeneralUtilities::Log(this, "Testing the child slot");
 		//see is the pointer is on top of the valid range
 		FVector2D cursor = InDragDropEvent.GetScreenSpacePosition();
 		bool validDrop = GeneralUtilities::insideGeometry(this->UI_Childs->GetCachedGeometry(), cursor - InOperation->Offset);
@@ -332,7 +335,8 @@ bool UCodeBlockCPP::NativeOnDrop(const FGeometry& InGeometry, const FDragDropEve
 		}
 	}
 
-	if (havingSlots()) { //special case for UExpressionCodeBlock is required
+	if (havingSlots()) { //TODO:special case for UExpressionCodeBlock is required
+		GeneralUtilities::Log(this, "Testing the expression slot");
 		//see is the pointer is on top of the valid range
 		FVector2D cursor = InDragDropEvent.GetScreenSpacePosition();
 		bool validDrop = GeneralUtilities::insideGeometry(this->UI_ExpressionBlock->GetCachedGeometry(), cursor - InOperation->Offset);
@@ -343,6 +347,7 @@ bool UCodeBlockCPP::NativeOnDrop(const FGeometry& InGeometry, const FDragDropEve
 			//check weather this operation is valid
 			const BlockType disallowedTypes[] = { BlockType::Statement,BlockType::Iteration,BlockType::Conditional };
 			if (GeneralUtilities::either<BlockType>(block->Type, ARRAY_T(disallowedTypes))) {
+				GeneralUtilities::Log(this, TEXT("Aborted the drag and drop because the block in question is not compactible"));
 				return false;
 			}
 			//try remove from parent
@@ -361,6 +366,7 @@ bool UCodeBlockCPP::NativeOnDrop(const FGeometry& InGeometry, const FDragDropEve
 					parentBlock->ClearSlot();
 				}
 			}
+			GeneralUtilities::Log(this, TEXT("Attempting to add the block into slot"));
 			//now add the new block under this
 			return AddBlockIntoSlot(block->asUniqueBlock());
 		}
