@@ -311,18 +311,20 @@ bool UCodeBlockCPP::NativeOnDrop(const FGeometry& InGeometry, const FDragDropEve
 	}
 	//try remove from parent
 	UCodeBlockBaseCPP* block = operation->WidgetReference;
-	if (UCodeBlockBaseCPP* parent = block->getParentBlock()) {
-		UCodeBlockCPP* parentBlock = Cast<UCodeBlockCPP>(parent);
-		if (!parentBlock) {
-			//cannot cast but it have parent
-			//reject
-			return false;
+	if (!block->Template) { //whenever it is not a template block remove it from its parent container
+		if (UCodeBlockBaseCPP* parent = block->getParentBlock()) {
+			UCodeBlockCPP* parentBlock = Cast<UCodeBlockCPP>(parent);
+			if (!parentBlock) {
+				//cannot cast but it have parent
+				//reject
+				return false;
+			}
+			else if (parentBlock == this) {
+				return false; //dont allow the move as the block it is NOP
+			}
+			parentBlock->RemoveChildBlock(block);
 		}
-		else if (parentBlock == this) {
-			return false; //dont allow the move as the block it is NOP
-		}
-		parentBlock->RemoveChildBlock(block);
 	}
 	//now add the new block under this
-	return AddChildBlock(block);
+	return AddChildBlock(block->asUniqueBlock());
 }

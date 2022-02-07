@@ -17,6 +17,7 @@ UCodeBlockBaseCPP::UCodeBlockBaseCPP(const FObjectInitializer& initializer) :UUs
 	Type = BlockType::Statement;
 	finalRenderScale = FVector2D(1);
 	Childs.Empty();
+	Template = false;
 	static ConstructorHelpers::FClassFinder<UNodeDragWidgetCPP> WidgetClassFinder(TEXT("/Game/UI/DragAndDrop/NodeDragWidget.NodeDragWidget_C"));
 	DragWidgetClass = WidgetClassFinder.Class;
 }
@@ -40,6 +41,7 @@ FLinearColor UCodeBlockBaseCPP::GetCurrentBGColor() const
 	case BlockType::Start:
 		return DEFINE_DIRECT_COLOR(136, 84, 13);
 	}
+	checkNoEntry();
 	//This should never happen
 	return FColor(0,0,0); //Fuck you
 #undef DEFINE_DIRECT_COLOR
@@ -74,6 +76,10 @@ UCodeBlockBaseCPP* UCodeBlockBaseCPP::clone_Implementation()
 
 FEvalResult UCodeBlockBaseCPP::eval_Implementation()
 {
+	if (Template) {
+		//illegal attempt to execute the Template block
+		checkNoEntry();
+	}
 	//execute any bound handlers or run the 'default' eval handler
 	FEvalResult evalResult=FEvalResult::AsError(
 		FString::Printf(
@@ -105,6 +111,11 @@ FEvalResult UCodeBlockBaseCPP::eval_Implementation()
 	else {
 		return evalResult;
 	}
+}
+
+UCodeBlockBaseCPP* UCodeBlockBaseCPP::asUniqueBlock()
+{
+	return Template ? clone() : this;
 }
 
 void UCodeBlockBaseCPP::NativeConstruct()

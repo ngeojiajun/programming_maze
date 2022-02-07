@@ -36,6 +36,14 @@ public:
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly)
 	TArray<UCodeBlockBaseCPP*> Childs;
 	/*
+	* Is the block should serve as a template block
+	* A template block have slightly different behavior at such as:
+	* eval() call will crash the game as it is illegal
+	* asUniqueBlock() will return the cloned version of this block instead of the original
+	*/
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadWrite, meta = (ExposeOnSpawn = "true"))
+	bool Template;
+	/*
 	*Getters
 	*/
 	/*
@@ -86,7 +94,14 @@ public:
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
 	FEvalResult eval();
 	virtual FEvalResult eval_Implementation();
+	/*
+	*Get reference to parent block
+	*/
 	UCodeBlockBaseCPP* getParentBlock();
+	/*
+	*Get the instance of this block as an unique unit
+	*/
+	UCodeBlockBaseCPP* asUniqueBlock();
 	protected:
 	//The construction/init in CPP
 	virtual void NativeConstruct() override;
