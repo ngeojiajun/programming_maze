@@ -120,10 +120,8 @@ void UCodeBlockCPP::Resize()
 				resolvedSlotWidth = std::max(resolvedSlotWidth, element->size.X);
 			}
 		}
-		//first one is the slot
-		if (Childs.Num() <= 1) {
-			slotHeight = 100;
-		}
+		//enforce minimum height of 100px;
+		slotHeight = std::max<float>(slotHeight, 100);
 		//---------------------------------------------------------
 		//The height is computed based on these rules
 		//first he borders have 2 units (one for top and one for bottom)
@@ -131,11 +129,11 @@ void UCodeBlockCPP::Resize()
 		//using those we can calculate the desirable cofficient for both
 		//---------------------------------------------------------
 		const float heightBorder = textSize.Y * 2;
-		float AR = floor(slotHeight / heightBorder);
+		float AR = (slotHeight / heightBorder);
 		//adjust the ratio to avoid zero and round up
 		AR += AR < 1 ? 2 : 1;
 		//multiply it with two because the base is not one but two
-		AR *= 2;
+		AR *= 2.5;
 		//set it
 		UI_MainGrid->SetRowFill(1, AR);
 		//the height is sum of those
@@ -147,13 +145,13 @@ void UCodeBlockCPP::Resize()
 		// Also if the slots are filled then we have to adjust it too
 		//---------------------------------------------------------
 		const float currentWidth = controlSize.X;
-		float minWidth = 40 + resolvedSlotWidth;
+		float minWidth = 50 + resolvedSlotWidth;
 		if (minWidth > currentWidth) {
 			//extend the control when it is not enough
 			controlSize.X = minWidth;
 		}
 		else {
-			resolvedSlotWidth = currentWidth - 40;
+			resolvedSlotWidth = currentWidth - 50;
 		}
 		//now lets calculate the ratio
 		AR = floor(resolvedSlotWidth/30);
