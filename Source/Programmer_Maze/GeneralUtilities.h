@@ -5,6 +5,8 @@
 //This file do not contain any unreal related stuffs
 //Only contain some common utilities used across the project
 
+DECLARE_LOG_CATEGORY_EXTERN(LogGameCore, Log, All);
+
 //automatically expand parameters as the constant array
 #define ARRAY_T(values) (values),(UE_ARRAY_COUNT(values))
 

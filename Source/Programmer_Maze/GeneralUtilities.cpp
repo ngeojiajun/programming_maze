@@ -2,6 +2,8 @@
 #include "GeneralUtilities.h"
 #include "UObject/Object.h"
 
+DEFINE_LOG_CATEGORY(LogGameCore);
+
 bool GeneralUtilities::insideRect(const FVector2D& pos, const FVector2D& size, const FVector2D& point)
 {
 	FVector2D another = pos + size;
@@ -17,7 +19,7 @@ bool GeneralUtilities::insideGeometry(const FGeometry& pos, const FVector2D& poi
 void GeneralUtilities::Log(UObject* owner, const FString text)
 {
 #ifndef NO_DEBUG
-	UE_LOG(LogTemp, Warning, TEXT("%s: %s"), *(owner->GetName()),*text);
+	UE_LOG(LogGameCore, Warning, TEXT("%s: %s"), *(owner->GetName()),*text);
 #endif
 }
 
@@ -30,4 +32,3 @@ void GeneralUtilities::LogBoolean(UObject* owner, bool value, const FString tag)
 {
 	Log(owner, FString::Printf(TEXT("%s = %s"), *tag, value ? TEXT("true") : TEXT("false")));
 }
-
