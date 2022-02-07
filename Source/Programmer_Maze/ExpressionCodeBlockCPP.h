@@ -47,4 +47,6 @@ public:
 	*/
 	UFUNCTION(BlueprintCallable)
 	bool AddBlockIntoSlot(UCodeBlockBaseCPP* block,int at);
+	UFUNCTION(BlueprintCallable)
+	bool RemoveBlockFromSlot(UCodeBlockBaseCPP* blockToRemove);
 };

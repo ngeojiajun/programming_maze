@@ -101,3 +101,19 @@ bool UExpressionCodeBlockCPP::AddBlockIntoSlot(UCodeBlockBaseCPP* block, int at)
 	rootResize();
 	return true;
 }
+
+bool UExpressionCodeBlockCPP::RemoveBlockFromSlot(UCodeBlockBaseCPP* blockToRemove)
+{
+	//if the block is NULL also ignore it
+	if (!blockToRemove)return false;
+	for (int i = 0; i < 2; i++) {
+		UCodeBlockBaseCPP* block = Childs[i];
+		if (block == blockToRemove) {
+			//remove the element front the slot
+			block->RemoveFromParent();
+			Childs[i] = NULL;
+			return true;
+		}
+	}
+	return false;
+}
