@@ -234,7 +234,7 @@ bool UCodeBlockCPP::RemoveChildBlock(UCodeBlockBaseCPP* block)
 	//fail if the block do not accept any child
 	if (!havingChilds())return false;
 	//only allow statement,iteration and iterative
-	const BlockType disallowedTypes[] = { BlockType::Expression ,BlockType::Variable , BlockType::Start };
+	const BlockType disallowedTypes[] = { BlockType::Expression ,BlockType::Variable , BlockType::Start, BlockType::Constant };
 	if (GeneralUtilities::either<BlockType>(block->Type, ARRAY_T(disallowedTypes))) {
 		return false;
 	}
@@ -260,8 +260,8 @@ bool UCodeBlockCPP::AddBlockIntoSlot(UCodeBlockBaseCPP* block)
 	//fail if the block do not accept any child
 	if (!havingSlots())return false;
 	//dont allow statement,iteration, start and iterative
-	const BlockType disallowedTypes[] = { BlockType::Expression ,BlockType::Variable};
-	if (GeneralUtilities::neither<BlockType>(block->Type, ARRAY_T(disallowedTypes))) {
+	const BlockType disallowedTypes[] = { BlockType::Statement,BlockType::Iteration,BlockType::Conditional };
+	if (GeneralUtilities::either<BlockType>(block->Type, ARRAY_T(disallowedTypes))) {
 		return false;
 	}
 	//it must be detached from any slot
@@ -292,40 +292,78 @@ bool UCodeBlockCPP::ClearSlot()
 
 bool UCodeBlockCPP::NativeOnDrop(const FGeometry& InGeometry, const FDragDropEvent& InDragDropEvent, UDragDropOperation* InOperation)
 {
-	//TODO: determine where the dropping point was !!!!
-	if (Type != Start)return false;
-	{
-		FVector2D posScroll = this->UI_Childs->GetCachedGeometry().GetAbsolutePosition();
-		FVector2D posRoot = InGeometry.GetAbsolutePosition();
-		GeneralUtilities::LogVector2D(this, posScroll, TEXT("Position of scroll box"));
-		GeneralUtilities::LogVector2D(this, posScroll, TEXT("Position of bounding box"));
-		//see is the pointer is on top of the valid range
-		FVector2D cursor = InDragDropEvent.GetScreenSpacePosition();
-		GeneralUtilities::LogVector2D(this, cursor, TEXT("Position of cursor"));
-		GeneralUtilities::LogBoolean(this, GeneralUtilities::insideGeometry(this->UI_Childs->GetCachedGeometry(),cursor-InOperation->Offset),TEXT("Valid drop?"));
-	}
 	//try to cast the InOperation into UNodeDragDropOperation
 	UNodeDragDropOperation* operation = Cast<UNodeDragDropOperation>(InOperation);
 	if (!operation) {
 		return false;
 	}
-	//try remove from parent
-	UCodeBlockBaseCPP* block = operation->WidgetReference;
-	if (!block->Template) { //whenever it is not a template block remove it from its parent container
-		if (UCodeBlockBaseCPP* parent = block->getParentBlock()) {
-			UCodeBlockCPP* parentBlock = Cast<UCodeBlockCPP>(parent);
-			if (!parentBlock) {
-				//cannot cast but it have parent
-				//reject
-				GeneralUtilities::Log(this, TEXT("Aborted the drag and drop because the block in question is not under a know parent"));
+
+	if (havingChilds()){ //test on the scroll box
+		//see is the pointer is on top of the valid range
+		FVector2D cursor = InDragDropEvent.GetScreenSpacePosition();
+		bool validDrop = GeneralUtilities::insideGeometry(this->UI_Childs->GetCachedGeometry(), cursor - InOperation->Offset);
+		GeneralUtilities::LogVector2D(this, cursor, TEXT("Position of cursor"));
+		GeneralUtilities::LogBoolean(this, validDrop, TEXT("Valid drop?"));
+		if (validDrop) {
+			UCodeBlockBaseCPP* block = operation->WidgetReference;
+			//check is the block is valid for this operation
+			const BlockType disallowedTypes[] = { BlockType::Expression ,BlockType::Variable,BlockType::Constant };
+			if (GeneralUtilities::either<BlockType>(block->Type, ARRAY_T(disallowedTypes))) {
 				return false;
 			}
-			else if (parentBlock == this) {
-				return false; //dont allow the move as the block it is NOP
+			//try remove from parent
+			if (!block->Template) { //whenever it is not a template block remove it from its parent container
+				if (UCodeBlockBaseCPP* parent = block->getParentBlock()) {
+					UCodeBlockCPP* parentBlock = Cast<UCodeBlockCPP>(parent);
+					if (!parentBlock) {
+						//cannot cast but it have parent
+						//reject
+						GeneralUtilities::Log(this, TEXT("Aborted the drag and drop because the block in question is not under a known parent"));
+						return false;
+					}
+					else if (parentBlock == this) {
+						return false; //dont allow the move as the block it is NOP
+					}
+					parentBlock->RemoveChildBlock(block);
+				}
 			}
-			parentBlock->RemoveChildBlock(block);
+			//now add the new block under this
+			return AddChildBlock(block->asUniqueBlock());
 		}
 	}
-	//now add the new block under this
-	return AddChildBlock(block->asUniqueBlock());
+
+	if (havingSlots()) { //special case for UExpressionCodeBlock is required
+		//see is the pointer is on top of the valid range
+		FVector2D cursor = InDragDropEvent.GetScreenSpacePosition();
+		bool validDrop = GeneralUtilities::insideGeometry(this->UI_ExpressionBlock->GetCachedGeometry(), cursor - InOperation->Offset);
+		GeneralUtilities::LogVector2D(this, cursor, TEXT("Position of cursor"));
+		GeneralUtilities::LogBoolean(this, validDrop, TEXT("Valid drop?"));
+		if (validDrop) {
+			UCodeBlockBaseCPP* block = operation->WidgetReference;
+			//check weather this operation is valid
+			const BlockType disallowedTypes[] = { BlockType::Statement,BlockType::Iteration,BlockType::Conditional };
+			if (GeneralUtilities::either<BlockType>(block->Type, ARRAY_T(disallowedTypes))) {
+				return false;
+			}
+			//try remove from parent
+			if (!block->Template) { //whenever it is not a template block remove it from its parent container
+				if (UCodeBlockBaseCPP* parent = block->getParentBlock()) {
+					UCodeBlockCPP* parentBlock = Cast<UCodeBlockCPP>(parent);
+					if (!parentBlock) {
+						//cannot cast but it have parent
+						//reject
+						GeneralUtilities::Log(this, TEXT("Aborted the drag and drop because the block in question is not under a known parent"));
+						return false;
+					}
+					else if (parentBlock == this) {
+						return false; //dont allow the move as the block it is NOP
+					}
+					parentBlock->ClearSlot();
+				}
+			}
+			//now add the new block under this
+			return AddBlockIntoSlot(block->asUniqueBlock());
+		}
+	}
+	return false;
 }
