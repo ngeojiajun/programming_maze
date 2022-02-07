@@ -317,6 +317,7 @@ bool UCodeBlockCPP::NativeOnDrop(const FGeometry& InGeometry, const FDragDropEve
 			if (!parentBlock) {
 				//cannot cast but it have parent
 				//reject
+				GeneralUtilities::Log(this, TEXT("Aborted the drag and drop because the block in question is not under a know parent"));
 				return false;
 			}
 			else if (parentBlock == this) {
