@@ -4,7 +4,9 @@
 #include "Components/TextBlock.h"
 #include "Components/NamedSlot.h"
 #include "Components/GridPanel.h"
+#include "NodeDragDropOperation.h"
 #include "GeneralUtilities.h"
+#include "CodeBlockCPP.h" //we need some to do some special deals with the CodeBlockCPP
 
 
 UExpressionCodeBlockCPP::UExpressionCodeBlockCPP(const FObjectInitializer& init) :UCodeBlockBaseCPP(init) {
@@ -68,7 +70,7 @@ void UExpressionCodeBlockCPP::Resize()
 	if (!(Slot && Slot->Parent->GetClass() == UNamedSlot::StaticClass()))
 		controlSize.X = std::max<float>(100, controlSize.X);
 	controlSize.X += 20; //offset the paddings
-	UE_LOG(LogTemp, Warning, TEXT("%s: size=(%f,%f)"), *(GetName()), controlSize.X, controlSize.Y);
+	GeneralUtilities::LogVector2D(this, controlSize, TEXT("size"));
 	setControlSize(controlSize);
 }
 
@@ -116,4 +118,59 @@ bool UExpressionCodeBlockCPP::RemoveBlockFromSlot(UCodeBlockBaseCPP* blockToRemo
 		}
 	}
 	return false;
+}
+
+bool UExpressionCodeBlockCPP::NativeOnDrop(const FGeometry& InGeometry, const FDragDropEvent& InDragDropEvent, UDragDropOperation* InOperation)
+{
+	//try to cast the InOperation into UNodeDragDropOperation
+	UNodeDragDropOperation* operation = Cast<UNodeDragDropOperation>(InOperation);
+	if (!operation) {
+		return false;
+	}
+	FVector2D cursor = InDragDropEvent.GetScreenSpacePosition();
+	UNamedSlot* slots[] = { UI_ExpressionSlot1,UI_ExpressionSlot2 };
+	int i = 0;
+	for (; i < 2; i++) {//check where the pointer was
+		UWidget* border = slots[i]->GetParent(); //get the border that warps the slot, it is invisible from the code
+		const FGeometry borderGeometry = border->GetCachedGeometry();
+		if (GeneralUtilities::insideGeometry(borderGeometry, cursor)) {
+			break; //break out from the loop if the check succeeded
+		}
+	}
+	if (i >= 2) { //not caught by any slot so drop it
+		return true;
+	}
+	UCodeBlockBaseCPP* block = operation->WidgetReference;
+	//check weather this operation is valid
+	const BlockType disallowedTypes[] = { BlockType::Statement,BlockType::Iteration,BlockType::Conditional };
+	if (GeneralUtilities::either<BlockType>(block->Type, ARRAY_T(disallowedTypes))) {
+		GeneralUtilities::Log(this, TEXT("Aborted the drag and drop because the block in question is not compactible"));
+		return true;
+	}
+	//check the target slot weather is it possible to do it so
+	if (Childs[i]) {
+		//drop it as there are something inside the slot
+		return true;
+	}
+	//try remove from parent
+	if (!block->Template) { //whenever it is not a template block remove it from its parent container
+		if (UCodeBlockBaseCPP* parent = block->getParentBlock()) {
+			if (UCodeBlockCPP* parentBlock = Cast<UCodeBlockCPP>(parent)) {
+				parentBlock->ClearSlot();
+			}
+			else if (UExpressionCodeBlockCPP* parentExprBlock = Cast<UExpressionCodeBlockCPP>(parent)) {
+				parentExprBlock->RemoveBlockFromSlot(block);
+			}
+			else {
+				//cannot cast but it have parent
+				//reject
+				GeneralUtilities::Log(this, TEXT("Aborted the drag and drop because the block in question is not under a known parent"));
+				return true;
+			}
+		}
+	}
+	GeneralUtilities::Log(this, TEXT("Attempting to add the block into slot"));
+	//now add the new block under this
+	AddBlockIntoSlot(block->asUniqueBlock(),i);
+	return true;
 }

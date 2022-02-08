@@ -12,6 +12,7 @@
 #include "Components/CanvasPanelSlot.h"
 #include "NodeDragDropOperation.h"
 #include "GeneralUtilities.h"
+#include "ExpressionCodeBlockCPP.h"
 
 const float gapBetweenBlocks = 15;
 
@@ -334,7 +335,7 @@ bool UCodeBlockCPP::NativeOnDrop(const FGeometry& InGeometry, const FDragDropEve
 		}
 	}
 
-	if (havingSlots()) { //TODO:special case for UExpressionCodeBlock is required
+	if (havingSlots()) {
 		GeneralUtilities::Log(this, "Testing the expression slot");
 		//see is the pointer is on top of the valid range
 		FVector2D cursor = InDragDropEvent.GetScreenSpacePosition();
@@ -349,20 +350,24 @@ bool UCodeBlockCPP::NativeOnDrop(const FGeometry& InGeometry, const FDragDropEve
 				GeneralUtilities::Log(this, TEXT("Aborted the drag and drop because the block in question is not compactible"));
 				return true;
 			}
+			if (Childs[0]) {
+				return true;
+			}
 			//try remove from parent
 			if (!block->Template) { //whenever it is not a template block remove it from its parent container
 				if (UCodeBlockBaseCPP* parent = block->getParentBlock()) {
-					UCodeBlockCPP* parentBlock = Cast<UCodeBlockCPP>(parent);
-					if (!parentBlock) {
+					if (UCodeBlockCPP* parentBlock = Cast<UCodeBlockCPP>(parent)) {
+						parentBlock->ClearSlot();
+					}
+					else if (UExpressionCodeBlockCPP* parentExprBlock = Cast<UExpressionCodeBlockCPP>(parent)) {
+						parentExprBlock->RemoveBlockFromSlot(block);
+					}
+					else {
 						//cannot cast but it have parent
 						//reject
 						GeneralUtilities::Log(this, TEXT("Aborted the drag and drop because the block in question is not under a known parent"));
 						return true;
 					}
-					else if (parentBlock == this) {
-						return true; //dont allow the move as the block it is NOP
-					}
-					parentBlock->ClearSlot();
 				}
 			}
 			GeneralUtilities::Log(this, TEXT("Attempting to add the block into slot"));

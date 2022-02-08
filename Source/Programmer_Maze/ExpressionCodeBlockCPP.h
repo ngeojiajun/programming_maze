@@ -49,4 +49,5 @@ public:
 	bool AddBlockIntoSlot(UCodeBlockBaseCPP* block,int at);
 	UFUNCTION(BlueprintCallable)
 	bool RemoveBlockFromSlot(UCodeBlockBaseCPP* blockToRemove);
+	virtual bool NativeOnDrop(const FGeometry& InGeometry, const FDragDropEvent& InDragDropEvent, UDragDropOperation* InOperation) override;
 };
