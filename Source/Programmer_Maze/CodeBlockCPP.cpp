@@ -310,7 +310,7 @@ bool UCodeBlockCPP::NativeOnDrop(const FGeometry& InGeometry, const FDragDropEve
 			//check is the block is valid for this operation
 			const BlockType disallowedTypes[] = { BlockType::Expression ,BlockType::Variable,BlockType::Constant };
 			if (GeneralUtilities::either<BlockType>(block->Type, ARRAY_T(disallowedTypes))) {
-				return false;
+				return true;
 			}
 			//try remove from parent
 			if (!block->Template) { //whenever it is not a template block remove it from its parent container
@@ -320,16 +320,17 @@ bool UCodeBlockCPP::NativeOnDrop(const FGeometry& InGeometry, const FDragDropEve
 						//cannot cast but it have parent
 						//reject
 						GeneralUtilities::Log(this, TEXT("Aborted the drag and drop because the block in question is not under a known parent"));
-						return false;
+						return true;
 					}
 					else if (parentBlock == this) {
-						return false; //dont allow the move as the block it is NOP
+						return true; //dont allow the move as the block it is NOP
 					}
 					parentBlock->RemoveChildBlock(block);
 				}
 			}
 			//now add the new block under this
-			return AddChildBlock(block->asUniqueBlock());
+			AddChildBlock(block->asUniqueBlock());
+			return true;
 		}
 	}
 
@@ -346,7 +347,7 @@ bool UCodeBlockCPP::NativeOnDrop(const FGeometry& InGeometry, const FDragDropEve
 			const BlockType disallowedTypes[] = { BlockType::Statement,BlockType::Iteration,BlockType::Conditional };
 			if (GeneralUtilities::either<BlockType>(block->Type, ARRAY_T(disallowedTypes))) {
 				GeneralUtilities::Log(this, TEXT("Aborted the drag and drop because the block in question is not compactible"));
-				return false;
+				return true;
 			}
 			//try remove from parent
 			if (!block->Template) { //whenever it is not a template block remove it from its parent container
@@ -356,18 +357,19 @@ bool UCodeBlockCPP::NativeOnDrop(const FGeometry& InGeometry, const FDragDropEve
 						//cannot cast but it have parent
 						//reject
 						GeneralUtilities::Log(this, TEXT("Aborted the drag and drop because the block in question is not under a known parent"));
-						return false;
+						return true;
 					}
 					else if (parentBlock == this) {
-						return false; //dont allow the move as the block it is NOP
+						return true; //dont allow the move as the block it is NOP
 					}
 					parentBlock->ClearSlot();
 				}
 			}
 			GeneralUtilities::Log(this, TEXT("Attempting to add the block into slot"));
 			//now add the new block under this
-			return AddBlockIntoSlot(block->asUniqueBlock());
+			AddBlockIntoSlot(block->asUniqueBlock());
+			return true;
 		}
 	}
-	return false;
+	return true;
 }
