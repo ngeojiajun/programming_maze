@@ -194,7 +194,7 @@ bool UCodeBlockCPP::AddChildBlock(UCodeBlockBaseCPP* block,int at)
 	//attach to it
 	root->AddChildToCanvas(block);
 	//set the offsets so it do not stick together
-	if (Childs.Num() > 1) {
+	if (Childs.Num() > 1||at!=0) {
 		Cast<UCanvasPanelSlot>(root->GetSlots()[0])->SetPosition(FVector2D(30, gapBetweenBlocks));
 	}
 	else {
@@ -304,8 +304,6 @@ bool UCodeBlockCPP::NativeOnDrop(const FGeometry& InGeometry, const FDragDropEve
 		//see is the pointer is on top of the valid range
 		FVector2D cursor = InDragDropEvent.GetScreenSpacePosition();
 		bool validDrop = GeneralUtilities::insideGeometry(this->UI_Childs->GetCachedGeometry(), cursor - InOperation->Offset);
-		GeneralUtilities::LogVector2D(this, cursor, TEXT("Position of cursor"));
-		GeneralUtilities::LogBoolean(this, validDrop, TEXT("Valid drop?"));
 		if (validDrop) {
 			UCodeBlockBaseCPP* block = operation->WidgetReference;
 			//check is the block is valid for this operation
@@ -323,12 +321,30 @@ bool UCodeBlockCPP::NativeOnDrop(const FGeometry& InGeometry, const FDragDropEve
 						GeneralUtilities::Log(this, TEXT("Aborted the drag and drop because the block in question is not under a known parent"));
 						return true;
 					}
-					else if (parentBlock == this) {
-						return true; //dont allow the move as the block it is NOP
-					}
 					parentBlock->RemoveChildBlock(block);
 				}
 			}
+			//determine its index
+			if (Childs.Num() > 1)
+			{
+				for (int i = 1; i < Childs.Num(); i++) {
+					UCodeBlockBaseCPP* blockRef = Childs[i];
+					FGeometry geo = blockRef->GetCachedGeometry();
+					FVector2D offset = FVector2D(0, gapBetweenBlocks);
+					FVector2D halfSize = geo.GetLocalSize()+offset ;
+					if (GeneralUtilities::insideRect(geo.GetAbsolutePosition()-offset, halfSize, cursor)) {
+						/*upper half*/
+						AddChildBlock(block->asUniqueBlock(),i);
+						return true;
+					}
+					else if (GeneralUtilities::insideRect(geo.GetAbsolutePosition() + halfSize, halfSize, cursor)) {
+						/*lower half */
+						AddChildBlock(block->asUniqueBlock(), i+1);
+						return true;
+					}
+				}
+			}
+
 			//now add the new block under this
 			AddChildBlock(block->asUniqueBlock());
 			return true;
@@ -340,8 +356,6 @@ bool UCodeBlockCPP::NativeOnDrop(const FGeometry& InGeometry, const FDragDropEve
 		//see is the pointer is on top of the valid range
 		FVector2D cursor = InDragDropEvent.GetScreenSpacePosition();
 		bool validDrop = GeneralUtilities::insideGeometry(this->UI_ExpressionBlock->GetCachedGeometry(), cursor - InOperation->Offset);
-		GeneralUtilities::LogVector2D(this, cursor, TEXT("Position of cursor"));
-		GeneralUtilities::LogBoolean(this, validDrop, TEXT("Valid drop?"));
 		if (validDrop) {
 			UCodeBlockBaseCPP* block = operation->WidgetReference;
 			//check weather this operation is valid
