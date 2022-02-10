@@ -3,7 +3,11 @@
 
 #include "CodeBlockNativeImpls.h"
 #include "CodeBlockCPP.h"
+#include "Components/ScrollBox.h"
+#include "Components/ScrollBoxSlot.h"
+#include "Components/CanvasPanel.h"
 #include "Kismet/KismetSystemLibrary.h"
+#include "GeneralUtilities.h"
 
 FEvalResult UCodeBlockNativeImpls::IfBlockImpl(UCodeBlockCPP* block)
 {
@@ -61,6 +65,41 @@ FEvalResult UCodeBlockNativeImpls::NopImpl(UCodeBlockCPP* block)
 {
 	//do nothing but return Void/
 	return FEvalResult::AsVoidResult();
+}
+
+void UCodeBlockNativeImpls::FillScrollPanel(UScrollBox* panel, TArray<UClass*> classes)
+{
+	if (!panel) return;
+	//HACK: For some reason TArray<TSubclassOf<UCodeBlockBaseCPP>> will cause MSVC to fail
+	//so we take the UClass as alternative but we enforce it inside to code
+	for (int i = 0; i < classes.Num(); i++) {
+		TSubclassOf<UCodeBlockBaseCPP> targetClass = classes[i];
+		check(targetClass); //will crash the entire application if the class passed in is not a subclass of the UCodeBlockBaseCPP
+		//Be noted that some block have some special behavior such as the the unamed variable and constant should not be cloned directly
+		//Due to this it is not included in this call but will added manually whenever needed
+		GeneralUtilities::Log(panel, FString::Printf(TEXT("Adding block named=%s"),*(targetClass->GetFName().ToString())));
+		//construct the block
+		UCodeBlockBaseCPP* block = NewObject<UCodeBlockBaseCPP>(panel, targetClass);
+		//mark it as template block
+		block->Template = true;
+		AddToScrollPanel(panel, block);
+	}
+}
+
+void UCodeBlockNativeImpls::AddToScrollPanel(UScrollBox* panel, UCodeBlockBaseCPP* block)
+{
+	if (!panel || !block)return;
+	//we mimic the bahavior of the UCodeBlock::AddChildBlock(....,-1)
+	//create the root
+	UCanvasPanel* root = NewObject<UCanvasPanel>(panel);
+	//attach to it
+	root->AddChildToCanvas(block);
+	//append to the panel
+	UPanelSlot* slot = panel->AddChild(root);
+	UScrollBoxSlot* box=Cast<UScrollBoxSlot>(slot);
+	box->SetPadding(FMargin(0, 0, 0, 15));
+	//set its render scale to a little bit larger
+	block->setFinalRenderScale(FVector2D(1.25));
 }
 
 FEvalResult UCodeBlockNativeImpls::runAll(UCodeBlockCPP* block)

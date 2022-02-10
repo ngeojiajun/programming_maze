@@ -13,6 +13,8 @@ class UExpressionCodeBlockCPP;
 
 /**
  * This library contain the implementation of some blocks in C++
+ * It also includes some function which are implemented in C++ but not enough to
+ * form an individual C++ class
  */
 UCLASS()
 class PROGRAMMER_MAZE_API UCodeBlockNativeImpls : public UBlueprintFunctionLibrary
@@ -30,6 +32,11 @@ public:
 	//Just for the use by stubs
 	UFUNCTION(BlueprintCallable)
 	static FEvalResult NopImpl(UCodeBlockCPP* block);
+	//Fill the scroll panel using the classes provided the [classes] parameter
+	UFUNCTION(BlueprintCallable)
+	static void FillScrollPanel(UScrollBox* panel, TArray<UClass*> classes);
+	UFUNCTION(BlueprintCallable)
+	static void AddToScrollPanel(UScrollBox* panel, UCodeBlockBaseCPP* ptr);
 private:
 	static FEvalResult runAll(UCodeBlockCPP* block);
 };
