@@ -15,7 +15,7 @@ class UNodeDragWidgetCPP;
 /**
  * This class define the common interface between the code blocks
  */
-UCLASS(Abstract)
+UCLASS()
 class PROGRAMMER_MAZE_API UCodeBlockBaseCPP : public UUserWidget
 {
 	GENERATED_BODY()
