@@ -293,6 +293,10 @@ bool UCodeBlockCPP::ClearSlot()
 
 bool UCodeBlockCPP::NativeOnDrop(const FGeometry& InGeometry, const FDragDropEvent& InDragDropEvent, UDragDropOperation* InOperation)
 {
+	//ignore the operation if it is template block
+	if (this->Template) {
+		return false;
+	}
 	//try to cast the InOperation into UNodeDragDropOperation
 	UNodeDragDropOperation* operation = Cast<UNodeDragDropOperation>(InOperation);
 	if (!operation) {
