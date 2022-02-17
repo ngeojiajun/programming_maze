@@ -335,7 +335,9 @@ bool UCodeBlockCPP::NativeOnDrop(const FGeometry& InGeometry, const FDragDropEve
 					UCodeBlockBaseCPP* blockRef = Childs[i];
 					FGeometry geo = blockRef->GetCachedGeometry();
 					FVector2D offset = FVector2D(0, gapBetweenBlocks);
-					FVector2D halfSize = geo.GetLocalSize()+offset ;
+					FVector2D halfSize = geo.GetLocalSize();
+					halfSize.Y *= 0.5;
+					halfSize += offset;
 					if (GeneralUtilities::insideRect(geo.GetAbsolutePosition()-offset, halfSize, cursor)) {
 						/*upper half*/
 						AddChildBlock(block->asUniqueBlock(),i);

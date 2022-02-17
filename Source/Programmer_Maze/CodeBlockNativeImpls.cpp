@@ -97,9 +97,11 @@ void UCodeBlockNativeImpls::AddToScrollPanel(UScrollBox* panel, UCodeBlockBaseCP
 	//append to the panel
 	UPanelSlot* slot = panel->AddChild(root);
 	UScrollBoxSlot* box=Cast<UScrollBoxSlot>(slot);
-	box->SetPadding(FMargin(0, 0, 0, 15));
+	box->SetPadding(FMargin(0, 0, 15, 15));
+	//make it right aligned
+	box->SetHorizontalAlignment(EHorizontalAlignment::HAlign_Right);
 	//set its render scale to a little bit larger
-	block->setFinalRenderScale(FVector2D(1.25));
+	block->setFinalRenderScale(FVector2D(1.5));
 }
 
 FEvalResult UCodeBlockNativeImpls::runAll(UCodeBlockCPP* block)
