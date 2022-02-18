@@ -4,6 +4,7 @@
 #include "MazeMainGameMode.h"
 #include "UObject/ConstructorHelpers.h"
 #include "Kismet/GameplayStatics.h"
+#include "GeneralUtilities.h"
 
 AMazeMainGameMode::AMazeMainGameMode() :AGameModeBase() {
 	static ConstructorHelpers::FClassFinder<UUserWidget> WidgetClassFinder(TEXT("/Game/UI/IDE/IDE.IDE_C"));
@@ -22,4 +23,8 @@ void AMazeMainGameMode::BeginPlay() {
 	//Enable mouse cursor
 	APlayerController* controller=UGameplayStatics::GetPlayerController(this, 0);
 	controller->SetShowMouseCursor(true);
+	//Step3:
+	//By reflection get the IDE::CloseButton
+	FObjectProperty* prop=FindFieldChecked<FObjectProperty>(IDEWidgetClass, FName(TEXT("CloseButton")));
+	IDECloseButton=Cast<UButton>(prop->GetObjectPropertyValue(prop->ContainerPtrToValuePtr<UObject>(IDEWidgetHandle)));
 }

@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
 #include "GameFramework/GameModeBase.h"
+#include "Components/Button.h"
 #include "MazeMainGameMode.generated.h"
 
 /**
@@ -24,4 +25,6 @@ private:
 	TSubclassOf<UUserWidget> IDEWidgetClass;
 	UPROPERTY()
 	UUserWidget* IDEWidgetHandle;
+	UPROPERTY()
+	UButton* IDECloseButton;
 };
