@@ -7,7 +7,9 @@
 
 AMazeMainGameMode::AMazeMainGameMode() :AGameModeBase() {
 	static ConstructorHelpers::FClassFinder<UUserWidget> WidgetClassFinder(TEXT("/Game/UI/IDE/IDE.IDE_C"));
+	static ConstructorHelpers::FClassFinder<AActor> ActorClassFinder(TEXT("/Game/UI/Actors/Ball.Ball_C"));
 	IDEWidgetClass = WidgetClassFinder.Class;
+	DefaultPawnClass = ActorClassFinder.Class;
 }
 
 void AMazeMainGameMode::BeginPlay() {
