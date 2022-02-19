@@ -27,4 +27,14 @@ void AMazeMainGameMode::BeginPlay() {
 	//By reflection get the IDE::CloseButton
 	FObjectProperty* prop=FindFieldChecked<FObjectProperty>(IDEWidgetClass, FName(TEXT("CloseButton")));
 	IDECloseButton=Cast<UButton>(prop->GetObjectPropertyValue(prop->ContainerPtrToValuePtr<UObject>(IDEWidgetHandle)));
+	//Step4:
+	//Attach onclick handle to it to hide the panel when it is clicked
+	IDECloseButton->OnClicked.AddDynamic(this,&AMazeMainGameMode::hidePanel);
+}
+
+void AMazeMainGameMode::hidePanel()
+{
+	//when the close button clicked
+	//hide the panel
+	IDEWidgetHandle->SetVisibility(ESlateVisibility::Collapsed);
 }

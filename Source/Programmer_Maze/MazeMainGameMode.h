@@ -22,6 +22,9 @@ protected:
 	//called when the game starts
 	virtual void BeginPlay() override;
 private:
+	UFUNCTION()
+	virtual void hidePanel();
+private:
 	TSubclassOf<UUserWidget> IDEWidgetClass;
 	UPROPERTY()
 	UUserWidget* IDEWidgetHandle;
