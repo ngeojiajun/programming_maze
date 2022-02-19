@@ -24,7 +24,6 @@ protected:
 private:
 	UFUNCTION()
 	virtual void hidePanel();
-private:
 	TSubclassOf<UUserWidget> IDEWidgetClass;
 	UPROPERTY()
 	UUserWidget* IDEWidgetHandle;
