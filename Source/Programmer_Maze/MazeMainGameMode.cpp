@@ -4,13 +4,13 @@
 #include "MazeMainGameMode.h"
 #include "UObject/ConstructorHelpers.h"
 #include "Kismet/GameplayStatics.h"
+#include "BallPawn.h"
 #include "GeneralUtilities.h"
 
 AMazeMainGameMode::AMazeMainGameMode() :AGameModeBase() {
 	static ConstructorHelpers::FClassFinder<UUserWidget> WidgetClassFinder(TEXT("/Game/UI/IDE/IDE.IDE_C"));
-	static ConstructorHelpers::FClassFinder<AActor> ActorClassFinder(TEXT("/Game/UI/Actors/Ball.Ball_C"));
 	IDEWidgetClass = WidgetClassFinder.Class;
-	DefaultPawnClass = ActorClassFinder.Class;
+	DefaultPawnClass = ABallPawn::StaticClass();
 }
 
 void AMazeMainGameMode::BeginPlay() {
@@ -37,4 +37,7 @@ void AMazeMainGameMode::hidePanel()
 	//when the close button clicked
 	//hide the panel
 	IDEWidgetHandle->SetVisibility(ESlateVisibility::Collapsed);
+	//ask the pawn to start process input
+	ABallPawn* target=Cast<ABallPawn>(UGameplayStatics::GetPlayerPawn(this, 0));
+	target->startProcessingInput();
 }
