@@ -20,6 +20,8 @@ public:
 	void startProcessingInput();
 	//used in the input handlers which the pawn should not take over the input processing
 	void stopProcessingInput();
+	//reset the camera
+	void resetCameraPosition();
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;

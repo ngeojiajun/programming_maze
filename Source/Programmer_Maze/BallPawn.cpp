@@ -9,7 +9,12 @@
 #include "Engine/StaticMesh.h"
 #include "UObject/ConstructorHelpers.h"
 #include "Kismet/GameplayStatics.h"
+#include "Kismet/KismetMathLibrary.h"
 #include "MazeMainGameMode.h"
+
+//the rate that the camera shall move per second
+const float panRate = 2000.f;
+const FVector cameraInitialPosition = FVector(0.f, 0.f, 430.f);
 
 // Sets default values
 ABallPawn::ABallPawn():APawn(),InPanGesture(false)
@@ -41,7 +46,7 @@ ABallPawn::ABallPawn():APawn(),InPanGesture(false)
 	//then our camera
 	camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
 	camera->bUsePawnControlRotation = false;
-	camera->SetRelativeLocation(FVector(0.f, 0.f, 430.f));
+	camera->SetRelativeLocation(cameraInitialPosition);
 	camera->SetRelativeRotation(FRotator(-90.000000, 0, 0));
 	camera->SetupAttachment(RootComponent);
 	//finally create a movement component and register this to the the component
@@ -57,6 +62,11 @@ void ABallPawn::startProcessingInput()
 void ABallPawn::stopProcessingInput()
 {
 	DisableInput(NULL);
+}
+
+void ABallPawn::resetCameraPosition()
+{
+	camera->SetRelativeLocation(cameraInitialPosition);
 }
 
 // Called when the game starts or when spawned
@@ -99,6 +109,24 @@ void ABallPawn::MouseXYAvis(FVector value)
 	if (!InPanGesture) {
 		return;
 	}
+	FVector finalMovement = FVector(0);
+	//forward Y
+	//get the forward vector
+	FRotator rot = UKismetMathLibrary::MakeRotFromX(GetActorForwardVector());
+	FVector forwardVector = UKismetMathLibrary::GetForwardVector(rot);
+	//apply it to the final vector (invert Y vector 
+	finalMovement = forwardVector * (value.Y * -1);
+	//right X
+	FVector rightVector = GetActorRightVector();
+	//invert the Y as the view should follow the mouse
+	finalMovement += (rightVector * value.X *-1);
+	//clear the Z
+	finalMovement.Z = 0;
+	//scale it with delta second and the rate
+	float delta=UGameplayStatics::GetWorldDeltaSeconds(this);
+	finalMovement *= (delta * panRate);
+	//finally add that to the camera
+	camera->AddRelativeLocation(finalMovement);
 }
 
 void ABallPawn::OnLMBDown()
