@@ -34,4 +34,12 @@ public:
 private:
 	UPROPERTY()
 	UBallPawnMovementComponent* movementComponent;
+	UPROPERTY()
+	UCameraComponent* camera;
+	bool InPanGesture;
+
+	void MouseXYAvis(FVector value);
+	void OnLMBDown();
+	void OnLMBUp();
+	void OnRMBDown();
 };

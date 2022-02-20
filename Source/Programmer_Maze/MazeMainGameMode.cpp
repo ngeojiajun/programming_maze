@@ -13,6 +13,11 @@ AMazeMainGameMode::AMazeMainGameMode() :AGameModeBase() {
 	DefaultPawnClass = ABallPawn::StaticClass();
 }
 
+void AMazeMainGameMode::showIDE()
+{
+	IDEWidgetHandle->SetVisibility(ESlateVisibility::Visible);
+}
+
 void AMazeMainGameMode::BeginPlay() {
 	//Step 1:
 	//Construct the IDE widget and add it to the viewport

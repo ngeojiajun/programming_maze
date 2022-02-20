@@ -18,6 +18,8 @@ class PROGRAMMER_MAZE_API AMazeMainGameMode : public AGameModeBase
 public:
 	//constructor
 	AMazeMainGameMode();
+	//reveal the IDE
+	void showIDE();
 protected:
 	//called when the game starts
 	virtual void BeginPlay() override;
