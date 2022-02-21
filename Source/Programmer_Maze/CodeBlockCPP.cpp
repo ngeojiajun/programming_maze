@@ -114,7 +114,7 @@ void UCodeBlockCPP::Resize()
 				//ask child to resize itself
 				element->Resize();
 				//add its height into height
-				slotHeight += element->size.Y;
+				slotHeight += element->size.Y * (1 / finalRenderScale.Y);
 				if (i > 1) {
 					slotHeight += gapBetweenBlocks;
 				}
@@ -334,7 +334,7 @@ bool UCodeBlockCPP::NativeOnDrop(const FGeometry& InGeometry, const FDragDropEve
 				for (int i = 1; i < Childs.Num(); i++) {
 					UCodeBlockBaseCPP* blockRef = Childs[i];
 					FGeometry geo = blockRef->GetCachedGeometry();
-					FVector2D offset = FVector2D(0, gapBetweenBlocks);
+					FVector2D offset = FVector2D(0, gapBetweenBlocks/2);
 					FVector2D halfSize = geo.GetLocalSize();
 					halfSize.Y *= 0.5;
 					halfSize += offset;
