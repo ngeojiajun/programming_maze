@@ -6,6 +6,8 @@
 #include "Blueprint/UserWidget.h"
 #include "GameFramework/GameModeBase.h"
 #include "Components/Button.h"
+#include "CodeBlockDefs.h"
+#include "ScriptExecutionContext.h"
 #include "MazeMainGameMode.generated.h"
 
 /**
@@ -20,6 +22,7 @@ public:
 	AMazeMainGameMode();
 	//reveal the IDE
 	void showIDE();
+	void executionDone(FEvalResult result);
 protected:
 	//called when the game starts
 	virtual void BeginPlay() override;
@@ -31,4 +34,6 @@ private:
 	UUserWidget* IDEWidgetHandle;
 	UPROPERTY()
 	UButton* IDECloseButton;
+	UPROPERTY()
+	FScriptExecutionContext context;
 };

@@ -18,6 +18,11 @@ void AMazeMainGameMode::showIDE()
 	IDEWidgetHandle->SetVisibility(ESlateVisibility::Visible);
 }
 
+void AMazeMainGameMode::executionDone(FEvalResult result)
+{
+	GeneralUtilities::LogBoolean(this, result.succeeded, TEXT("Execution succeeded"));
+}
+
 void AMazeMainGameMode::BeginPlay() {
 	//Step 1:
 	//Construct the IDE widget and add it to the viewport
