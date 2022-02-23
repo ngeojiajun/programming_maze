@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "CodeBlockDefs.h"
 #include "Kismet/BlueprintFunctionLibrary.h"
+#include "ScriptExecutionContext.h"
 #include "CodeBlockNativeImpls.generated.h"
 
 //forward defs
@@ -22,13 +23,13 @@ class PROGRAMMER_MAZE_API UCodeBlockNativeImpls : public UBlueprintFunctionLibra
 	GENERATED_BODY()
 public:
 	UFUNCTION(BlueprintCallable)
-	static FEvalResult IfBlockImpl(UCodeBlockCPP* block);
+	static FEvalResult IfBlockImpl(UCodeBlockCPP* block,UPARAM(ref) FScriptExecutionContext& ctx);
 	UFUNCTION(BlueprintCallable)
-	static FEvalResult WhileBlockImpl(UCodeBlockCPP* block);
+	static FEvalResult WhileBlockImpl(UCodeBlockCPP* block,UPARAM(ref) FScriptExecutionContext& ctx);
 	UFUNCTION(BlueprintCallable)
-	static FEvalResult StartBlockImpl(UCodeBlockCPP* block);
+	static FEvalResult StartBlockImpl(UCodeBlockCPP* block,UPARAM(ref) FScriptExecutionContext& ctx);
 	UFUNCTION(BlueprintCallable)
-	static FEvalResult ExitBlockImpl(UCodeBlockCPP* block);
+	static FEvalResult ExitBlockImpl(UCodeBlockCPP* block,UPARAM(ref) FScriptExecutionContext& ctx);
 	//Just for the use by stubs
 	UFUNCTION(BlueprintCallable)
 	static FEvalResult NopImpl(UCodeBlockCPP* block);
@@ -38,5 +39,5 @@ public:
 	UFUNCTION(BlueprintCallable)
 	static void AddToScrollPanel(UScrollBox* panel, UCodeBlockBaseCPP* ptr);
 private:
-	static FEvalResult runAll(UCodeBlockCPP* block);
+	static FEvalResult runAll(UCodeBlockCPP* block,UPARAM(ref) FScriptExecutionContext& ctx);
 };

@@ -2,12 +2,10 @@
 
 #pragma once
 
-
-#include <functional>
-
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
 #include "CodeBlockDefs.h"
+#include "ScriptExecutionContext.h"
 #include "CodeBlockBaseCPP.generated.h"
 
 class UNodeDragWidgetCPP;
@@ -54,10 +52,6 @@ public:
 	UFUNCTION(BlueprintCallable)
 	FLinearColor GetSlotColor() const;
 	/*
-	* Event handlers for native code outside the owning class
-	*/
-	std::function<bool(UCodeBlockBaseCPP*,FEvalResult&)> nativeEval;
-	/*
 	*Some of core API
 	*/
 	/*
@@ -92,8 +86,8 @@ public:
 	*Execute this block
 	*/
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
-	FEvalResult eval();
-	virtual FEvalResult eval_Implementation();
+	FEvalResult eval(UPARAM(ref) FScriptExecutionContext& ctx);
+	virtual FEvalResult eval_Implementation(UPARAM(ref) FScriptExecutionContext& ctx);
 	/*
 	*Get reference to parent block
 	*/

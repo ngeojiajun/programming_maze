@@ -74,7 +74,7 @@ UCodeBlockBaseCPP* UCodeBlockBaseCPP::clone_Implementation()
 	return nullptr;
 }
 
-FEvalResult UCodeBlockBaseCPP::eval_Implementation()
+FEvalResult UCodeBlockBaseCPP::eval_Implementation(FScriptExecutionContext& ctx)
 {
 	if (Template) {
 		//illegal attempt to execute the Template block
@@ -86,30 +86,24 @@ FEvalResult UCodeBlockBaseCPP::eval_Implementation()
 			TEXT("The native handler did not overwrite the result of this class"),*(GetClass()->GetName())
 		)
 	);
-	bool proceeded = (nativeEval) && nativeEval(this, evalResult);
-	if(!proceeded){
-		if (Type != BlockType::Constant) {
-			return UCodeBlockDefs::makeFailedResult("Unimplemented");
-		}
-		else {
-			if (Name.EqualToCaseIgnored(FText::FromString(TEXT("TRUE")))) {
-				return FEvalResult(true);
-			}
-			else if (Name.EqualToCaseIgnored(FText::FromString(TEXT("FALSE")))) {
-				return FEvalResult(false);
-			}
-			else {
-				if (Name.IsNumeric()) {
-					return FEvalResult(Name.ToString()).AsIntValue();
-				}
-				else {
-					return FEvalResult(Name.ToString());
-				}
-			}
-		}
+	if (Type != BlockType::Constant) {
+		return UCodeBlockDefs::makeFailedResult("Unimplemented");
 	}
 	else {
-		return evalResult;
+		if (Name.EqualToCaseIgnored(FText::FromString(TEXT("TRUE")))) {
+			return FEvalResult(true);
+		}
+		else if (Name.EqualToCaseIgnored(FText::FromString(TEXT("FALSE")))) {
+			return FEvalResult(false);
+		}
+		else {
+			if (Name.IsNumeric()) {
+				return FEvalResult(Name.ToString()).AsIntValue();
+			}
+			else {
+				return FEvalResult(Name.ToString());
+			}
+		}
 	}
 }
 

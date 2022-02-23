@@ -9,7 +9,7 @@
 #include "Kismet/KismetSystemLibrary.h"
 #include "GeneralUtilities.h"
 
-FEvalResult UCodeBlockNativeImpls::IfBlockImpl(UCodeBlockCPP* block)
+FEvalResult UCodeBlockNativeImpls::IfBlockImpl(UCodeBlockCPP* block,FScriptExecutionContext& ctx)
 {
 	//If code run the code if and only if the block is evaluated to true
 	//lets evaluate that first
@@ -20,15 +20,15 @@ FEvalResult UCodeBlockNativeImpls::IfBlockImpl(UCodeBlockCPP* block)
 		return FEvalResult::AsError(TEXT("Cannot evaluate the block due to one of its slot are empty"));
 	}
 	//evaluate it
-	result = slot->eval();
+	result = slot->eval(ctx);
 	if (!!(result.AsBoolValue())) {
-		result = runAll(block);
+		result = runAll(block,ctx);
 	}
 	//return it so the error propogates to its parent
 	return result;
 }
 
-FEvalResult UCodeBlockNativeImpls::WhileBlockImpl(UCodeBlockCPP* block)
+FEvalResult UCodeBlockNativeImpls::WhileBlockImpl(UCodeBlockCPP* block,FScriptExecutionContext& ctx)
 {
 	//while block is similar with the if block but it runs until the expression become false
 	//lets evaluate that first
@@ -41,20 +41,20 @@ FEvalResult UCodeBlockNativeImpls::WhileBlockImpl(UCodeBlockCPP* block)
 	//evaluate it
 	//the first one catchs any evaluation error in runAll
 	//second part is the normal eval and check
-	while (result.succeeded && (result = slot->eval(), !!(result.AsBoolValue()))) {
-		result = runAll(block);
+	while (result.succeeded && (result = slot->eval(ctx), !!(result.AsBoolValue()))) {
+		result = runAll(block,ctx);
 	}
 	//return it so the error propogates to its parent
 	return result;
 }
 
-FEvalResult UCodeBlockNativeImpls::StartBlockImpl(UCodeBlockCPP* block)
+FEvalResult UCodeBlockNativeImpls::StartBlockImpl(UCodeBlockCPP* block,FScriptExecutionContext& ctx)
 {
 	//start block do not have any special meaning, just forward it to runAll
-	return runAll(block);
+	return runAll(block,ctx);
 }
 
-FEvalResult UCodeBlockNativeImpls::ExitBlockImpl(UCodeBlockCPP* block)
+FEvalResult UCodeBlockNativeImpls::ExitBlockImpl(UCodeBlockCPP* block,FScriptExecutionContext& ctx)
 {
 	//this simply quit the game
 	UKismetSystemLibrary::QuitGame(block, NULL, EQuitPreference::Quit, false);
@@ -104,14 +104,14 @@ void UCodeBlockNativeImpls::AddToScrollPanel(UScrollBox* panel, UCodeBlockBaseCP
 	block->setFinalRenderScale(FVector2D(1.5));
 }
 
-FEvalResult UCodeBlockNativeImpls::runAll(UCodeBlockCPP* block)
+FEvalResult UCodeBlockNativeImpls::runAll(UCodeBlockCPP* block,FScriptExecutionContext& ctx)
 {
 	//This is just a utility function that simply run all the child blocks
 	//lets evaluate that first
 	FEvalResult result = FEvalResult::AsVoidResult();
 	//stop code execution when the exception happened
 	for (int i = 0; i < block->Childs.Num() && result.succeeded; i++) {
-		result = block->Childs[i]->eval();
+		result = block->Childs[i]->eval(ctx);
 	}
 	return result;
 }
