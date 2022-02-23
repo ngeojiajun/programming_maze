@@ -74,6 +74,9 @@ UCodeBlockBaseCPP* UCodeBlockBaseCPP::clone_Implementation()
 	return nullptr;
 }
 
+/*
+*NOTE: we dont implement the latern protocol here because expression object are always run synchronously
+*/
 FEvalResult UCodeBlockBaseCPP::eval_Implementation(FScriptExecutionContext& ctx)
 {
 	if (Template) {

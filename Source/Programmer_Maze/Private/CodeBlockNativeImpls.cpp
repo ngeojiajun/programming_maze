@@ -29,7 +29,7 @@ FEvalResult UCodeBlockNativeImpls::IfBlockImpl(UCodeBlockCPP* block,FScriptExecu
 	if (!slot) {
 		result = FEvalResult::AsError(TEXT("Cannot evaluate the block due to one of its slot are empty"));
 		PUSH_FAR_VALUE(ctx, FEvalResult, result);
-		return FEvalResult::AsError(TEXT("Cannot evaluate the block due to one of its slot are empty"));
+		return FEvalResult::AsVoidResult();
 	}
 	if (shouldRestore) {
 		//restore the values as we need
@@ -64,7 +64,7 @@ FEvalResult UCodeBlockNativeImpls::IfBlockImpl(UCodeBlockCPP* block,FScriptExecu
 	}
 	if (!ctx.yielding) {
 		PUSH_FAR_VALUE(ctx, FEvalResult, result);
-		return result;
+		return FEvalResult::AsVoidResult();
 	}
 	else {
 		return FEvalResult::AsVoidResult(); //yielding up
@@ -88,7 +88,7 @@ FEvalResult UCodeBlockNativeImpls::WhileBlockImpl(UCodeBlockCPP* block,FScriptEx
 		check(!shouldRestore);
 		result = FEvalResult::AsError(TEXT("Cannot evaluate the block due to one of its slot are empty"));
 		PUSH_FAR_VALUE(ctx, FEvalResult, result);
-		return FEvalResult::AsError(TEXT("Cannot evaluate the block due to one of its slot are empty"));
+		return FEvalResult::AsVoidResult();
 	}
 	//state:
 	// -1:quit
@@ -122,7 +122,7 @@ FEvalResult UCodeBlockNativeImpls::WhileBlockImpl(UCodeBlockCPP* block,FScriptEx
 				PUSH_FAR_VALUE(ctx, FEvalResult, result);
 			}
 			shouldRestore = false;
-			result = runAll(block, ctx);
+			runAll(block, ctx);
 			//check if it is yielding up, if not clean up
 			if (!ctx.yielding) {
 				//ret value
@@ -147,7 +147,7 @@ FEvalResult UCodeBlockNativeImpls::WhileBlockImpl(UCodeBlockCPP* block,FScriptEx
 	//return it so the error propogates to its parent
 	if (!ctx.yielding) {
 		PUSH_FAR_VALUE(ctx, FEvalResult, result);
-		return result;
+		return FEvalResult::AsVoidResult();
 	}
 	else {
 		return FEvalResult::AsVoidResult(); //yielding up
@@ -279,7 +279,7 @@ FEvalResult UCodeBlockNativeImpls::runAll(UCodeBlockCPP* block,FScriptExecutionC
 	}
 	if (!ctx.yielding) {
 		PUSH_FAR_VALUE(ctx, FEvalResult, result);
-		return result;
+		return FEvalResult::AsVoidResult();
 	}
 	else {
 		return FEvalResult::AsVoidResult(); //yielding up
