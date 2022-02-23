@@ -7,6 +7,7 @@
 #include "Components/ScrollBoxSlot.h"
 #include "Components/CanvasPanel.h"
 #include "Kismet/KismetSystemLibrary.h"
+#include "MazeMainGameMode.h"
 #include "GeneralUtilities.h"
 //we need this because we need use void* as scalar
 #pragma warning( disable : 4302 4311 4312)
@@ -35,7 +36,8 @@ FEvalResult UCodeBlockNativeImpls::IfBlockImpl(UCodeBlockCPP* block,FScriptExecu
 		//-------
 		//result	|
 		//...	\/
-		TAKE_FAR_VALUE_ASSIGN(ctx, FEvalResult, result);
+		TAKE_FAR_VALUE_ASSIGN(ctx, FEvalResult, result,0);
+		ctx.sp += 1;
 	}
 	else {
 		//evaluate it
@@ -51,7 +53,7 @@ FEvalResult UCodeBlockNativeImpls::IfBlockImpl(UCodeBlockCPP* block,FScriptExecu
 		//check if it is yielding up, if not clean up
 		if (!ctx.yielding) {
 			//ret value
-			TAKE_FAR_VALUE_ASSIGN(ctx, FEvalResult, result);
+			TAKE_FAR_VALUE_ASSIGN(ctx, FEvalResult, result,0);
 			DESTROY_FAR_VALUE(ctx, FEvalResult);
 			//
 			DESTROY_FAR_VALUE(ctx, FEvalResult);
@@ -60,9 +62,13 @@ FEvalResult UCodeBlockNativeImpls::IfBlockImpl(UCodeBlockCPP* block,FScriptExecu
 			return FEvalResult::AsVoidResult(); //yielding up
 		}
 	}
-	PUSH_FAR_VALUE(ctx, FEvalResult, result);
-	//return it so the error propogates to its parent
-	return result;
+	if (!ctx.yielding) {
+		PUSH_FAR_VALUE(ctx, FEvalResult, result);
+		return result;
+	}
+	else {
+		return FEvalResult::AsVoidResult(); //yielding up
+	}
 }
 /*
 *State:
@@ -96,8 +102,9 @@ FEvalResult UCodeBlockNativeImpls::WhileBlockImpl(UCodeBlockCPP* block,FScriptEx
 		//state	|
 		//result	|
 		//...	\/
-		TAKE_NEAR_VALUE_ASSIGN(ctx, int, state);
-		TAKE_FAR_VALUE_ASSIGN(ctx, FEvalResult, result);
+		TAKE_NEAR_VALUE_ASSIGN(ctx, int, state,-1);
+		TAKE_FAR_VALUE_ASSIGN(ctx, FEvalResult, result,0);
+		ctx.sp += 2;
 	}
 	do {
 		switch (state) {
@@ -119,7 +126,7 @@ FEvalResult UCodeBlockNativeImpls::WhileBlockImpl(UCodeBlockCPP* block,FScriptEx
 			//check if it is yielding up, if not clean up
 			if (!ctx.yielding) {
 				//ret value
-				TAKE_FAR_VALUE_ASSIGN(ctx, FEvalResult, result);
+				TAKE_FAR_VALUE_ASSIGN(ctx, FEvalResult, result,0);
 				DESTROY_FAR_VALUE(ctx, FEvalResult);
 				//
 				DESTROY_FAR_VALUE(ctx, FEvalResult);
@@ -140,8 +147,11 @@ FEvalResult UCodeBlockNativeImpls::WhileBlockImpl(UCodeBlockCPP* block,FScriptEx
 	//return it so the error propogates to its parent
 	if (!ctx.yielding) {
 		PUSH_FAR_VALUE(ctx, FEvalResult, result);
+		return result;
 	}
-	return result;
+	else {
+		return FEvalResult::AsVoidResult(); //yielding up
+	}
 }
 
 /*
@@ -152,7 +162,18 @@ FEvalResult UCodeBlockNativeImpls::StartBlockImpl(UCodeBlockCPP* block,FScriptEx
 	//start block do not have any special meaning, just forward it to runAll
 	ctx.sp = 0; //reset the SP
 	if (ctx.yielding)return FEvalResult::AsVoidResult();
-	return runAll(block,ctx);
+	runAll(block,ctx);
+	if (!ctx.yielding) {
+		TAKE_FAR_VALUE(ctx, FEvalResult, result, 0);
+		DESTROY_FAR_VALUE(ctx, FEvalResult);
+		//It should never have anything in execution stack if all operation done w/o yielding
+		check(ctx.sp == 0);
+		ctx.ptrGameMode->executionDone(result);
+		return FEvalResult::AsVoidResult();
+	}
+	else {
+		return FEvalResult::AsVoidResult(); //yielding up
+	}
 }
 
 /*
@@ -162,7 +183,7 @@ FEvalResult UCodeBlockNativeImpls::ExitBlockImpl(UCodeBlockCPP* block,FScriptExe
 {
 	//this simply quit the game
 	UKismetSystemLibrary::QuitGame(block, NULL, EQuitPreference::Quit, false);
-	FEvalResult result = FEvalResult::AsVoidResult();
+	FEvalResult result = FEvalResult(FString(TEXT("Tenya Wanya Yuri Yuri!!!")));
 	PUSH_FAR_VALUE(ctx, FEvalResult, result);
 	return FEvalResult::AsVoidResult(); //never return
 }
@@ -224,7 +245,7 @@ FEvalResult UCodeBlockNativeImpls::runAll(UCodeBlockCPP* block,FScriptExecutionC
 	//This is just a utility function that simply run all the child blocks
 	//lets evaluate that first
 	bool shouldRestore = ctx.contextRestore;
-	int i = 0;
+	int i = 1;
 	FEvalResult result = FEvalResult::AsVoidResult();
 	if (shouldRestore) {
 		//restore the values as we need
@@ -232,8 +253,9 @@ FEvalResult UCodeBlockNativeImpls::runAll(UCodeBlockCPP* block,FScriptExecutionC
 		//i		|
 		//result	|
 		//...	\/
-		TAKE_NEAR_VALUE_ASSIGN(ctx, int, i);
-		TAKE_FAR_VALUE_ASSIGN(ctx, FEvalResult, result);
+		TAKE_NEAR_VALUE_ASSIGN(ctx, int, i,-1);
+		TAKE_FAR_VALUE_ASSIGN(ctx, FEvalResult, result,0);
+		ctx.sp += 2;
 	}
 	//stop code execution when the exception happened
 	for (; i < block->Childs.Num() && result.succeeded; i++) {
@@ -245,7 +267,7 @@ FEvalResult UCodeBlockNativeImpls::runAll(UCodeBlockCPP* block,FScriptExecutionC
 		//check if it is yielding up, if not clean up
 		if (!ctx.yielding) {
 			//ret value
-			TAKE_FAR_VALUE_ASSIGN(ctx, FEvalResult, result);
+			TAKE_FAR_VALUE_ASSIGN(ctx, FEvalResult, result,0);
 			DESTROY_FAR_VALUE(ctx, FEvalResult);
 			//
 			DESTROY_FAR_VALUE(ctx, FEvalResult);
@@ -255,6 +277,11 @@ FEvalResult UCodeBlockNativeImpls::runAll(UCodeBlockCPP* block,FScriptExecutionC
 			return FEvalResult::AsVoidResult(); //yielding up
 		}
 	}
-	PUSH_FAR_VALUE(ctx, FEvalResult, result);
-	return result;
+	if (!ctx.yielding) {
+		PUSH_FAR_VALUE(ctx, FEvalResult, result);
+		return result;
+	}
+	else {
+		return FEvalResult::AsVoidResult(); //yielding up
+	}
 }

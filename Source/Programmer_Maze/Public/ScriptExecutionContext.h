@@ -27,11 +27,11 @@ struct FScriptExecutionContext{
   int sp;
 };
 
-#define PUSH_NEAR_VALUE(ctx,v) ctx.runtimeStack.Push((void*)v)
-#define PUSH_FAR_VALUE(ctx,t,v) ctx.runtimeStack.Push(new t(v))
-#define TAKE_NEAR_VALUE(ctx,t,name) t name=(t)ctx.runtimeStack[ctx.sp++]
-#define TAKE_FAR_VALUE(ctx,t,name) t name;{t* tmp=(t*)ctx.runtimeStack[ctx.sp++]; name=*tmp;}
-#define TAKE_NEAR_VALUE_ASSIGN(ctx,t,name) name=(t)ctx.runtimeStack[ctx.sp++]
-#define TAKE_FAR_VALUE_ASSIGN(ctx,t,name) {t* tmp=(t*)ctx.runtimeStack[ctx.sp++]; name=*tmp;}
+#define PUSH_NEAR_VALUE(ctx,v) ctx.runtimeStack.Push((void*)v);ctx.sp++;
+#define PUSH_FAR_VALUE(ctx,t,v) ctx.runtimeStack.Push(new t(v));ctx.sp++;
+#define TAKE_NEAR_VALUE(ctx,t,name,off) t name=(t)ctx.runtimeStack[ctx.sp+(off-1)]
+#define TAKE_FAR_VALUE(ctx,t,name,off) t name;{t* tmp=(t*)ctx.runtimeStack[ctx.sp+(off-1)]; name=*tmp;}
+#define TAKE_NEAR_VALUE_ASSIGN(ctx,t,name,off) name=(t)ctx.runtimeStack[ctx.sp+(off-1)]
+#define TAKE_FAR_VALUE_ASSIGN(ctx,t,name,off) {t* tmp=(t*)ctx.runtimeStack[ctx.sp+(off-1)]; name=*tmp;}
 #define DESTROY_NEAR_VALUE(ctx) ctx.runtimeStack.Pop();ctx.sp--;
 #define DESTROY_FAR_VALUE(ctx,t) {t* tmp=(t*)ctx.runtimeStack.Pop(); delete tmp;ctx.sp--;}

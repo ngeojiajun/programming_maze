@@ -5,6 +5,7 @@
 #include "UObject/ConstructorHelpers.h"
 #include "Kismet/GameplayStatics.h"
 #include "BallPawn.h"
+#include "CodeBlockCPP.h"
 #include "GeneralUtilities.h"
 
 AMazeMainGameMode::AMazeMainGameMode() :AGameModeBase() {
@@ -18,9 +19,18 @@ void AMazeMainGameMode::showIDE()
 	IDEWidgetHandle->SetVisibility(ESlateVisibility::Visible);
 }
 
+void AMazeMainGameMode::gogogo()
+{
+	context.sp = 0;
+	context.contextRestore = false;
+	//fire it
+	IDEStartBlock->eval(context);
+}
+
 void AMazeMainGameMode::executionDone(FEvalResult result)
 {
-	GeneralUtilities::LogBoolean(this, result.succeeded, TEXT("Execution succeeded"));
+	//GeneralUtilities::LogBoolean(this, result.succeeded, TEXT("Execution succeeded"));
+	GeneralUtilities::Log(this, result.strVal);
 }
 
 void AMazeMainGameMode::BeginPlay() {
@@ -40,6 +50,23 @@ void AMazeMainGameMode::BeginPlay() {
 	//Step4:
 	//Attach onclick handle to it to hide the panel when it is clicked
 	IDECloseButton->OnClicked.AddDynamic(this,&AMazeMainGameMode::hidePanel);
+	//Step5:
+	//By reflection get the IDE::GoButton
+	prop = FindFieldChecked<FObjectProperty>(IDEWidgetClass, FName(TEXT("GoButton")));
+	IDEGogoButton = Cast<UButton>(prop->GetObjectPropertyValue(prop->ContainerPtrToValuePtr<UObject>(IDEWidgetHandle)));
+	//Step6:
+	//Attach onclick handle to it 
+	IDEGogoButton->OnClicked.AddDynamic(this, &AMazeMainGameMode::gogogo);
+	//Step6:
+	//By reflection get the IDE::StartBlock
+	prop = FindFieldChecked<FObjectProperty>(IDEWidgetClass, FName(TEXT("StartBlock")));
+	IDEStartBlock = Cast<UCodeBlockCPP>(prop->GetObjectPropertyValue(prop->ContainerPtrToValuePtr<UObject>(IDEWidgetHandle)));
+	//Step7:
+	//Prefill the context
+	context = FScriptExecutionContext();
+	context.ptrGameMode = this;
+	context.contextRestore = false;
+	context.ptrPawn = Cast<ABallPawn>(UGameplayStatics::GetPlayerPawn(this, 0));
 }
 
 void AMazeMainGameMode::hidePanel()

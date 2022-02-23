@@ -10,6 +10,7 @@
 #include "ScriptExecutionContext.h"
 #include "MazeMainGameMode.generated.h"
 
+class UCodeBlockCPP;
 /**
  * 
  */
@@ -29,11 +30,17 @@ protected:
 private:
 	UFUNCTION()
 	virtual void hidePanel();
+	UFUNCTION()
+	void gogogo();
 	TSubclassOf<UUserWidget> IDEWidgetClass;
 	UPROPERTY()
 	UUserWidget* IDEWidgetHandle;
 	UPROPERTY()
 	UButton* IDECloseButton;
+	UPROPERTY()
+	UButton* IDEGogoButton;
+	UPROPERTY()
+	UCodeBlockCPP* IDEStartBlock;
 	UPROPERTY()
 	FScriptExecutionContext context;
 };
