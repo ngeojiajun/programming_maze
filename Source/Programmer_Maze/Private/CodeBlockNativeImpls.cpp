@@ -181,11 +181,23 @@ FEvalResult UCodeBlockNativeImpls::StartBlockImpl(UCodeBlockCPP* block,FScriptEx
 */
 FEvalResult UCodeBlockNativeImpls::ExitBlockImpl(UCodeBlockCPP* block,FScriptExecutionContext& ctx)
 {
-	//this simply quit the game
-	UKismetSystemLibrary::QuitGame(block, NULL, EQuitPreference::Quit, false);
-	FEvalResult result = FEvalResult(FString(TEXT("Tenya Wanya Yuri Yuri!!!")));
-	PUSH_FAR_VALUE(ctx, FEvalResult, result);
-	return FEvalResult::AsVoidResult(); //never return
+	//latent test
+	// in first call yield the call immediately
+	// on second call exit the app
+	if (!ctx.contextRestore) {
+		GeneralUtilities::Log(block, TEXT("Yielding from exit block ###"));
+		ctx.yielding = true;
+		return FEvalResult::AsVoidResult(); //never return
+	}
+	else {
+		//Compliance with the latent protocol
+		ctx.contextRestore = false;
+		//this simply quit the game
+		UKismetSystemLibrary::QuitGame(block, NULL, EQuitPreference::Quit, false);
+		FEvalResult result = FEvalResult(FString(TEXT("Tenya Wanya Yuri Yuri!!!")));
+		PUSH_FAR_VALUE(ctx, FEvalResult, result);
+		return FEvalResult::AsVoidResult(); //never return
+	}
 }
 
 /*

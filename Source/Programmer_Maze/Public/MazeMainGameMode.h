@@ -24,6 +24,7 @@ public:
 	//reveal the IDE
 	void showIDE();
 	void executionDone(FEvalResult result);
+	virtual void Tick();
 protected:
 	//called when the game starts
 	virtual void BeginPlay() override;
@@ -43,4 +44,5 @@ private:
 	UCodeBlockCPP* IDEStartBlock;
 	UPROPERTY()
 	FScriptExecutionContext context;
+	bool evaluationRunning;
 };

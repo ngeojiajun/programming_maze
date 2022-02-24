@@ -8,10 +8,11 @@
 #include "CodeBlockCPP.h"
 #include "GeneralUtilities.h"
 
-AMazeMainGameMode::AMazeMainGameMode() :AGameModeBase() {
+AMazeMainGameMode::AMazeMainGameMode() :AGameModeBase(),evaluationRunning(false) {
 	static ConstructorHelpers::FClassFinder<UUserWidget> WidgetClassFinder(TEXT("/Game/UI/IDE/IDE.IDE_C"));
 	IDEWidgetClass = WidgetClassFinder.Class;
 	DefaultPawnClass = ABallPawn::StaticClass();
+	PrimaryActorTick.bCanEverTick = true; //enable ticking
 }
 
 void AMazeMainGameMode::showIDE()
@@ -21,16 +22,42 @@ void AMazeMainGameMode::showIDE()
 
 void AMazeMainGameMode::gogogo()
 {
-	context.sp = 0;
-	context.contextRestore = false;
-	//fire it
-	IDEStartBlock->eval(context);
+	if (!evaluationRunning) {
+		context.sp = 0;
+		context.contextRestore = false;
+		context.yielding = false;
+		evaluationRunning = true;
+		//fire it
+		IDEStartBlock->SetVisibility(ESlateVisibility::HitTestInvisible);
+		IDEStartBlock->eval(context);
+	}
+	else {
+		Tick(); //tick the code
+	}
 }
 
 void AMazeMainGameMode::executionDone(FEvalResult result)
 {
-	//GeneralUtilities::LogBoolean(this, result.succeeded, TEXT("Execution succeeded"));
+	GeneralUtilities::LogBoolean(this, result.succeeded, TEXT("Execution succeeded"));
 	GeneralUtilities::Log(this, result.strVal);
+	evaluationRunning = false;
+	IDEStartBlock->SetVisibility(ESlateVisibility::Visible);
+}
+
+void AMazeMainGameMode::Tick()
+{
+	//TODO: check the latent operation and see weather it is done
+	//For now unyield anything if it is set
+	if (evaluationRunning) {
+		context.yielding = false;
+	}
+	//If yes execute it
+	if (evaluationRunning && !context.yielding) {
+		//the context is not longer yielding so execute it
+		//set the contextRestore so all participant restore it
+		context.contextRestore = true;
+		IDEStartBlock->eval(context);
+	}
 }
 
 void AMazeMainGameMode::BeginPlay() {
