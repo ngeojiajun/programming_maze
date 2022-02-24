@@ -2,35 +2,24 @@
 
 Developed with Unreal Engine 4
 
-## Plan on code evaluation
-The most challenging part here is the fact the C/C++ code is executed in linear form
-and we have no way to put `pause` instruction without suspending the execution thread.
-To solve this problem there are two methods to overcome it:
+## Latent protocol
+Latent protocol is the asynchronous dispatching protocol used inside the application.
 
-### Virtual Machine
-The most obvious way to overcome it is the evaluate the code outside the main execution context,
-which putting the code into the execution unit in which the clock is customizable.
+### Main goals
+To simulate the operation of fiber since it is not provided by UE.
 
-**Planned Approach**:
-The `eval()` will be changed to `asVMInstruction()` which will return a filled `VM_INSTRUCTION` structure which represent the instruction that will run inside the VM. Then, the interop will be provided by the `MazeMainGameMode` toward those instructions which are specific to the world.
+### Assumptions made
+Provided nothing except the context (`FScriptExecutionContext`) changed it is possible for functions to save and restore their local state and having it to perform as it is executed linearly.
 
-**Advantages**:
-- Highly efficient: It is very efficient to use this approach as there are no overhead on having another thread waiting for main thread performing something. The execution can be anywhere which the code is executed periodically such as `AActor::Tick(float delta)`
-- Thread safety: Since the virtual machine is ticking on the same thread the normal code is running. There are no risk of the race condition which might corrupt the application state which might crash the entire application.
+### Actions
+The latent function are having following requirements.
+- Saving their state when calling a function which known to be latent compliant
+- Aware with context state `yielding` and `contextRestore`
 
-**Disadvantages**:
-- Highly complicated: It is complicated to implement a working virtual machine.
+Callers must aware the result are saved on the first element inside the stack.
 
-### Spawn another thread and execute it
-This approach spawns another thread to execute the code directly and wait on the `FEvent` on the block that require the animation. The `FEvent` will be signaled then on finish.
+### Yielding
+`yielding` is a state that the code are depending on the external operations which are not able to completes immediately. When the latent function sets it, all of its caller must returns immediately without saving its state. Similar with the unwind.
 
-**Planned Approach**:
-The `eval()` will be expanded with a new parameter `execContext` which will hold the information of the current state of the execution. `FThread` class is used to run new thread.
-
-**Advantages**:
-- Relatively simple compared to VM: simpler since no need to deal with the instruction definitions and so on
-
-**Disadvantages**:
-- Inefficient: It creates the overhead on executing code in another thread
-- Thread safety: The `UObject` are in fact not thread safe. This means the code which deal with the `UObject`s such as `AActor` must be done of main thread using functions such as ` FFunctionGraphTask::CreateAndDispatchWhenReady`
-- Stability: The multi-threaded code are prone to error and easier to crash
+### contextRestore
+When the external operation done, the host will unset the `yielding` and set the `contextRestore` to true. All functions involved must restore its state from its local vars. The function which asks for yielding must unset it.
