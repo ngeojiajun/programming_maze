@@ -36,7 +36,7 @@ FEvalResult UCodeBlockNativeImpls::IfBlockImpl(UCodeBlockCPP* block,FScriptExecu
 		//-------
 		//result	|
 		//...	\/
-		TAKE_FAR_VALUE_ASSIGN(ctx, FEvalResult, result,0);
+		TAKE_FAR_VALUE_ASSIGN(ctx, FEvalResult, result,1);
 		ctx.sp += 1;
 	}
 	else {
@@ -102,8 +102,8 @@ FEvalResult UCodeBlockNativeImpls::WhileBlockImpl(UCodeBlockCPP* block,FScriptEx
 		//state	|
 		//result	|
 		//...	\/
-		TAKE_NEAR_VALUE_ASSIGN(ctx, int, state,-1);
-		TAKE_FAR_VALUE_ASSIGN(ctx, FEvalResult, result,0);
+		TAKE_NEAR_VALUE_ASSIGN(ctx, int, state,1);
+		TAKE_FAR_VALUE_ASSIGN(ctx, FEvalResult, result,2);
 		ctx.sp += 2;
 	}
 	do {
@@ -265,8 +265,8 @@ FEvalResult UCodeBlockNativeImpls::runAll(UCodeBlockCPP* block,FScriptExecutionC
 		//i		|
 		//result	|
 		//...	\/
-		TAKE_NEAR_VALUE_ASSIGN(ctx, int, i,-1);
-		TAKE_FAR_VALUE_ASSIGN(ctx, FEvalResult, result,0);
+		TAKE_NEAR_VALUE_ASSIGN(ctx, int, i,1);
+		TAKE_FAR_VALUE_ASSIGN(ctx, FEvalResult, result,2);
 		ctx.sp += 2;
 	}
 	//stop code execution when the exception happened
