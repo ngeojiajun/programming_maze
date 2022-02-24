@@ -55,6 +55,7 @@ void AMazeMainGameMode::Tick()
 	if (evaluationRunning && !context.yielding) {
 		//the context is not longer yielding so execute it
 		//set the contextRestore so all participant restore it
+		context.sp = 0;
 		context.contextRestore = true;
 		IDEStartBlock->eval(context);
 	}
