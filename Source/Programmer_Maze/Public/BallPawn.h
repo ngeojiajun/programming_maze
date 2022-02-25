@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Pawn.h"
 #include "BallPawnMovementComponent.h"
+#include "ScriptExecutionContext.h"
 #include "Camera/CameraComponent.h"
 #include "BallPawn.generated.h"
 
@@ -22,6 +23,13 @@ public:
 	void stopProcessingInput();
 	//reset the camera
 	void resetCameraPosition();
+	//start the movement
+	//this function is latern protocol compliant (but not returning anything)
+	void startMovement(const FVector movement, FScriptExecutionContext& ctx);
+	//terminate the movement
+	//Not required by the latern protocol but needed to reset the view
+	void stopMovement();
+	void signalCompletation();
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -39,9 +47,10 @@ private:
 	UPROPERTY()
 	UCameraComponent* camera;
 	bool InPanGesture;
-
 	void MouseXYAvis(FVector value);
 	void OnLMBDown();
 	void OnLMBUp();
 	void OnRMBDown();
+	FVector currentEffectiveMovement;
+	FScriptExecutionContext* executionCtx;
 };

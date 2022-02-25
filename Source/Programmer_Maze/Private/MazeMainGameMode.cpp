@@ -31,9 +31,6 @@ void AMazeMainGameMode::gogogo()
 		IDEStartBlock->SetVisibility(ESlateVisibility::HitTestInvisible);
 		IDEStartBlock->eval(context);
 	}
-	else {
-		Tick(); //tick the code
-	}
 }
 
 void AMazeMainGameMode::executionDone(FEvalResult result)
@@ -44,14 +41,8 @@ void AMazeMainGameMode::executionDone(FEvalResult result)
 	IDEStartBlock->SetVisibility(ESlateVisibility::Visible);
 }
 
-void AMazeMainGameMode::Tick()
+void AMazeMainGameMode::TickScript()
 {
-	//TODO: check the latent operation and see weather it is done
-	//For now unyield anything if it is set
-	if (evaluationRunning) {
-		context.yielding = false;
-	}
-	//If yes execute it
 	if (evaluationRunning && !context.yielding) {
 		//the context is not longer yielding so execute it
 		//set the contextRestore so all participant restore it

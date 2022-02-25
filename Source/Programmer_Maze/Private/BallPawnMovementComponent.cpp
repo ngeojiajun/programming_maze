@@ -2,6 +2,7 @@
 
 
 #include "BallPawnMovementComponent.h"
+#include "BallPawn.h"
 
 //refer Unreal Engine tutorial for this
 void UBallPawnMovementComponent::TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) {
@@ -26,12 +27,12 @@ void UBallPawnMovementComponent::TickComponent(float DeltaTime, enum ELevelTick 
         FHitResult Hit;
         SafeMoveUpdatedComponent(DesiredMovementThisFrame, UpdatedComponent->GetComponentRotation(), true, Hit);
 
-        // If we bumped into something, try to slide along it
         if (Hit.IsValidBlockingHit())
         {
-            //TODO: signal the actor that the actor is hit to something
-            //this is required to signal the end of the execution of function as all
-            //movement functions are based on this event
+            ABallPawn* actor=Cast<ABallPawn>(GetOwner());
+            if (actor) {
+                actor->signalCompletation();
+            }
         }
     }
 }

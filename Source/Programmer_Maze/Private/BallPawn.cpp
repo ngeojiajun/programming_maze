@@ -69,6 +69,40 @@ void ABallPawn::resetCameraPosition()
 	camera->SetRelativeLocation(cameraInitialPosition);
 }
 
+void ABallPawn::startMovement(const FVector movement, FScriptExecutionContext& ctx)
+{
+	//as required by the latern protocol the function must save its local state before start yielding
+	if (!ctx.contextRestore) {
+		//this is the first hit
+		//copy the address context
+		executionCtx = (FScriptExecutionContext*)(&ctx);
+		//set the movement vector
+		currentEffectiveMovement = movement;
+		//trigger the yield
+		ctx.yielding = true;
+	}
+	else {
+		//the context restore should never happens if the operation not done yet
+		check(currentEffectiveMovement.IsNearlyZero());
+		ctx.contextRestore = false;
+	}
+}
+
+void ABallPawn::stopMovement()
+{
+	currentEffectiveMovement=FVector(0.0f);
+}
+
+void ABallPawn::signalCompletation()
+{
+	//called from BallPawnMovementComponent when it met blocking object
+	//this simply reset the vector and signal the event
+	if (executionCtx) {
+		currentEffectiveMovement = FVector(0.0f);
+		executionCtx->yielding = false;
+	}
+}
+
 // Called when the game starts or when spawned
 void ABallPawn::BeginPlay()
 {
@@ -80,7 +114,13 @@ void ABallPawn::BeginPlay()
 void ABallPawn::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
+	if (!currentEffectiveMovement.IsNearlyZero()) {
+		movementComponent->AddInputVector(currentEffectiveMovement);
+	}
+	AMazeMainGameMode* gameMode = Cast<AMazeMainGameMode>(UGameplayStatics::GetGameMode(this));
+	if (gameMode) {
+		gameMode->TickScript();
+	}
 }
 
 // Called to bind functionality to input
@@ -106,7 +146,7 @@ UPawnMovementComponent* ABallPawn::GetMovementComponent() const
 
 void ABallPawn::MouseXYAvis(FVector value)
 {
-	if (!InPanGesture) {
+	if (!InPanGesture || !currentEffectiveMovement.IsNearlyZero()) {
 		return;
 	}
 	FVector finalMovement = FVector(0);
