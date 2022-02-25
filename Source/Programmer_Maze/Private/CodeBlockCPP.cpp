@@ -118,7 +118,7 @@ void UCodeBlockCPP::Resize()
 				if (i > 1) {
 					slotHeight += gapBetweenBlocks;
 				}
-				resolvedSlotWidth = std::max(resolvedSlotWidth, element->size.X);
+				resolvedSlotWidth = std::max(resolvedSlotWidth, element->size.X * (1 / finalRenderScale.X));
 			}
 		}
 		//enforce minimum height of 100px;
@@ -273,6 +273,9 @@ bool UCodeBlockCPP::AddBlockIntoSlot(UCodeBlockBaseCPP* block)
 	}
 	//just add it as the children for the UI_Expression
 	UI_Expression->AddChild(block);
+	if (!Childs.Num()) {
+		Childs.SetNum(1);
+	}
 	Childs[0] = block;
 	//adjust the block size as needed
 	rootResize();
@@ -315,6 +318,10 @@ bool UCodeBlockCPP::NativeOnDrop(const FGeometry& InGeometry, const FDragDropEve
 			if (GeneralUtilities::either<BlockType>(block->Type, ARRAY_T(disallowedTypes))) {
 				return true;
 			}
+			//If the block just moved around it will results in a dead loop
+			if (block == this) {
+				return true;
+			}
 			//try remove from parent
 			if (!block->Template) { //whenever it is not a template block remove it from its parent container
 				if (UCodeBlockBaseCPP* parent = block->getParentBlock()) {
@@ -329,7 +336,7 @@ bool UCodeBlockCPP::NativeOnDrop(const FGeometry& InGeometry, const FDragDropEve
 				}
 			}
 			//determine its index
-			if (Childs.Num() > 1)
+			if (Childs.Num() > 2)
 			{
 				for (int i = 1; i < Childs.Num(); i++) {
 					UCodeBlockBaseCPP* blockRef = Childs[i];
@@ -370,7 +377,7 @@ bool UCodeBlockCPP::NativeOnDrop(const FGeometry& InGeometry, const FDragDropEve
 				GeneralUtilities::Log(this, TEXT("Aborted the drag and drop because the block in question is not compactible"));
 				return true;
 			}
-			if (Childs[0]) {
+			if (Childs.Num()&&Childs[0]) {
 				return true;
 			}
 			//try remove from parent
