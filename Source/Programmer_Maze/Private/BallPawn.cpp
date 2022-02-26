@@ -11,6 +11,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "MazeMainGameMode.h"
+#include "GeneralUtilities.h"
 
 //the rate that the camera shall move per second
 const float panRate = 2000.f;
@@ -22,6 +23,7 @@ ABallPawn::ABallPawn():APawn(),InPanGesture(false)
  	//setup the stuffs
 	//by default this pawn should receive no input
 	AutoPossessPlayer = EAutoReceiveInput::Player0;
+	PrimaryActorTick.bCanEverTick = true;
 	DisableInput(NULL);
 	//the root is the sphere component that will react to the physic
 	const FVector size = FVector(1.0f);
@@ -52,6 +54,8 @@ ABallPawn::ABallPawn():APawn(),InPanGesture(false)
 	//finally create a movement component and register this to the the component
 	movementComponent = CreateDefaultSubobject<UBallPawnMovementComponent>(TEXT("MovementComponent"));
 	movementComponent->UpdatedComponent = RootComponent;
+	//save a ref to external
+	refGameMode = Cast<AMazeMainGameMode>(UGameplayStatics::GetGameMode(this));
 }
 
 void ABallPawn::startProcessingInput()
@@ -74,16 +78,19 @@ void ABallPawn::startMovement(const FVector movement, FScriptExecutionContext& c
 	//as required by the latern protocol the function must save its local state before start yielding
 	if (!ctx.contextRestore) {
 		//this is the first hit
-		//copy the address context
-		executionCtx = (FScriptExecutionContext*)(&ctx);
+		//reset the view
+		this->resetCameraPosition();
 		//set the movement vector
 		currentEffectiveMovement = movement;
 		//trigger the yield
 		ctx.yielding = true;
+		GeneralUtilities::Log(this, TEXT("Yielding..."));
 	}
 	else {
 		//the context restore should never happens if the operation not done yet
 		check(currentEffectiveMovement.IsNearlyZero());
+		FEvalResult result = FEvalResult::AsVoidResult();
+		PUSH_FAR_VALUE(ctx, FEvalResult, result);
 		ctx.contextRestore = false;
 	}
 }
@@ -97,9 +104,10 @@ void ABallPawn::signalCompletation()
 {
 	//called from BallPawnMovementComponent when it met blocking object
 	//this simply reset the vector and signal the event
-	if (executionCtx) {
+	if (refGameMode) {
 		currentEffectiveMovement = FVector(0.0f);
-		executionCtx->yielding = false;
+		refGameMode->context.yielding = false;
+		GeneralUtilities::Log(this, TEXT("Unyielding..."));
 	}
 }
 
@@ -117,9 +125,8 @@ void ABallPawn::Tick(float DeltaTime)
 	if (!currentEffectiveMovement.IsNearlyZero()) {
 		movementComponent->AddInputVector(currentEffectiveMovement);
 	}
-	AMazeMainGameMode* gameMode = Cast<AMazeMainGameMode>(UGameplayStatics::GetGameMode(this));
-	if (gameMode) {
-		gameMode->TickScript();
+	if (refGameMode) {
+		refGameMode->TickScript();
 	}
 }
 
@@ -182,10 +189,9 @@ void ABallPawn::OnLMBUp()
 void ABallPawn::OnRMBDown()
 {
 	//just show the IDE back
-	AMazeMainGameMode* gameMode = Cast<AMazeMainGameMode>(UGameplayStatics::GetGameMode(this));
-	if (gameMode) {
+	if (refGameMode) {
 		this->stopProcessingInput();
-		gameMode->showIDE();
+		refGameMode->showIDE();
 	}
 }
 

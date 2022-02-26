@@ -9,6 +9,8 @@
 #include "Camera/CameraComponent.h"
 #include "BallPawn.generated.h"
 
+class AMazeMainGameCode;
+
 UCLASS()
 class PROGRAMMER_MAZE_API ABallPawn : public APawn
 {
@@ -46,11 +48,12 @@ private:
 	UBallPawnMovementComponent* movementComponent;
 	UPROPERTY()
 	UCameraComponent* camera;
+	UPROPERTY()
+		AMazeMainGameMode* refGameMode;
 	bool InPanGesture;
 	void MouseXYAvis(FVector value);
 	void OnLMBDown();
 	void OnLMBUp();
 	void OnRMBDown();
 	FVector currentEffectiveMovement;
-	FScriptExecutionContext* executionCtx;
 };

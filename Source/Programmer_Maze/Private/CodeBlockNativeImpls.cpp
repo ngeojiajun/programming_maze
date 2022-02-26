@@ -194,11 +194,7 @@ FEvalResult UCodeBlockNativeImpls::ExitBlockImpl(UCodeBlockCPP* block,FScriptExe
 */
 FEvalResult UCodeBlockNativeImpls::MoveBlockImpl(UCodeBlockCPP* block, UPARAM(ref)FScriptExecutionContext& ctx, FVector movementVector /*block consts*/)
 {
-	ctx.ptrPawn->startMovement(movementVector, ctx);
-	if (!ctx.yielding) {
-		FEvalResult result = FEvalResult::AsVoidResult();
-		PUSH_FAR_VALUE(ctx, FEvalResult, result);
-	}
+	ctx.ptrPawn->startMovement(movementVector,ctx);
 	return FEvalResult::AsVoidResult();
 }
 
@@ -277,6 +273,7 @@ FEvalResult UCodeBlockNativeImpls::runAll(UCodeBlockCPP* block,FScriptExecutionC
 			PUSH_NEAR_VALUE(ctx, i);
 			PUSH_FAR_VALUE(ctx, FEvalResult, result);
 		}
+		shouldRestore = false;
 		result = block->Childs[i]->eval(ctx);
 		//check if it is yielding up, if not clean up
 		if (!ctx.yielding) {
