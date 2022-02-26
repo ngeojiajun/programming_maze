@@ -30,6 +30,9 @@ public:
 	static FEvalResult StartBlockImpl(UCodeBlockCPP* block,UPARAM(ref) FScriptExecutionContext& ctx);
 	UFUNCTION(BlueprintCallable)
 	static FEvalResult ExitBlockImpl(UCodeBlockCPP* block,UPARAM(ref) FScriptExecutionContext& ctx);
+	//The base function for move action blocks
+	UFUNCTION(BlueprintCallable)
+	static FEvalResult MoveBlockImpl(UCodeBlockCPP* block, UPARAM(ref) FScriptExecutionContext& ctx, FVector movementVector);
 	//Just for the use by stubs
 	UFUNCTION(BlueprintCallable)
 	static FEvalResult NopImpl(UCodeBlockCPP* block);

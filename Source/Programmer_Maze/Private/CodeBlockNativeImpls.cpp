@@ -8,6 +8,7 @@
 #include "Components/CanvasPanel.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "MazeMainGameMode.h"
+#include "BallPawn.h"
 #include "GeneralUtilities.h"
 //we need this because we need use void* as scalar
 #pragma warning( disable : 4302 4311 4312)
@@ -185,7 +186,20 @@ FEvalResult UCodeBlockNativeImpls::ExitBlockImpl(UCodeBlockCPP* block,FScriptExe
 	UKismetSystemLibrary::QuitGame(block, NULL, EQuitPreference::Quit, false);
 	FEvalResult result = FEvalResult::AsVoidResult();
 	PUSH_FAR_VALUE(ctx, FEvalResult, result);
-	return FEvalResult::AsVoidResult(); //never return
+	return FEvalResult::AsVoidResult(); 
+}
+
+/*
+*State:none
+*/
+FEvalResult UCodeBlockNativeImpls::MoveBlockImpl(UCodeBlockCPP* block, UPARAM(ref)FScriptExecutionContext& ctx, FVector movementVector /*block consts*/)
+{
+	ctx.ptrPawn->startMovement(movementVector, ctx);
+	if (!ctx.yielding) {
+		FEvalResult result = FEvalResult::AsVoidResult();
+		PUSH_FAR_VALUE(ctx, FEvalResult, result);
+	}
+	return FEvalResult::AsVoidResult();
 }
 
 /*
