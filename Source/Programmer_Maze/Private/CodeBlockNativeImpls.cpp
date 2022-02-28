@@ -180,18 +180,6 @@ FEvalResult UCodeBlockNativeImpls::StartBlockImpl(UCodeBlockCPP* block,FScriptEx
 /*
 *State:none
 */
-FEvalResult UCodeBlockNativeImpls::ExitBlockImpl(UCodeBlockCPP* block,FScriptExecutionContext& ctx)
-{
-	//this simply quit the game
-	UKismetSystemLibrary::QuitGame(block, NULL, EQuitPreference::Quit, false);
-	FEvalResult result = FEvalResult::AsVoidResult();
-	PUSH_FAR_VALUE(ctx, FEvalResult, result);
-	return FEvalResult::AsVoidResult(); 
-}
-
-/*
-*State:none
-*/
 FEvalResult UCodeBlockNativeImpls::MoveBlockImpl(UCodeBlockCPP* block, UPARAM(ref)FScriptExecutionContext& ctx, FVector movementVector /*block consts*/)
 {
 	ctx.ptrPawn->startMovement(movementVector,ctx);

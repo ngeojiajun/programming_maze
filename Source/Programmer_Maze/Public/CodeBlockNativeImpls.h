@@ -28,8 +28,6 @@ public:
 	static FEvalResult WhileBlockImpl(UCodeBlockCPP* block,UPARAM(ref) FScriptExecutionContext& ctx);
 	UFUNCTION(BlueprintCallable)
 	static FEvalResult StartBlockImpl(UCodeBlockCPP* block,UPARAM(ref) FScriptExecutionContext& ctx);
-	UFUNCTION(BlueprintCallable)
-	static FEvalResult ExitBlockImpl(UCodeBlockCPP* block,UPARAM(ref) FScriptExecutionContext& ctx);
 	//The base function for move action blocks
 	UFUNCTION(BlueprintCallable)
 	static FEvalResult MoveBlockImpl(UCodeBlockCPP* block, UPARAM(ref) FScriptExecutionContext& ctx, FVector movementVector);
