@@ -4,8 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Pawn.h"
-#include "BallPawnMovementComponent.h"
-#include "ScriptExecutionContext.h"
+#include "Maze/BallPawnMovementComponent.h"
+#include "Blocks/ScriptExecutionContext.h"
 #include "Camera/CameraComponent.h"
 #include "BallPawn.generated.h"
 
@@ -39,7 +39,7 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-public:	
+public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 	// Called to bind functionality to input

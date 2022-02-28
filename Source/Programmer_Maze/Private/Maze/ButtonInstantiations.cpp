@@ -1,11 +1,11 @@
 //// (C) 2022 Jia Jun Ngeo All Rights Reserved. This source is attached with the submission of the final year project for the BSc Multimedia Computing
 
-#include "ButtonInstantiations.h"
+#include "Maze/ButtonInstantiations.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Components/StaticMeshComponent.h"
 #include "UObject/ConstructorHelpers.h"
 #include "Kismet/GameplayStatics.h"
-#include "MazeMainGameMode.h"
+#include "Maze/MazeMainGameMode.h"
 
 void AExitButtonPawn::onBallHit() {
 	//quit the game

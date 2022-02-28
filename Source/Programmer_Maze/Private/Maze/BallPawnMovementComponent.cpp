@@ -1,8 +1,8 @@
 // (C) 2022 Jia Jun Ngeo All Rights Reserved. This source is attached with the submission of the final year project for the BSc Multimedia Computing
 
 
-#include "BallPawnMovementComponent.h"
-#include "BallPawn.h"
+#include "Maze/BallPawnMovementComponent.h"
+#include "Maze/BallPawn.h"
 
 //refer Unreal Engine tutorial for this
 void UBallPawnMovementComponent::TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) {
@@ -20,7 +20,7 @@ void UBallPawnMovementComponent::TickComponent(float DeltaTime, enum ELevelTick 
         SafeMoveUpdatedComponent(FVector(0,0,-1), UpdatedComponent->GetComponentRotation(), true, ignored);
     }
 
-    // Get (and then clear) the movement vector that 
+    // Get (and then clear) the movement vector that
     FVector DesiredMovementThisFrame = ConsumeInputVector().GetClampedToMaxSize(1.0f) * DeltaTime * 150.0f;
     if (!DesiredMovementThisFrame.IsNearlyZero())
     {

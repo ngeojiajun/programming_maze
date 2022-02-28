@@ -6,13 +6,13 @@
 #include "Blueprint/UserWidget.h"
 #include "GameFramework/GameModeBase.h"
 #include "Components/Button.h"
-#include "CodeBlockDefs.h"
-#include "ScriptExecutionContext.h"
+#include "Blocks/CodeBlockDefs.h"
+#include "Blocks/ScriptExecutionContext.h"
 #include "MazeMainGameMode.generated.h"
 
 class UCodeBlockCPP;
 /**
- * 
+ *
  */
 UCLASS()
 class PROGRAMMER_MAZE_API AMazeMainGameMode : public AGameModeBase

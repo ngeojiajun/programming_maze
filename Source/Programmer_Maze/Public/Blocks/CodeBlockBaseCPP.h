@@ -4,8 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
-#include "CodeBlockDefs.h"
-#include "ScriptExecutionContext.h"
+#include "Blocks/CodeBlockDefs.h"
+#include "Blocks/ScriptExecutionContext.h"
 #include "CodeBlockBaseCPP.generated.h"
 
 class UNodeDragWidgetCPP;

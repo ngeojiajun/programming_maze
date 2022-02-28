@@ -1,7 +1,7 @@
 // (C) 2022 Jia Jun Ngeo All Rights Reserved. This source is attached with the submission of the final year project for the BSc Multimedia Computing
 
 
-#include "CodeBlockBaseCPP.h"
+#include "Blocks/CodeBlockBaseCPP.h"
 #include "Components/ScaleBox.h"
 #include "Components/CanvasPanelSlot.h"
 #include "Components/TextBlock.h"
@@ -9,7 +9,7 @@
 #include "Components/NamedSlot.h"
 #include "Components/GridSlot.h"
 #include "Components/Border.h"
-#include "NodeDragDropOperation.h"
+#include "Blocks/NodeDragDropOperation.h"
 #include "UObject/ConstructorHelpers.h"
 
 UCodeBlockBaseCPP::UCodeBlockBaseCPP(const FObjectInitializer& initializer) :UUserWidget(initializer) {

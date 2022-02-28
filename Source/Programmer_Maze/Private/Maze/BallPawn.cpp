@@ -1,7 +1,7 @@
 // (C) 2022 Jia Jun Ngeo All Rights Reserved. This source is attached with the submission of the final year project for the BSc Multimedia Computing
 
 
-#include "BallPawn.h"
+#include "Maze/BallPawn.h"
 #include "Components/SphereComponent.h"
 #include "Components/StaticMeshComponent.h"
 #include "Components/InputComponent.h"
@@ -10,7 +10,7 @@
 #include "UObject/ConstructorHelpers.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
-#include "MazeMainGameMode.h"
+#include "Maze/MazeMainGameMode.h"
 #include "GeneralUtilities.h"
 
 //the rate that the camera shall move per second
@@ -167,7 +167,7 @@ void ABallPawn::MouseXYAvis(FVector value)
 	//get the forward vector
 	FRotator rot = UKismetMathLibrary::MakeRotFromX(GetActorForwardVector());
 	FVector forwardVector = UKismetMathLibrary::GetForwardVector(rot);
-	//apply it to the final vector (invert Y vector 
+	//apply it to the final vector (invert Y vector
 	finalMovement = forwardVector * (value.Y * -1);
 	//right X
 	FVector rightVector = GetActorRightVector();
@@ -200,4 +200,3 @@ void ABallPawn::OnRMBDown()
 		refGameMode->showIDE();
 	}
 }
-

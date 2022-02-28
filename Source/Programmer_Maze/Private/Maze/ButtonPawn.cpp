@@ -1,11 +1,11 @@
 // (C) 2022 Jia Jun Ngeo All Rights Reserved. This source is attached with the submission of the final year project for the BSc Multimedia Computing
 
 
-#include "ButtonPawn.h"
+#include "Maze/ButtonPawn.h"
 #include "Components/StaticMeshComponent.h"
 #include "Camera/CameraComponent.h"
 #include "Engine/StaticMesh.h"
-#include "BallPawn.h"
+#include "Maze/BallPawn.h"
 #include "UObject/ConstructorHelpers.h"
 
 // Sets default values
@@ -31,7 +31,7 @@ AButtonPawn::AButtonPawn()
 void AButtonPawn::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
 }
 
 // Called every frame
@@ -57,4 +57,3 @@ void AButtonPawn::OnBallEnter(UPrimitiveComponent* OverlappedComponent, AActor* 
 		onBallHit();
 	}
 }
-

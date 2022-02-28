@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "ButtonPawn.h"
+#include "Maze/ButtonPawn.h"
 #include "ButtonInstantiations.generated.h"
 
 /*A example button which exits when the ball touches it*/

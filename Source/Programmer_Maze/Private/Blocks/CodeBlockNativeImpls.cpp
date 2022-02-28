@@ -1,14 +1,14 @@
 // (C) 2022 Jia Jun Ngeo All Rights Reserved. This source is attached with the submission of the final year project for the BSc Multimedia Computing
 
 
-#include "CodeBlockNativeImpls.h"
-#include "CodeBlockCPP.h"
+#include "Blocks/CodeBlockNativeImpls.h"
+#include "Blocks/CodeBlockCPP.h"
 #include "Components/ScrollBox.h"
 #include "Components/ScrollBoxSlot.h"
 #include "Components/CanvasPanel.h"
 #include "Kismet/KismetSystemLibrary.h"
-#include "MazeMainGameMode.h"
-#include "BallPawn.h"
+#include "Maze/MazeMainGameMode.h"
+#include "Maze/BallPawn.h"
 #include "GeneralUtilities.h"
 //we need this because we need use void* as scalar
 #pragma warning( disable : 4302 4311 4312)
@@ -143,7 +143,7 @@ FEvalResult UCodeBlockNativeImpls::WhileBlockImpl(UCodeBlockCPP* block,FScriptEx
 			break;
 		}
 		}
-	} 
+	}
 	while (state != -1);
 	//return it so the error propogates to its parent
 	if (!ctx.yielding) {

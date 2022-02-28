@@ -1,8 +1,8 @@
 // (C) 2022 Jia Jun Ngeo All Rights Reserved. This source is attached with the submission of the final year project for the BSc Multimedia Computing
-#include "BlockBlackhole.h"
-#include "CodeBlockCPP.h"
-#include "ExpressionCodeBlockCPP.h"
-#include "NodeDragDropOperation.h"
+#include "Blocks/BlockBlackhole.h"
+#include "Blocks/CodeBlockCPP.h"
+#include "Blocks/ExpressionCodeBlockCPP.h"
+#include "Blocks/NodeDragDropOperation.h"
 #include "GeneralUtilities.h"
 
 bool UBlockBlackhole::NativeOnDrop(const FGeometry& InGeometry, const FDragDropEvent& InDragDropEvent, UDragDropOperation* InOperation)

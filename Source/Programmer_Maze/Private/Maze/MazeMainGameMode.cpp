@@ -1,12 +1,12 @@
 // (C) 2022 Jia Jun Ngeo All Rights Reserved. This source is attached with the submission of the final year project for the BSc Multimedia Computing
 
 
-#include "MazeMainGameMode.h"
+#include "Maze/MazeMainGameMode.h"
 #include "UObject/ConstructorHelpers.h"
 #include "Kismet/GameplayStatics.h"
-#include "BallPawn.h"
-#include "ButtonInstantiations.h"
-#include "CodeBlockCPP.h"
+#include "Maze/BallPawn.h"
+#include "Maze/ButtonInstantiations.h"
+#include "Blocks/CodeBlockCPP.h"
 #include "GeneralUtilities.h"
 
 AMazeMainGameMode::AMazeMainGameMode() :AGameModeBase(),evaluationRunning(false),lastCheckpointId(-1) {
@@ -113,7 +113,7 @@ void AMazeMainGameMode::BeginPlay() {
 	prop = FindFieldChecked<FObjectProperty>(IDEWidgetClass, FName(TEXT("GoButton")));
 	IDEGogoButton = Cast<UButton>(prop->GetObjectPropertyValue(prop->ContainerPtrToValuePtr<UObject>(IDEWidgetHandle)));
 	//Step6:
-	//Attach onclick handle to it 
+	//Attach onclick handle to it
 	IDEGogoButton->OnClicked.AddDynamic(this, &AMazeMainGameMode::gogogo);
 	//Step6:
 	//By reflection get the IDE::StartBlock

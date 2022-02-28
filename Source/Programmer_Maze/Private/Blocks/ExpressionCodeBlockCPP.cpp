@@ -1,12 +1,12 @@
 // (C) 2022 Jia Jun Ngeo All Rights Reserved. This source is attached with the submission of the final year project for the BSc Multimedia Computing
 
-#include "ExpressionCodeBlockCPP.h"
+#include "Blocks/ExpressionCodeBlockCPP.h"
 #include "Components/TextBlock.h"
 #include "Components/NamedSlot.h"
 #include "Components/GridPanel.h"
-#include "NodeDragDropOperation.h"
+#include "Blocks/NodeDragDropOperation.h"
 #include "GeneralUtilities.h"
-#include "CodeBlockCPP.h" //we need some to do some special deals with the CodeBlockCPP
+#include "Blocks/CodeBlockCPP.h" //we need some to do some special deals with the CodeBlockCPP
 
 
 UExpressionCodeBlockCPP::UExpressionCodeBlockCPP(const FObjectInitializer& init) :UCodeBlockBaseCPP(init) {

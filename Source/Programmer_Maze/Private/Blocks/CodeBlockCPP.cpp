@@ -1,7 +1,7 @@
 // (C) 2022 Jia Jun Ngeo All Rights Reserved. This source is attached with the submission of the final year project for the BSc Multimedia Computing
 
 
-#include "CodeBlockCPP.h"
+#include "Blocks/CodeBlockCPP.h"
 #include "Components/ScaleBox.h"
 #include "Components/TextBlock.h"
 #include "Components/GridPanel.h"
@@ -10,9 +10,9 @@
 #include "Components/ScrollBox.h"
 #include "Components/CanvasPanel.h"
 #include "Components/CanvasPanelSlot.h"
-#include "NodeDragDropOperation.h"
+#include "Blocks/NodeDragDropOperation.h"
 #include "GeneralUtilities.h"
-#include "ExpressionCodeBlockCPP.h"
+#include "Blocks/ExpressionCodeBlockCPP.h"
 
 const float gapBetweenBlocks = 15;
 
@@ -158,7 +158,7 @@ void UCodeBlockCPP::Resize()
 		AR = floor(resolvedSlotWidth/30);
 		//adjust the ratio to avoid zero and round up
 		AR += AR < 1 ? 2 : 1;
-		UI_ChildGrid->SetColumnFill(1, AR);	
+		UI_ChildGrid->SetColumnFill(1, AR);
 	}
 	controlSize.X += 25;
 	GeneralUtilities::LogVector2D(this, controlSize, TEXT("size"));

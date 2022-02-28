@@ -3,9 +3,9 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "CodeBlockDefs.h"
+#include "Blocks/CodeBlockDefs.h"
 #include "Kismet/BlueprintFunctionLibrary.h"
-#include "ScriptExecutionContext.h"
+#include "Blocks/ScriptExecutionContext.h"
 #include "CodeBlockNativeImpls.generated.h"
 
 //forward defs

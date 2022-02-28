@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "CodeBlockBaseCPP.h"
+#include "Blocks/CodeBlockBaseCPP.h"
 #include "ExpressionCodeBlockCPP.generated.h"
 
 /**
