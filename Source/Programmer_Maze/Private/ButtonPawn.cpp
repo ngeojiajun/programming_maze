@@ -7,7 +7,6 @@
 #include "Engine/StaticMesh.h"
 #include "BallPawn.h"
 #include "UObject/ConstructorHelpers.h"
-#include "Kismet/KismetSystemLibrary.h"
 
 // Sets default values
 AButtonPawn::AButtonPawn()

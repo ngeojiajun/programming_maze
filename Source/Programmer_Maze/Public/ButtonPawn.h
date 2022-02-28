@@ -6,7 +6,7 @@
 #include "GameFramework/Pawn.h"
 #include "ButtonPawn.generated.h"
 
-UCLASS()
+UCLASS(Abstract)
 class PROGRAMMER_MAZE_API AButtonPawn : public APawn
 {
 	GENERATED_BODY()
