@@ -23,8 +23,13 @@ public:
 	AMazeMainGameMode();
 	//reveal the IDE
 	void showIDE();
+	//callback from Start Block after the execution done
 	void executionDone(FEvalResult result);
+	//Chained with Tick() from ball pawn
 	void TickScript();
+	//for checkpoint buttons
+	//called by the button when the ball passed through the checkpoint
+	void onCheckpointHit(int id);
 	UPROPERTY()
 	FScriptExecutionContext context;
 protected:
@@ -35,6 +40,8 @@ private:
 	virtual void hidePanel();
 	UFUNCTION()
 	void gogogo();
+	//warp the player pawn to the last checkpoint that the engine has taken note
+	void wrapPawnToLastCheckpoint();
 	TSubclassOf<UUserWidget> IDEWidgetClass;
 	UPROPERTY()
 	UUserWidget* IDEWidgetHandle;
@@ -45,4 +52,5 @@ private:
 	UPROPERTY()
 	UCodeBlockCPP* IDEStartBlock;
 	bool evaluationRunning;
+	int lastCheckpointId;
 };

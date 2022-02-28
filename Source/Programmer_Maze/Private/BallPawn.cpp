@@ -111,11 +111,17 @@ void ABallPawn::signalCompletation()
 	}
 }
 
+FVector ABallPawn::getInitialLocation()
+{
+	return initialPosition;
+}
+
 // Called when the game starts or when spawned
 void ABallPawn::BeginPlay()
 {
 	Super::BeginPlay();
-	
+	//copy the initial position
+	initialPosition = this->GetActorLocation();
 }
 
 // Called every frame

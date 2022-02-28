@@ -32,6 +32,9 @@ public:
 	//Not required by the latern protocol but needed to reset the view
 	void stopMovement();
 	void signalCompletation();
+	//checkpoint
+	//get the initial position of the pawn when there are no checkpoint found
+	FVector getInitialLocation();
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -56,4 +59,5 @@ private:
 	void OnLMBUp();
 	void OnRMBDown();
 	FVector currentEffectiveMovement;
+	FVector initialPosition;
 };

@@ -20,6 +20,9 @@ class ACheckpointPawn :public AButtonPawn {
 	GENERATED_BODY()
 public:
 	ACheckpointPawn();
+	/*the id of the checkpoint inside the map*/
+	UPROPERTY(EditInstanceOnly, BlueprintReadWrite)
+	int checkpointId;
 protected:
 	virtual void onBallHit() override;
 };

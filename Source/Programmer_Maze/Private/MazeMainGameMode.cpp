@@ -5,14 +5,14 @@
 #include "UObject/ConstructorHelpers.h"
 #include "Kismet/GameplayStatics.h"
 #include "BallPawn.h"
+#include "ButtonInstantiations.h"
 #include "CodeBlockCPP.h"
 #include "GeneralUtilities.h"
 
-AMazeMainGameMode::AMazeMainGameMode() :AGameModeBase(),evaluationRunning(false) {
+AMazeMainGameMode::AMazeMainGameMode() :AGameModeBase(),evaluationRunning(false),lastCheckpointId(-1) {
 	static ConstructorHelpers::FClassFinder<UUserWidget> WidgetClassFinder(TEXT("/Game/UI/IDE/IDE.IDE_C"));
 	IDEWidgetClass = WidgetClassFinder.Class;
 	DefaultPawnClass = ABallPawn::StaticClass();
-	PrimaryActorTick.bCanEverTick = true; //enable ticking
 }
 
 void AMazeMainGameMode::showIDE()
@@ -27,9 +27,40 @@ void AMazeMainGameMode::gogogo()
 		context.contextRestore = false;
 		context.yielding = false;
 		evaluationRunning = true;
-		//fire it
+		//prevent the movement
 		IDEStartBlock->SetVisibility(ESlateVisibility::HitTestInvisible);
+		IDEGogoButton->SetIsEnabled(false);
+		//fire it
 		IDEStartBlock->eval(context);
+	}
+}
+
+void AMazeMainGameMode::wrapPawnToLastCheckpoint()
+{
+	FVector initial = context.ptrPawn->getInitialLocation();
+	if (lastCheckpointId < 0) {
+		//invalid checkpoint just wrap to the initial point
+		context.ptrPawn->TeleportTo(initial,FRotator(),false,true);
+	}
+	else {
+		//find all classes with the ACheckpointPawn
+		TArray<AActor*> FoundActors;
+		UGameplayStatics::GetAllActorsOfClass(GetWorld(), ACheckpointPawn::StaticClass(), FoundActors);
+		for (int i = 0; i < FoundActors.Num(); i++) {
+			//check weather there are one with the said id
+			ACheckpointPawn* button = (ACheckpointPawn*)FoundActors[i]; //always succeeded as the check is done by the iterator
+			if (button->checkpointId == lastCheckpointId) {
+				//if yes
+				FVector vec = button->GetActorLocation(); //get the location
+				//set the Z (height) to the initial height
+				vec.Z = initial.Z;
+				//teleport
+				context.ptrPawn->TeleportTo(vec, FRotator(), false, true);
+				return;
+			}
+		}
+		//none found teleport to the initial
+		context.ptrPawn->TeleportTo(initial, FRotator(), false, true);
 	}
 }
 
@@ -38,7 +69,9 @@ void AMazeMainGameMode::executionDone(FEvalResult result)
 	GeneralUtilities::LogBoolean(this, result.succeeded, TEXT("Execution succeeded"));
 	GeneralUtilities::Log(this, result.strVal);
 	evaluationRunning = false;
+	wrapPawnToLastCheckpoint();
 	IDEStartBlock->SetVisibility(ESlateVisibility::Visible);
+	IDEGogoButton->SetIsEnabled(true);
 }
 
 void AMazeMainGameMode::TickScript()
@@ -50,6 +83,12 @@ void AMazeMainGameMode::TickScript()
 		context.contextRestore = true;
 		IDEStartBlock->eval(context);
 	}
+}
+
+void AMazeMainGameMode::onCheckpointHit(int id)
+{
+	//note it down the id of the checkpoint the ball last hit
+	this->lastCheckpointId = id;
 }
 
 void AMazeMainGameMode::BeginPlay() {

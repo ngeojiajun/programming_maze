@@ -4,13 +4,15 @@
 #include "Kismet/KismetSystemLibrary.h"
 #include "Components/StaticMeshComponent.h"
 #include "UObject/ConstructorHelpers.h"
+#include "Kismet/GameplayStatics.h"
+#include "MazeMainGameMode.h"
 
 void AExitButtonPawn::onBallHit() {
 	//quit the game
 	UKismetSystemLibrary::QuitGame(this, NULL, EQuitPreference::Quit, false);
 }
 
-ACheckpointPawn::ACheckpointPawn() :AButtonPawn() {
+ACheckpointPawn::ACheckpointPawn() :AButtonPawn(),checkpointId(0) {
 	static ConstructorHelpers::FObjectFinder<UMaterialInterface> CylinderMaterial(TEXT("/Game/UI/Actors/CheckpointButtonMat.CheckpointButtonMat"));
 	if (CylinderMaterial.Succeeded()) {
 		root->SetMaterial(0, CylinderMaterial.Object);
@@ -20,5 +22,8 @@ ACheckpointPawn::ACheckpointPawn() :AButtonPawn() {
 
 void ACheckpointPawn::onBallHit()
 {
-	//TODO update the game mode that the checkpoint was hit
+	AMazeMainGameMode* refGameMode = Cast<AMazeMainGameMode>(UGameplayStatics::GetGameMode(this));
+	if (refGameMode) {
+		refGameMode->onCheckpointHit(checkpointId);
+	}
 }
