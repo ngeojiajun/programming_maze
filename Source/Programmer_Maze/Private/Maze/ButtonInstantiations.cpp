@@ -7,7 +7,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "Maze/MazeMainGameMode.h"
 
-void AExitButtonPawn::onBallHit() {
+void AGoalPawn::onBallHit() {
 	//quit the game
 	UKismetSystemLibrary::QuitGame(this, NULL, EQuitPreference::Quit, false);
 }

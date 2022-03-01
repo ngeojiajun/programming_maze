@@ -8,7 +8,7 @@
 
 /*A example button which exits when the ball touches it*/
 UCLASS()
-class AExitButtonPawn :public AButtonPawn {
+class AGoalPawn :public AButtonPawn {
 	GENERATED_BODY()
 protected:
 	virtual void onBallHit() override;
