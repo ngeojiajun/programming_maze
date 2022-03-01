@@ -52,12 +52,14 @@ private:
 	UPROPERTY()
 	UCameraComponent* camera;
 	UPROPERTY()
-		AMazeMainGameMode* refGameMode;
+	AMazeMainGameMode* refGameMode;
 	bool InPanGesture;
 	void MouseXYAvis(FVector value);
 	void OnLMBDown();
 	void OnLMBUp();
 	void OnRMBDown();
+	void onWheelUp();
+	void onWheelDown();
 	FVector currentEffectiveMovement;
 	FVector initialPosition;
 };

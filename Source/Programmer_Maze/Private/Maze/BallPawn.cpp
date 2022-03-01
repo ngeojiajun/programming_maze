@@ -150,6 +150,9 @@ void ABallPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 	PlayerInputComponent->BindKey(EKeys::LeftMouseButton, EInputEvent::IE_Released, this, &ABallPawn::OnLMBUp);
 	//Right mouse buttons
 	PlayerInputComponent->BindKey(EKeys::RightMouseButton, EInputEvent::IE_Pressed, this, &ABallPawn::OnRMBDown);
+	//wheels
+	PlayerInputComponent->BindKey(EKeys::MouseScrollUp, EInputEvent::IE_Pressed, this, &ABallPawn::onWheelUp);
+	PlayerInputComponent->BindKey(EKeys::MouseScrollDown, EInputEvent::IE_Pressed, this, &ABallPawn::onWheelDown);
 }
 
 UPawnMovementComponent* ABallPawn::GetMovementComponent() const
@@ -199,4 +202,20 @@ void ABallPawn::OnRMBDown()
 		this->stopProcessingInput();
 		refGameMode->showIDE();
 	}
+}
+
+void ABallPawn::onWheelUp()
+{
+	//zoom up increase Z by 50 cap to 1230
+	FVector cameraCurrent = camera->GetRelativeLocation();
+	cameraCurrent.Z = std::min<float>(1230,cameraCurrent.Z + 50);
+	camera->SetRelativeLocation(cameraCurrent);
+}
+
+void ABallPawn::onWheelDown()
+{
+	//zoom up increase Z by 50 cap to 230
+	FVector cameraCurrent = camera->GetRelativeLocation();
+	cameraCurrent.Z = std::max<float>(230, cameraCurrent.Z - 50);
+	camera->SetRelativeLocation(cameraCurrent);
 }

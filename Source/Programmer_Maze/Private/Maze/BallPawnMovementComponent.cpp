@@ -21,7 +21,7 @@ void UBallPawnMovementComponent::TickComponent(float DeltaTime, enum ELevelTick 
     }
 
     // Get (and then clear) the movement vector that
-    FVector DesiredMovementThisFrame = ConsumeInputVector().GetClampedToMaxSize(1.0f) * DeltaTime * 150.0f;
+    FVector DesiredMovementThisFrame = ConsumeInputVector().GetClampedToMaxSize(1.0f) * DeltaTime * 300.f;
     if (!DesiredMovementThisFrame.IsNearlyZero())
     {
         FHitResult Hit;
