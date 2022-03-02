@@ -38,6 +38,8 @@ public:
 	//not used by this class but to allow ball, buttons and walls to sync its state
 	UPROPERTY()
 	FOnCharacterStatusChanged characterStatusBroadcast;
+	//this holds the association of the groupID with the material bound to it
+	TMap<int, UMaterialInterface*> groupMaterialMap;
 protected:
 	//called when the game starts
 	virtual void BeginPlay() override;

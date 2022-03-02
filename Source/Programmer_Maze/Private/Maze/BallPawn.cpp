@@ -33,7 +33,7 @@ ABallPawn::ABallPawn():APawn(),InPanGesture(false)
 	spherePhysic->InitSphereRadius(radius);
 	spherePhysic->SetCollisionProfileName(TEXT("Pawn"));
 	//then create the UI here
-	UStaticMeshComponent* SphereVisual = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("VisualRepresentation"));
+	SphereVisual = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("VisualRepresentation"));
 	SphereVisual->SetupAttachment(RootComponent);
 	static ConstructorHelpers::FObjectFinder<UStaticMesh> SphereVisualAsset(TEXT("/Engine/BasicShapes/Sphere.Sphere"));
 	static ConstructorHelpers::FObjectFinder<UMaterialInterface> SphereMaterial(TEXT("/Game/UI/Actors/BallMat.BallMat"));
@@ -43,6 +43,7 @@ ABallPawn::ABallPawn():APawn(),InPanGesture(false)
 		SphereVisual->SetWorldScale3D(size);
 	}
 	if (SphereMaterial.Succeeded()) {
+		defaultMaterial = SphereMaterial.Object;
 		SphereVisual->SetMaterial(0, SphereMaterial.Object);
 	}
 	//then our camera
@@ -54,8 +55,6 @@ ABallPawn::ABallPawn():APawn(),InPanGesture(false)
 	//finally create a movement component and register this to the the component
 	movementComponent = CreateDefaultSubobject<UBallPawnMovementComponent>(TEXT("MovementComponent"));
 	movementComponent->UpdatedComponent = RootComponent;
-	//save a ref to external
-	refGameMode = Cast<AMazeMainGameMode>(UGameplayStatics::GetGameMode(this));
 }
 
 void ABallPawn::startProcessingInput()
@@ -120,8 +119,14 @@ FVector ABallPawn::getInitialLocation()
 void ABallPawn::BeginPlay()
 {
 	Super::BeginPlay();
+	//save a ref to external
+	refGameMode = Cast<AMazeMainGameMode>(UGameplayStatics::GetGameMode(this));
 	//copy the initial position
 	initialPosition = this->GetActorLocation();
+	if (refGameMode) {
+		//register for the character status broadcast
+		refGameMode->characterStatusBroadcast.AddDynamic(this, &ABallPawn::onCharacterStatusChanged);
+	}
 }
 
 // Called every frame
@@ -158,6 +163,20 @@ void ABallPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 UPawnMovementComponent* ABallPawn::GetMovementComponent() const
 {
 	return movementComponent;
+}
+
+void ABallPawn::onCharacterStatusChanged(int group)
+{
+	if (group < 0 || !(refGameMode->groupMaterialMap.Contains(group))) {
+		//show the default material if the groupID is not registered into the map or it is invalid
+		if (defaultMaterial) {
+			SphereVisual->SetMaterial(0, defaultMaterial);
+		}
+	}
+	else {
+		//otherwise set the material into the one which are registered
+		SphereVisual->SetMaterial(0, (refGameMode->groupMaterialMap[group]));
+	}
 }
 
 void ABallPawn::MouseXYAvis(FVector value)

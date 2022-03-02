@@ -52,14 +52,26 @@ private:
 	UPROPERTY()
 	UCameraComponent* camera;
 	UPROPERTY()
+	UStaticMeshComponent* SphereVisual;
+	UPROPERTY()
 	AMazeMainGameMode* refGameMode;
+	UPROPERTY()
+	UMaterialInterface* defaultMaterial;
+	//is the panning is in progress
 	bool InPanGesture;
+	//listener for the characterStatusBroadcast
+	UFUNCTION()
+	void onCharacterStatusChanged(int group);
+	//handle the mouse coords
 	void MouseXYAvis(FVector value);
+	//mouse button handlers
 	void OnLMBDown();
 	void OnLMBUp();
 	void OnRMBDown();
 	void onWheelUp();
 	void onWheelDown();
+	//scripting: the movement that the ball is possessing
 	FVector currentEffectiveMovement;
+	//original position for resetting it later
 	FVector initialPosition;
 };

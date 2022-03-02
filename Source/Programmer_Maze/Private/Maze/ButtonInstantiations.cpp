@@ -5,6 +5,7 @@
 #include "UObject/ConstructorHelpers.h"
 #include "Kismet/GameplayStatics.h"
 #include "Maze/MazeMainGameMode.h"
+#include "GeneralUtilities.h"
 
 AGoalPawn::AGoalPawn() {
 	static ConstructorHelpers::FObjectFinder<UMaterialInterface> CylinderMaterial(TEXT("/Game/UI/Actors/GoalButtonMat.GoalButtonMat"));
@@ -44,14 +45,33 @@ void AAnchorPawn::BeginPlay()
 	if (baseMaterial) {
 		root->SetMaterial(0, baseMaterial);
 	}
+	//register the material to the map
+	if(groupID>=0){
+		AMazeMainGameMode* ptrGameMode = Cast<AMazeMainGameMode>(UGameplayStatics::GetGameMode(this));
+		if (ptrGameMode->groupMaterialMap.Contains(groupID)) {
+			//ensure it is same
+			if (ptrGameMode->groupMaterialMap[groupID] != baseMaterial) {
+				GeneralUtilities::Log(this, FString::Printf(
+					TEXT("Detected inconsistency on the materials used inside this map (groupID=%d), this might results in a glitch in display")
+					,groupID
+				));
+			}
+		}
+		else {
+			//register it otherwise
+			ptrGameMode->groupMaterialMap[groupID] = baseMaterial;
+		}
+	}
 }
 
 void AAnchorPawn::onBallHit()
 {
 	//try to broadcast the event if the group id is valid (more than or equal with 0)
-	AMazeMainGameMode* ptrGameMode = Cast<AMazeMainGameMode>(UGameplayStatics::GetGameMode(this));
-	if (ptrGameMode) {
-		ptrGameMode->characterStatusBroadcast.Broadcast(groupID);
+	if (groupID >= 0) {
+		AMazeMainGameMode* ptrGameMode = Cast<AMazeMainGameMode>(UGameplayStatics::GetGameMode(this));
+		if (ptrGameMode) {
+			ptrGameMode->characterStatusBroadcast.Broadcast(groupID);
+		}
 	}
 }
 
