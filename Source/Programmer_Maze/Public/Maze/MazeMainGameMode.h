@@ -45,14 +45,19 @@ protected:
 	virtual void BeginPlay() override;
 private:
 	UFUNCTION()
-	virtual void hidePanel();
+	void hidePanel();
+	UFUNCTION()
+	void showHelp();
 	UFUNCTION()
 	void gogogo();
 	//warp the player pawn to the last checkpoint that the engine has taken note
 	void wrapPawnToLastCheckpoint();
 	TSubclassOf<UUserWidget> IDEWidgetClass;
+	TSubclassOf<UUserWidget> IDEHelpDialogClass;
 	UPROPERTY()
 	UUserWidget* IDEWidgetHandle;
+	UPROPERTY()
+	UUserWidget* IDEHelpDialogHandle;
 	UPROPERTY()
 	UButton* IDECloseButton;
 	UPROPERTY()

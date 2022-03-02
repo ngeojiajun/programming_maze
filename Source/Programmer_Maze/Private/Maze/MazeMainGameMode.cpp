@@ -11,7 +11,9 @@
 
 AMazeMainGameMode::AMazeMainGameMode() :AGameModeBase(),evaluationRunning(false),lastCheckpointId(-1) {
 	static ConstructorHelpers::FClassFinder<UUserWidget> WidgetClassFinder(TEXT("/Game/UI/IDE/IDE.IDE_C"));
+	static ConstructorHelpers::FClassFinder<UUserWidget> HelpDialogClassFinder(TEXT("/Game/UI/Flow/DialogHelp.DialogHelp_C"));
 	IDEWidgetClass = WidgetClassFinder.Class;
+	IDEHelpDialogClass = HelpDialogClassFinder.Class;
 	DefaultPawnClass = ABallPawn::StaticClass();
 }
 
@@ -140,9 +142,7 @@ void AMazeMainGameMode::BeginPlay() {
 	IDEHelpButton = Cast<UButton>(prop->GetObjectPropertyValue(prop->ContainerPtrToValuePtr<UObject>(IDEWidgetHandle)));
 	//Step8:
 	//Attach onclick handle to it
-	// 
-	//TODO: Add handler here to show help menu
-	// 
+	IDEHelpButton->OnClicked.AddDynamic(this, &AMazeMainGameMode::showHelp);
 	//Step9:
 	//Prefill the context
 	context = FScriptExecutionContext();
@@ -152,6 +152,11 @@ void AMazeMainGameMode::BeginPlay() {
 	//Step10:
 	//Broadcast a characterStatusBroadcast (-1) to force all walls to be deassociated
 	characterStatusBroadcast.Broadcast(-1);
+	//Step11:
+	//Construct the help dialog then add it into the tree but make it hidden by default
+	IDEHelpDialogHandle = NewObject<UUserWidget>(this, IDEHelpDialogClass);
+	IDEHelpDialogHandle->SetVisibility(ESlateVisibility::Collapsed);
+	IDEHelpDialogHandle->AddToViewport(1);
 }
 
 void AMazeMainGameMode::hidePanel()
@@ -161,4 +166,9 @@ void AMazeMainGameMode::hidePanel()
 	IDEWidgetHandle->SetVisibility(ESlateVisibility::Collapsed);
 	//ask the pawn to start process input
 	context.ptrPawn->startProcessingInput();
+}
+
+void AMazeMainGameMode::showHelp()
+{
+	IDEHelpDialogHandle->SetVisibility(ESlateVisibility::Visible);
 }
