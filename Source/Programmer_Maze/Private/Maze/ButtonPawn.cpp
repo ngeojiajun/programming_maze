@@ -3,7 +3,6 @@
 
 #include "Maze/ButtonPawn.h"
 #include "Components/StaticMeshComponent.h"
-#include "Camera/CameraComponent.h"
 #include "Engine/StaticMesh.h"
 #include "Maze/BallPawn.h"
 #include "UObject/ConstructorHelpers.h"

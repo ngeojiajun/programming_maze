@@ -11,6 +11,7 @@
 #include "MazeMainGameMode.generated.h"
 
 class UCodeBlockCPP;
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnCharacterStatusChanged, int, groupId);
 /**
  *
  */
@@ -30,8 +31,13 @@ public:
 	//for checkpoint buttons
 	//called by the button when the ball passed through the checkpoint
 	void onCheckpointHit(int id);
+	//when the level complemeted
+	void onLevelCompleted();
 	UPROPERTY()
 	FScriptExecutionContext context;
+	//not used by this class but to allow ball, buttons and walls to sync its state
+	UPROPERTY()
+	FOnCharacterStatusChanged characterStatusBroadcast;
 protected:
 	//called when the game starts
 	virtual void BeginPlay() override;

@@ -91,6 +91,11 @@ void AMazeMainGameMode::onCheckpointHit(int id)
 	this->lastCheckpointId = id;
 }
 
+void AMazeMainGameMode::onLevelCompleted()
+{
+	UKismetSystemLibrary::QuitGame(this, NULL, EQuitPreference::Quit, true);
+}
+
 void AMazeMainGameMode::BeginPlay() {
 	//Step 1:
 	//Construct the IDE widget and add it to the viewport
@@ -125,6 +130,9 @@ void AMazeMainGameMode::BeginPlay() {
 	context.ptrGameMode = this;
 	context.contextRestore = false;
 	context.ptrPawn = Cast<ABallPawn>(UGameplayStatics::GetPlayerPawn(this, 0));
+	//Step8:
+	//Broadcast a characterStatusBroadcast (-1) to force all walls to be deassociated
+	characterStatusBroadcast.Broadcast(-1);
 }
 
 void AMazeMainGameMode::hidePanel()

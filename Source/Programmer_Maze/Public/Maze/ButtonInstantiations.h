@@ -10,6 +10,8 @@
 UCLASS()
 class AGoalPawn :public AButtonPawn {
 	GENERATED_BODY()
+public:
+	AGoalPawn();
 protected:
 	virtual void onBallHit() override;
 };
