@@ -52,9 +52,15 @@ ABallPawn::ABallPawn():APawn(),InPanGesture(false),Executing(false)
 	camera->SetRelativeLocation(cameraInitialPosition);
 	camera->SetRelativeRotation(FRotator(-90.000000, 0, 0));
 	camera->SetupAttachment(RootComponent);
-	//finally create a movement component and register this to the the component
+	//then create a movement component and register this to the the component
 	movementComponent = CreateDefaultSubobject<UBallPawnMovementComponent>(TEXT("MovementComponent"));
 	movementComponent->UpdatedComponent = RootComponent;
+	//finally try to find our SFX and create the component if we have one
+	static ConstructorHelpers::FObjectFinder<USoundBase> SFXAsset(TEXT("/Game/Sounds/ball_moving.ball_moving"));
+	if (SFXAsset.Succeeded()) {
+		audioComponent = CreateDefaultSubobject<UAudioComponent>(TEXT("AudioComponent"));
+		audioComponent->SetSound(SFXAsset.Object);
+	}
 }
 
 void ABallPawn::startProcessingInput()
@@ -92,12 +98,20 @@ void ABallPawn::startMovement(const FVector movement, FScriptExecutionContext& c
 		currentEffectiveMovement = movement;
 		//trigger the yield
 		ctx.yielding = true;
+		//play the audio if found
+		if (audioComponent) {
+			audioComponent->Play(0);
+		}
 		GeneralUtilities::Log(this, TEXT("Yielding..."));
 	}
 	else {
 		//the context restore should never happens if the operation not done yet
 		check(currentEffectiveMovement.IsNearlyZero());
 		Executing = false;
+		//stop the audio if found
+		if (audioComponent) {
+			audioComponent->Stop();
+		}
 		FEvalResult result = FEvalResult::AsVoidResult();
 		PUSH_FAR_VALUE(ctx, FEvalResult, result);
 		ctx.contextRestore = false;
@@ -106,7 +120,6 @@ void ABallPawn::startMovement(const FVector movement, FScriptExecutionContext& c
 
 void ABallPawn::stopMovement()
 {
-	Executing = false;
 	currentEffectiveMovement=FVector(0.0f);
 }
 
@@ -137,6 +150,9 @@ void ABallPawn::BeginPlay()
 	if (refGameMode) {
 		//register for the character status broadcast
 		refGameMode->characterStatusBroadcast.AddDynamic(this, &ABallPawn::onCharacterStatusChanged);
+	}
+	if (audioComponent) {
+		audioComponent->Stop();
 	}
 }
 

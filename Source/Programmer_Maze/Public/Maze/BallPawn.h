@@ -7,6 +7,7 @@
 #include "Maze/BallPawnMovementComponent.h"
 #include "Blocks/ScriptExecutionContext.h"
 #include "Camera/CameraComponent.h"
+#include "Components/AudioComponent.h"
 #include "BallPawn.generated.h"
 
 class AMazeMainGameCode;
@@ -59,6 +60,8 @@ private:
 	AMazeMainGameMode* refGameMode;
 	UPROPERTY()
 	UMaterialInterface* defaultMaterial;
+	UPROPERTY()
+	UAudioComponent* audioComponent;
 	//is the panning is in progress
 	bool InPanGesture;
 	bool Executing;
