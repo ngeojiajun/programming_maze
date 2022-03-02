@@ -25,6 +25,8 @@ public:
 	void stopProcessingInput();
 	//reset the camera
 	void resetCameraPosition();
+	//reset the zoom
+	void resetCameraZoom();
 	//start the movement
 	//this function is latern protocol compliant (but not returning anything)
 	void startMovement(const FVector movement, FScriptExecutionContext& ctx);
@@ -59,6 +61,7 @@ private:
 	UMaterialInterface* defaultMaterial;
 	//is the panning is in progress
 	bool InPanGesture;
+	bool Executing;
 	//listener for the characterStatusBroadcast
 	UFUNCTION()
 	void onCharacterStatusChanged(int group);

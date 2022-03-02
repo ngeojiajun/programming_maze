@@ -58,6 +58,8 @@ private:
 	UPROPERTY()
 	UButton* IDEGogoButton;
 	UPROPERTY()
+	UButton* IDEHelpButton;
+	UPROPERTY()
 	UCodeBlockCPP* IDEStartBlock;
 	bool evaluationRunning;
 	int lastCheckpointId;

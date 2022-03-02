@@ -30,6 +30,10 @@ void AMazeMainGameMode::gogogo()
 		//prevent the movement
 		IDEStartBlock->SetVisibility(ESlateVisibility::HitTestInvisible);
 		IDEGogoButton->SetIsEnabled(false);
+		IDEHelpButton->SetIsEnabled(false);
+		//reset the zoom and camera position
+		context.ptrPawn->resetCameraPosition();
+		context.ptrPawn->resetCameraZoom();
 		//fire it
 		IDEStartBlock->eval(context);
 	}
@@ -72,6 +76,12 @@ void AMazeMainGameMode::executionDone(FEvalResult result)
 	wrapPawnToLastCheckpoint();
 	IDEStartBlock->SetVisibility(ESlateVisibility::Visible);
 	IDEGogoButton->SetIsEnabled(true);
+	IDEHelpButton->SetIsEnabled(true);
+	//reset the zoom
+	context.ptrPawn->resetCameraZoom();
+	//ensure the IDE is shown
+	context.ptrPawn->stopProcessingInput();
+	showIDE();
 }
 
 void AMazeMainGameMode::TickScript()
@@ -125,12 +135,21 @@ void AMazeMainGameMode::BeginPlay() {
 	prop = FindFieldChecked<FObjectProperty>(IDEWidgetClass, FName(TEXT("StartBlock")));
 	IDEStartBlock = Cast<UCodeBlockCPP>(prop->GetObjectPropertyValue(prop->ContainerPtrToValuePtr<UObject>(IDEWidgetHandle)));
 	//Step7:
+	//By reflection get the IDE::HelpButton
+	prop = FindFieldChecked<FObjectProperty>(IDEWidgetClass, FName(TEXT("HelpButton")));
+	IDEHelpButton = Cast<UButton>(prop->GetObjectPropertyValue(prop->ContainerPtrToValuePtr<UObject>(IDEWidgetHandle)));
+	//Step8:
+	//Attach onclick handle to it
+	// 
+	//TODO: Add handler here to show help menu
+	// 
+	//Step9:
 	//Prefill the context
 	context = FScriptExecutionContext();
 	context.ptrGameMode = this;
 	context.contextRestore = false;
 	context.ptrPawn = Cast<ABallPawn>(UGameplayStatics::GetPlayerPawn(this, 0));
-	//Step8:
+	//Step10:
 	//Broadcast a characterStatusBroadcast (-1) to force all walls to be deassociated
 	characterStatusBroadcast.Broadcast(-1);
 }
@@ -141,6 +160,5 @@ void AMazeMainGameMode::hidePanel()
 	//hide the panel
 	IDEWidgetHandle->SetVisibility(ESlateVisibility::Collapsed);
 	//ask the pawn to start process input
-	ABallPawn* target=Cast<ABallPawn>(UGameplayStatics::GetPlayerPawn(this, 0));
-	target->startProcessingInput();
+	context.ptrPawn->startProcessingInput();
 }

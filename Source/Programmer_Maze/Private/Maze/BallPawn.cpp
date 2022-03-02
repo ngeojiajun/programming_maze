@@ -18,7 +18,7 @@ const float panRate = 2000.f;
 const FVector cameraInitialPosition = FVector(0.f, 0.f, 430.f);
 
 // Sets default values
-ABallPawn::ABallPawn():APawn(),InPanGesture(false)
+ABallPawn::ABallPawn():APawn(),InPanGesture(false),Executing(false)
 {
  	//setup the stuffs
 	//by default this pawn should receive no input
@@ -69,7 +69,17 @@ void ABallPawn::stopProcessingInput()
 
 void ABallPawn::resetCameraPosition()
 {
-	camera->SetRelativeLocation(cameraInitialPosition);
+	FVector cameraCurrent = camera->GetRelativeLocation();
+	FVector newPosition = cameraInitialPosition;
+	newPosition.Z = cameraCurrent.Z;
+	camera->SetRelativeLocation(newPosition);
+}
+
+void ABallPawn::resetCameraZoom()
+{
+	FVector cameraCurrent = camera->GetRelativeLocation();
+	cameraCurrent.Z = cameraInitialPosition.Z;
+	camera->SetRelativeLocation(cameraCurrent);
 }
 
 void ABallPawn::startMovement(const FVector movement, FScriptExecutionContext& ctx)
@@ -77,8 +87,7 @@ void ABallPawn::startMovement(const FVector movement, FScriptExecutionContext& c
 	//as required by the latern protocol the function must save its local state before start yielding
 	if (!ctx.contextRestore) {
 		//this is the first hit
-		//reset the view
-		this->resetCameraPosition();
+		Executing = true;
 		//set the movement vector
 		currentEffectiveMovement = movement;
 		//trigger the yield
@@ -88,6 +97,7 @@ void ABallPawn::startMovement(const FVector movement, FScriptExecutionContext& c
 	else {
 		//the context restore should never happens if the operation not done yet
 		check(currentEffectiveMovement.IsNearlyZero());
+		Executing = false;
 		FEvalResult result = FEvalResult::AsVoidResult();
 		PUSH_FAR_VALUE(ctx, FEvalResult, result);
 		ctx.contextRestore = false;
@@ -96,6 +106,7 @@ void ABallPawn::startMovement(const FVector movement, FScriptExecutionContext& c
 
 void ABallPawn::stopMovement()
 {
+	Executing = false;
 	currentEffectiveMovement=FVector(0.0f);
 }
 
@@ -206,7 +217,9 @@ void ABallPawn::MouseXYAvis(FVector value)
 
 void ABallPawn::OnLMBDown()
 {
-	InPanGesture = true;
+	if (!Executing) {
+		InPanGesture = true;
+	}
 }
 
 void ABallPawn::OnLMBUp()
