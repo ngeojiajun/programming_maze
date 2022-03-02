@@ -36,7 +36,9 @@ void AConditionalWall::BeginPlay()
 	}
 	//then try to listen to the characterStatusBroadcast whenever possible
 	AMazeMainGameMode* ptrGameMode= Cast<AMazeMainGameMode>(UGameplayStatics::GetGameMode(this));
-	ptrGameMode->characterStatusBroadcast.AddDynamic(this,&AConditionalWall::onCharacterStatusChanged);
+	if (ptrGameMode) {
+		ptrGameMode->characterStatusBroadcast.AddDynamic(this, &AConditionalWall::onCharacterStatusChanged);
+	}
 }
 
 void AConditionalWall::onCharacterStatusChanged(int group)

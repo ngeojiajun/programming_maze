@@ -28,3 +28,21 @@ public:
 protected:
 	virtual void onBallHit() override;
 };
+
+/*A button which "modifies" the maps when hit*/
+UCLASS()
+class AAnchorPawn :public AButtonPawn {
+	GENERATED_BODY()
+public:
+	AAnchorPawn();
+	//actually update the button to use the said material
+	virtual void BeginPlay() override;
+	//the base material used to render the button
+	UPROPERTY(EditAnywhere)
+	UMaterialInterface* baseMaterial;
+	//the anchor group id
+	UPROPERTY(EditAnywhere)
+	int groupID;
+protected:
+	virtual void onBallHit() override;
+};

@@ -18,9 +18,10 @@ public:
 	//initialize the the real mat ptr
 	virtual void BeginPlay() override;
 
-
+	//the base material used to render the wall
 	UPROPERTY(EditAnywhere)
 	UMaterialInterface* baseMaterial;
+	//the anchor group id
 	UPROPERTY(EditAnywhere)
 	int groupID;
 private:
