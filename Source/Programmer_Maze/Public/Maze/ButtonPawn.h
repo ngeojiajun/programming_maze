@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Pawn.h"
+#include "Components/AudioComponent.h"
 #include "ButtonPawn.generated.h"
 
 UCLASS(Abstract)
@@ -29,6 +30,8 @@ protected:
 	UPROPERTY()
 	UStaticMeshComponent* root;
 private:
+	UPROPERTY()
+	UAudioComponent* audioComponent;
 	UFUNCTION()
 	void OnBallEnter(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 };

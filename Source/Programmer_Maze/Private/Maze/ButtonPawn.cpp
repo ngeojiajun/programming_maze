@@ -22,15 +22,22 @@ AButtonPawn::AButtonPawn()
 	}
 	root->SetRelativeScale3D(FVector(1, 1, 0.15));
 	root->SetCollisionProfileName(TEXT("OverlapOnlyPawn"));
-	//done
 	root->OnComponentBeginOverlap.AddDynamic(this, &AButtonPawn::OnBallEnter);
+	//try to find our SFX and create the component if we have one
+	static ConstructorHelpers::FObjectFinder<USoundBase> SFXAsset(TEXT("/Game/Sounds/click_zapsplat.click_zapsplat"));
+	if (SFXAsset.Succeeded()) {
+		audioComponent = CreateDefaultSubobject<UAudioComponent>(TEXT("AudioComponent"));
+		audioComponent->SetSound(SFXAsset.Object);
+	}
 }
 
 // Called when the game starts or when spawned
 void AButtonPawn::BeginPlay()
 {
 	Super::BeginPlay();
-
+	if (audioComponent) {
+		audioComponent->Stop();
+	}
 }
 
 // Called every frame
@@ -53,6 +60,11 @@ void AButtonPawn::onBallHit()
 void AButtonPawn::OnBallEnter(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	if (OtherActor->GetClass() == ABallPawn::StaticClass() && OtherComp->GetClass() != UStaticMeshComponent::StaticClass()) {
+		//play the audio if here
+		//do it here so every instance of this class can enjoy the benigit regardless of how it is implemented
+		if (audioComponent) {
+			audioComponent->Play(0);
+		}
 		onBallHit();
 	}
 }
