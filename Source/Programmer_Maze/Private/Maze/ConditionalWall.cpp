@@ -22,6 +22,9 @@ AConditionalWall::AConditionalWall() :APawn(),groupID(0) {
 	}
 	root->SetRelativeScale3D(FVector(1, 1, 1));
 	root->SetCollisionProfileName(TEXT("BlockAllDynamic"));
+	//explicitly disable the control possession
+	AutoPossessAI = EAutoPossessAI::Disabled;
+	AutoPossessPlayer = EAutoReceiveInput::Disabled;
 }
 
 void AConditionalWall::BeginPlay()

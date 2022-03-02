@@ -29,6 +29,9 @@ AButtonPawn::AButtonPawn()
 		audioComponent = CreateDefaultSubobject<UAudioComponent>(TEXT("AudioComponent"));
 		audioComponent->SetSound(SFXAsset.Object);
 	}
+	//explicitly disable the control possession
+	AutoPossessAI = EAutoPossessAI::Disabled;
+	AutoPossessPlayer = EAutoReceiveInput::Disabled;
 }
 
 // Called when the game starts or when spawned

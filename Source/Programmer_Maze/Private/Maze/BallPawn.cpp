@@ -24,6 +24,8 @@ ABallPawn::ABallPawn():APawn(),InPanGesture(false),Executing(false)
 	//by default this pawn should receive no input
 	AutoPossessPlayer = EAutoReceiveInput::Player0;
 	PrimaryActorTick.bCanEverTick = true;
+	//no AI needed
+	AutoPossessAI = EAutoPossessAI::Disabled;
 	DisableInput(NULL);
 	//the root is the sphere component that will react to the physic
 	const FVector size = FVector(1.0f);
