@@ -12,6 +12,8 @@ class AGoalPawn :public AButtonPawn {
 	GENERATED_BODY()
 public:
 	AGoalPawn();
+	UPROPERTY()
+	FString nextLevelName;
 protected:
 	virtual void onBallHit() override;
 };

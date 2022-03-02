@@ -11,6 +11,7 @@
 #include "MazeMainGameMode.generated.h"
 
 class UCodeBlockCPP;
+class AGoalPawn;
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnCharacterStatusChanged, int, groupId);
 /**
  *
@@ -32,7 +33,7 @@ public:
 	//called by the button when the ball passed through the checkpoint
 	void onCheckpointHit(int id);
 	//when the level complemeted
-	void onLevelCompleted();
+	void onLevelCompleted(AGoalPawn* buttonHit);
 	UPROPERTY()
 	FScriptExecutionContext context;
 	//not used by this class but to allow ball, buttons and walls to sync its state

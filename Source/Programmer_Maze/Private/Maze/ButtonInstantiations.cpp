@@ -12,12 +12,13 @@ AGoalPawn::AGoalPawn() {
 	if (CylinderMaterial.Succeeded()) {
 		root->SetMaterial(0, CylinderMaterial.Object);
 	}
+	nextLevelName = TEXT("");
 }
 
 void AGoalPawn::onBallHit() {
 	AMazeMainGameMode* refGameMode = Cast<AMazeMainGameMode>(UGameplayStatics::GetGameMode(this));
 	if (refGameMode) {
-		refGameMode->onLevelCompleted();
+		refGameMode->onLevelCompleted(this);
 	}
 }
 

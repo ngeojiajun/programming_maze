@@ -103,7 +103,7 @@ void AMazeMainGameMode::onCheckpointHit(int id)
 	this->lastCheckpointId = id;
 }
 
-void AMazeMainGameMode::onLevelCompleted()
+void AMazeMainGameMode::onLevelCompleted(AGoalPawn* buttonHit)
 {
 	UKismetSystemLibrary::QuitGame(this, NULL, EQuitPreference::Quit, true);
 }
