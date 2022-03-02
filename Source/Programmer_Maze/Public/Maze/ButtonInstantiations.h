@@ -31,7 +31,7 @@ protected:
 
 /*A button which "modifies" the maps when hit*/
 UCLASS()
-class AAnchorPawn :public AButtonPawn {
+class AAnchorPawn :public ACheckpointPawn {
 	GENERATED_BODY()
 public:
 	AAnchorPawn();
