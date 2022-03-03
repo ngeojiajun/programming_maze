@@ -56,12 +56,17 @@ private:
 	void gogogo();
 	//warp the player pawn to the last checkpoint that the engine has taken note
 	void wrapPawnToLastCheckpoint();
+	//show the dialog
+	void showDialog(FString name, FString content);
 	TSubclassOf<UUserWidget> IDEWidgetClass;
 	TSubclassOf<UUserWidget> IDEHelpDialogClass;
+	TSubclassOf<UUserWidget> IDEDialogClass;
 	UPROPERTY()
 	UUserWidget* IDEWidgetHandle;
 	UPROPERTY()
 	UUserWidget* IDEHelpDialogHandle;
+	UPROPERTY()
+	UUserWidget* IDEDialogHandle;
 	UPROPERTY()
 	UButton* IDECloseButton;
 	UPROPERTY()

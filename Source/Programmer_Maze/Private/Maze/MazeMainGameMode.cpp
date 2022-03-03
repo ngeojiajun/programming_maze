@@ -7,13 +7,16 @@
 #include "Maze/BallPawn.h"
 #include "Maze/ButtonInstantiations.h"
 #include "Blocks/CodeBlockCPP.h"
+#include "Components/MultiLineEditableText.h"
 #include "GeneralUtilities.h"
 
 AMazeMainGameMode::AMazeMainGameMode() :AGameModeBase(),evaluationRunning(false),lastCheckpointId(-1) {
 	static ConstructorHelpers::FClassFinder<UUserWidget> WidgetClassFinder(TEXT("/Game/UI/IDE/IDE.IDE_C"));
 	static ConstructorHelpers::FClassFinder<UUserWidget> HelpDialogClassFinder(TEXT("/Game/UI/Flow/DialogHelp.DialogHelp_C"));
+	static ConstructorHelpers::FClassFinder<UUserWidget> DialogClassFinder(TEXT("/Game/UI/Flow/DialogBase.DialogBase_C"));
 	IDEWidgetClass = WidgetClassFinder.Class;
 	IDEHelpDialogClass = HelpDialogClassFinder.Class;
+	IDEDialogClass = DialogClassFinder.Class;
 	DefaultPawnClass = ABallPawn::StaticClass();
 }
 
@@ -70,6 +73,28 @@ void AMazeMainGameMode::wrapPawnToLastCheckpoint()
 	}
 }
 
+void AMazeMainGameMode::showDialog(FString name, FString content)
+{
+	if (IDEDialogHandle) {
+		//get the handle, just set it directly
+		FStrProperty* prop = FindFieldChecked<FStrProperty>(IDEDialogClass, FName(TEXT("Title")));
+		prop->SetPropertyValue(prop->ContainerPtrToValuePtr<void*>(IDEDialogHandle), name);
+		FObjectProperty* propObj = FindFieldChecked<FObjectProperty>(IDEDialogClass, FName(TEXT("ContextBox")));
+		UMultiLineEditableText* contextBox= Cast<UMultiLineEditableText>(propObj->GetObjectPropertyValue(propObj->ContainerPtrToValuePtr<UObject>(IDEDialogHandle)));
+		contextBox->SetText(FText::FromString(content));
+		IDEDialogHandle->SetVisibility(ESlateVisibility::Visible);
+	}
+	else {
+		IDEDialogHandle = NewObject<UUserWidget>(this, IDEDialogClass);
+		FStrProperty* prop = FindFieldChecked<FStrProperty>(IDEDialogClass, FName(TEXT("Title")));
+		prop->SetPropertyValue(prop->ContainerPtrToValuePtr<void*>(IDEDialogHandle), name);
+		prop = FindFieldChecked<FStrProperty>(IDEDialogClass, FName(TEXT("Content")));
+		prop->SetPropertyValue(prop->ContainerPtrToValuePtr<void*>(IDEDialogHandle), name);
+		IDEDialogHandle->SetVisibility(ESlateVisibility::Visible);
+		IDEDialogHandle->AddToViewport(3);
+	}
+}
+
 void AMazeMainGameMode::executionDone(FEvalResult result)
 {
 	GeneralUtilities::LogBoolean(this, result.succeeded, TEXT("Execution succeeded"));
@@ -79,6 +104,8 @@ void AMazeMainGameMode::executionDone(FEvalResult result)
 		wrapPawnToLastCheckpoint();
 	}
 	else {
+		//show the error dialog
+		showDialog(TEXT("Error"),result.errorMsg);
 		//force reset the game state when the script error was thrown by the block
 		FVector initial = context.ptrPawn->getInitialLocation();
 		context.ptrPawn->TeleportTo(initial, FRotator(), false, true);
