@@ -75,7 +75,15 @@ void AMazeMainGameMode::executionDone(FEvalResult result)
 	GeneralUtilities::LogBoolean(this, result.succeeded, TEXT("Execution succeeded"));
 	GeneralUtilities::Log(this, result.strVal);
 	evaluationRunning = false;
-	wrapPawnToLastCheckpoint();
+	if (result.succeeded) {
+		wrapPawnToLastCheckpoint();
+	}
+	else {
+		//force reset the game state when the script error was thrown by the block
+		FVector initial = context.ptrPawn->getInitialLocation();
+		context.ptrPawn->TeleportTo(initial, FRotator(), false, true);
+		characterStatusBroadcast.Broadcast(-1);
+	}
 	IDEStartBlock->SetVisibility(ESlateVisibility::Visible);
 	IDEGogoButton->SetIsEnabled(true);
 	IDEHelpButton->SetIsEnabled(true);
