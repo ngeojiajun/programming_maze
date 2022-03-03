@@ -41,7 +41,8 @@ public:
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
-
+	// Called when being removed from a level
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -61,7 +62,9 @@ private:
 	UPROPERTY()
 	UMaterialInterface* defaultMaterial;
 	UPROPERTY()
-	UAudioComponent* audioComponent;
+	UAudioComponent* audioSFXComponent;
+	UPROPERTY()
+	UAudioComponent* audioBGMComponent;
 	//is the panning is in progress
 	bool InPanGesture;
 	bool Executing;

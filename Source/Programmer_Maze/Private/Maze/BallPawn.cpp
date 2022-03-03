@@ -57,11 +57,17 @@ ABallPawn::ABallPawn():APawn(),InPanGesture(false),Executing(false)
 	//then create a movement component and register this to the the component
 	movementComponent = CreateDefaultSubobject<UBallPawnMovementComponent>(TEXT("MovementComponent"));
 	movementComponent->UpdatedComponent = RootComponent;
-	//finally try to find our SFX and create the component if we have one
+	//then try to find our SFX and create the component if we have one
 	static ConstructorHelpers::FObjectFinder<USoundBase> SFXAsset(TEXT("/Game/Sounds/ball_moving.ball_moving"));
 	if (SFXAsset.Succeeded()) {
-		audioComponent = CreateDefaultSubobject<UAudioComponent>(TEXT("AudioComponent"));
-		audioComponent->SetSound(SFXAsset.Object);
+		audioSFXComponent = CreateDefaultSubobject<UAudioComponent>(TEXT("SFXAudioComponent"));
+		audioSFXComponent->SetSound(SFXAsset.Object);
+	}
+	//then try to find our BGM and create the component if we have one
+	static ConstructorHelpers::FObjectFinder<USoundBase> BGMAsset(TEXT("/Game/Sounds/technophobia_amachagashi.technophobia_amachagashi"));
+	if (BGMAsset.Succeeded()) {
+		audioBGMComponent = CreateDefaultSubobject<UAudioComponent>(TEXT("BGMAudioComponent"));
+		audioBGMComponent->SetSound(BGMAsset.Object);
 	}
 }
 
@@ -101,8 +107,8 @@ void ABallPawn::startMovement(const FVector movement, FScriptExecutionContext& c
 		//trigger the yield
 		ctx.yielding = true;
 		//play the audio if found
-		if (audioComponent) {
-			audioComponent->Play(0);
+		if (audioSFXComponent) {
+			audioSFXComponent->Play(0);
 		}
 		GeneralUtilities::Log(this, TEXT("Yielding..."));
 	}
@@ -111,8 +117,8 @@ void ABallPawn::startMovement(const FVector movement, FScriptExecutionContext& c
 		check(currentEffectiveMovement.IsNearlyZero());
 		Executing = false;
 		//stop the audio if found
-		if (audioComponent) {
-			audioComponent->Stop();
+		if (audioSFXComponent) {
+			audioSFXComponent->Stop();
 		}
 		FEvalResult result = FEvalResult::AsVoidResult();
 		PUSH_FAR_VALUE(ctx, FEvalResult, result);
@@ -153,8 +159,15 @@ void ABallPawn::BeginPlay()
 		//register for the character status broadcast
 		refGameMode->characterStatusBroadcast.AddDynamic(this, &ABallPawn::onCharacterStatusChanged);
 	}
-	if (audioComponent) {
-		audioComponent->Stop();
+	if (audioSFXComponent) {
+		audioSFXComponent->Stop();
+	}
+}
+
+void ABallPawn::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	if (audioBGMComponent) {
+		audioBGMComponent->Stop();
 	}
 }
 
