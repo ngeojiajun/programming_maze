@@ -12,8 +12,12 @@ class AGoalPawn :public AButtonPawn {
 	GENERATED_BODY()
 public:
 	AGoalPawn();
-	UPROPERTY()
-	FString nextLevelName;
+	UPROPERTY(EditInstanceOnly, BlueprintReadWrite)
+	FString nextLevelID;
+	UPROPERTY(EditInstanceOnly, BlueprintReadWrite)
+	FName currentLevelName;
+	//announce the set level name to the game mode
+	virtual void BeginPlay() override;
 protected:
 	virtual void onBallHit() override;
 };

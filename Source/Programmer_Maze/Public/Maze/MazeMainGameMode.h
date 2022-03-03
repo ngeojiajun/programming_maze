@@ -6,6 +6,7 @@
 #include "Blueprint/UserWidget.h"
 #include "GameFramework/GameModeBase.h"
 #include "Components/Button.h"
+#include "Components/TextBlock.h"
 #include "Blocks/CodeBlockDefs.h"
 #include "Blocks/ScriptExecutionContext.h"
 #include "MazeMainGameMode.generated.h"
@@ -41,6 +42,8 @@ public:
 	FOnCharacterStatusChanged characterStatusBroadcast;
 	//this holds the association of the groupID with the material bound to it
 	TMap<int, UMaterialInterface*> groupMaterialMap;
+	UPROPERTY()
+	UTextBlock* IDELevelNameBlock;
 protected:
 	//called when the game starts
 	virtual void BeginPlay() override;

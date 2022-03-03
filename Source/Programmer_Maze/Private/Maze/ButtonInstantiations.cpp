@@ -12,7 +12,16 @@ AGoalPawn::AGoalPawn() {
 	if (CylinderMaterial.Succeeded()) {
 		root->SetMaterial(0, CylinderMaterial.Object);
 	}
-	nextLevelName = TEXT("");
+	nextLevelID = TEXT("");
+	currentLevelName = TEXT("Unknown Level");
+}
+
+void AGoalPawn::BeginPlay() {
+	Super::BeginPlay();
+	AMazeMainGameMode* refGameMode = Cast<AMazeMainGameMode>(UGameplayStatics::GetGameMode(this));
+	if (refGameMode&&refGameMode->IDELevelNameBlock) {
+		refGameMode->IDELevelNameBlock->SetText(FText::FromName(currentLevelName));
+	}
 }
 
 void AGoalPawn::onBallHit() {
@@ -43,6 +52,7 @@ AAnchorPawn::AAnchorPawn() :ACheckpointPawn(), groupID(-1) {
 
 void AAnchorPawn::BeginPlay()
 {
+	Super::BeginPlay();
 	if (baseMaterial) {
 		root->SetMaterial(0, baseMaterial);
 	}

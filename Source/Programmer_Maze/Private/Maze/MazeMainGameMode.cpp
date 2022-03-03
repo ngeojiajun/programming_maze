@@ -157,6 +157,10 @@ void AMazeMainGameMode::BeginPlay() {
 	IDEHelpDialogHandle = NewObject<UUserWidget>(this, IDEHelpDialogClass);
 	IDEHelpDialogHandle->SetVisibility(ESlateVisibility::Collapsed);
 	IDEHelpDialogHandle->AddToViewport(1);
+	//Step12:
+	//By reflection get the IDE::LevelName
+	prop = FindFieldChecked<FObjectProperty>(IDEWidgetClass, FName(TEXT("LevelName")));
+	IDELevelNameBlock = Cast<UTextBlock>(prop->GetObjectPropertyValue(prop->ContainerPtrToValuePtr<UObject>(IDEWidgetHandle)));
 }
 
 void AMazeMainGameMode::hidePanel()
