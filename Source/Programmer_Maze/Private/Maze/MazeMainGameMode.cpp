@@ -89,7 +89,7 @@ void AMazeMainGameMode::showDialog(FString name, FString content)
 		FStrProperty* prop = FindFieldChecked<FStrProperty>(IDEDialogClass, FName(TEXT("Title")));
 		prop->SetPropertyValue(prop->ContainerPtrToValuePtr<void*>(IDEDialogHandle), name);
 		prop = FindFieldChecked<FStrProperty>(IDEDialogClass, FName(TEXT("Content")));
-		prop->SetPropertyValue(prop->ContainerPtrToValuePtr<void*>(IDEDialogHandle), name);
+		prop->SetPropertyValue(prop->ContainerPtrToValuePtr<void*>(IDEDialogHandle), content);
 		IDEDialogHandle->SetVisibility(ESlateVisibility::Visible);
 		IDEDialogHandle->AddToViewport(3);
 	}
