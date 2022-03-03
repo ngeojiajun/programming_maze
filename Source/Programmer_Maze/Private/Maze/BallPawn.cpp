@@ -256,9 +256,9 @@ void ABallPawn::OnRMBDown()
 
 void ABallPawn::onWheelDown()
 {
-	//zoom out increase Z by 50 cap to 1230
+	//zoom out increase Z by 50 cap to 2230
 	FVector cameraCurrent = camera->GetRelativeLocation();
-	cameraCurrent.Z = std::min<float>(1230,cameraCurrent.Z + 50);
+	cameraCurrent.Z = std::min<float>(2230,cameraCurrent.Z + 50);
 	camera->SetRelativeLocation(cameraCurrent);
 }
 
