@@ -105,7 +105,13 @@ void AMazeMainGameMode::onCheckpointHit(int id)
 
 void AMazeMainGameMode::onLevelCompleted(AGoalPawn* buttonHit)
 {
-	UKismetSystemLibrary::QuitGame(this, NULL, EQuitPreference::Quit, true);
+	if (buttonHit->nextLevelID.IsNone()) {
+		//For now quit it when there are no next level
+		UKismetSystemLibrary::QuitGame(this, NULL, EQuitPreference::Quit, true);
+	}
+	else {
+		UGameplayStatics::OpenLevel(this, buttonHit->nextLevelID);
+	}
 }
 
 void AMazeMainGameMode::BeginPlay() {

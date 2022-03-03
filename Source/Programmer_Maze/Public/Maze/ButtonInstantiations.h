@@ -13,7 +13,7 @@ class AGoalPawn :public AButtonPawn {
 public:
 	AGoalPawn();
 	UPROPERTY(EditInstanceOnly, BlueprintReadWrite)
-	FString nextLevelID;
+	FName nextLevelID;
 	UPROPERTY(EditInstanceOnly, BlueprintReadWrite)
 	FName currentLevelName;
 	//announce the set level name to the game mode
