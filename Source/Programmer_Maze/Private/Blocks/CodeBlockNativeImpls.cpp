@@ -26,7 +26,7 @@ FEvalResult UCodeBlockNativeImpls::IfBlockImpl(UCodeBlockCPP* block,FScriptExecu
 	//lets evaluate that first
 	FEvalResult result=FEvalResult::AsVoidResult();
 	//get the slot from first child
-	UCodeBlockBaseCPP* slot = block->Childs[0];
+	UCodeBlockBaseCPP* slot = block->Childs.Num()<=0 ? NULL : block->Childs[0];
 	if (!slot) {
 		result = FEvalResult::AsError(TEXT("Cannot evaluate the block due to one of its slot are empty"));
 		PUSH_FAR_VALUE(ctx, FEvalResult, result);
@@ -84,7 +84,7 @@ FEvalResult UCodeBlockNativeImpls::WhileBlockImpl(UCodeBlockCPP* block,FScriptEx
 	//lets evaluate that first
 	FEvalResult result = FEvalResult::AsVoidResult();
 	//get the slot from first child
-	UCodeBlockBaseCPP* slot = block->Childs[0];
+	UCodeBlockBaseCPP* slot = block->Childs.Num() <= 0 ? NULL : block->Childs[0];
 	if (!slot) {
 		check(!shouldRestore);
 		result = FEvalResult::AsError(TEXT("Cannot evaluate the block due to one of its slot are empty"));
