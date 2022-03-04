@@ -255,6 +255,13 @@ FEvalResult UCodeBlockNativeImpls::runAll(UCodeBlockCPP* block,FScriptExecutionC
 		TAKE_FAR_VALUE_ASSIGN(ctx, FEvalResult, result,2);
 		ctx.sp += 2;
 	}
+	//fail the execution if the block is empty
+	if (block->Childs.Num() <= 1) {
+		check(!shouldRestore);
+		result = FEvalResult::AsError(TEXT("Cannot evaluate the block due its body is empty"));
+		PUSH_FAR_VALUE(ctx, FEvalResult, result);
+		return FEvalResult::AsVoidResult();
+	}
 	//stop code execution when the exception happened
 	for (; i < block->Childs.Num() && result.succeeded; i++) {
 		if (!shouldRestore) {
