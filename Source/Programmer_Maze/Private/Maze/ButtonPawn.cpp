@@ -28,6 +28,7 @@ AButtonPawn::AButtonPawn()
 	if (SFXAsset.Succeeded()) {
 		audioComponent = CreateDefaultSubobject<UAudioComponent>(TEXT("AudioComponent"));
 		audioComponent->SetSound(SFXAsset.Object);
+		audioComponent->SetupAttachment(RootComponent);
 	}
 	//explicitly disable the control possession
 	AutoPossessAI = EAutoPossessAI::Disabled;

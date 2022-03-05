@@ -62,12 +62,14 @@ ABallPawn::ABallPawn():APawn(),InPanGesture(false),Executing(false)
 	if (SFXAsset.Succeeded()) {
 		audioSFXComponent = CreateDefaultSubobject<UAudioComponent>(TEXT("SFXAudioComponent"));
 		audioSFXComponent->SetSound(SFXAsset.Object);
+		audioSFXComponent->SetupAttachment(RootComponent);
 	}
 	//then try to find our BGM and create the component if we have one
 	static ConstructorHelpers::FObjectFinder<USoundBase> BGMAsset(TEXT("/Game/Sounds/technophobia_amachagashi.technophobia_amachagashi"));
 	if (BGMAsset.Succeeded()) {
 		audioBGMComponent = CreateDefaultSubobject<UAudioComponent>(TEXT("BGMAudioComponent"));
 		audioBGMComponent->SetSound(BGMAsset.Object);
+		audioBGMComponent->SetupAttachment(RootComponent);
 	}
 }
 
