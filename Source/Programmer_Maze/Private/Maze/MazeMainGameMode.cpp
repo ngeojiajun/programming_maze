@@ -18,6 +18,7 @@ AMazeMainGameMode::AMazeMainGameMode() :AGameModeBase(),evaluationRunning(false)
 	IDEHelpDialogClass = HelpDialogClassFinder.Class;
 	IDEDialogClass = DialogClassFinder.Class;
 	DefaultPawnClass = ABallPawn::StaticClass();
+	currentLevelName = FName();
 }
 
 void AMazeMainGameMode::showIDE()
@@ -201,6 +202,9 @@ void AMazeMainGameMode::BeginPlay() {
 	//By reflection get the IDE::LevelName
 	prop = FindFieldChecked<FObjectProperty>(IDEWidgetClass, FName(TEXT("LevelName")));
 	IDELevelNameBlock = Cast<UTextBlock>(prop->GetObjectPropertyValue(prop->ContainerPtrToValuePtr<UObject>(IDEWidgetHandle)));
+	if (!currentLevelName.IsNone()) {
+		IDELevelNameBlock->SetText(FText::FromName(currentLevelName));
+	}
 }
 
 void AMazeMainGameMode::hidePanel()

@@ -22,6 +22,9 @@ void AGoalPawn::BeginPlay() {
 	if (refGameMode&&refGameMode->IDELevelNameBlock) {
 		refGameMode->IDELevelNameBlock->SetText(FText::FromName(currentLevelName));
 	}
+	else {
+		refGameMode->currentLevelName = currentLevelName;
+	}
 }
 
 void AGoalPawn::onBallHit() {

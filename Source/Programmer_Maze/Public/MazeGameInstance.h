@@ -9,7 +9,8 @@
 #include "ProgrammingMazeGameSaves.h"
 #include "MazeGameInstance.generated.h"
 
-enum class SoundType {
+UENUM()
+enum ESoundType {
 	BGM,SFX,Master
 };
 
@@ -27,9 +28,13 @@ public:
 	//shutdown the instance
 	virtual void Shutdown();
 	//adjust the volume
-	void setVolume(SoundType type, float volume);
+	UFUNCTION(BlueprintCallable)
+	void setVolume(TEnumAsByte<ESoundType> type, float volume);
 	//checkpoint id that the map shall teleports to
 	int checkpointID;
+	//the save object that this game setting use
+	UPROPERTY(BlueprintReadOnly)
+	UProgrammingMazeSettings* settings;
 private:
 	//the global sound mixer for the volume control
 	UPROPERTY()
@@ -43,9 +48,6 @@ private:
 	//SFX sound class
 	UPROPERTY()
 	USoundClass* SFXClass;
-	//the save object that this game setting use
-	UPROPERTY()
-	UProgrammingMazeSettings* settings;
 	//weather the resolution succeeded
 	bool initializationDone;
 };

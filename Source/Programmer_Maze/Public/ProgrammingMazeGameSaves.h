@@ -29,10 +29,10 @@ class PROGRAMMER_MAZE_API UProgrammingMazeSettings : public USaveGame
 	GENERATED_BODY()
 public:
 	UProgrammingMazeSettings(const FObjectInitializer& ObjectInitializer);
-	UPROPERTY()
+	UPROPERTY(BlueprintReadOnly)
 	float MasterVolume;
-	UPROPERTY()
+	UPROPERTY(BlueprintReadOnly)
 	float BGMVolume;
-	UPROPERTY()
+	UPROPERTY(BlueprintReadOnly)
 	float SFXVolume;
 };

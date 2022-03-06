@@ -44,6 +44,7 @@ public:
 	TMap<int, UMaterialInterface*> groupMaterialMap;
 	UPROPERTY()
 	UTextBlock* IDELevelNameBlock;
+	FName currentLevelName;
 protected:
 	//called when the game starts
 	virtual void BeginPlay() override;
