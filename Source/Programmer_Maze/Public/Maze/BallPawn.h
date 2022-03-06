@@ -20,9 +20,9 @@ class PROGRAMMER_MAZE_API ABallPawn : public APawn
 public:
 	// Sets default values for this pawn's properties
 	ABallPawn();
-	//used in the input handlers which the pawn should take over the input processing
+	//used in the input handlers which the pawn should take over the input processing for panning
 	void startProcessingInput();
-	//used in the input handlers which the pawn should not take over the input processing
+	//used in the input handlers which the pawn should not take over the input processing for panning
 	void stopProcessingInput();
 	//reset the camera
 	void resetCameraPosition();
@@ -68,6 +68,7 @@ private:
 	//is the panning is in progress
 	bool InPanGesture;
 	bool Executing;
+	bool isReceivingPanInput;
 	//listener for the characterStatusBroadcast
 	UFUNCTION()
 	void onCharacterStatusChanged(int group);

@@ -18,15 +18,13 @@ const float panRate = 2000.f;
 const FVector cameraInitialPosition = FVector(0.f, 0.f, 430.f);
 
 // Sets default values
-ABallPawn::ABallPawn():APawn(),InPanGesture(false),Executing(false)
+ABallPawn::ABallPawn():APawn(),InPanGesture(false),Executing(false), isReceivingPanInput(false)
 {
  	//setup the stuffs
-	//by default this pawn should receive no input
 	AutoPossessPlayer = EAutoReceiveInput::Player0;
 	PrimaryActorTick.bCanEverTick = true;
 	//no AI needed
 	AutoPossessAI = EAutoPossessAI::Disabled;
-	DisableInput(NULL);
 	//the root is the sphere component that will react to the physic
 	const FVector size = FVector(1.0f);
 	const float radius = 50.5f;
@@ -75,12 +73,12 @@ ABallPawn::ABallPawn():APawn(),InPanGesture(false),Executing(false)
 
 void ABallPawn::startProcessingInput()
 {
-	EnableInput(NULL);
+	isReceivingPanInput = true;
 }
 
 void ABallPawn::stopProcessingInput()
 {
-	DisableInput(NULL);
+	isReceivingPanInput = false;
 }
 
 void ABallPawn::resetCameraPosition()
@@ -225,7 +223,7 @@ void ABallPawn::onCharacterStatusChanged(int group)
 
 void ABallPawn::MouseXYAvis(FVector value)
 {
-	if (!InPanGesture || !currentEffectiveMovement.IsNearlyZero()) {
+	if (!isReceivingPanInput || !InPanGesture || !currentEffectiveMovement.IsNearlyZero()) {
 		return;
 	}
 	FVector finalMovement = FVector(0);
@@ -250,20 +248,22 @@ void ABallPawn::MouseXYAvis(FVector value)
 
 void ABallPawn::OnLMBDown()
 {
-	if (!Executing) {
+	if (isReceivingPanInput && !Executing) {
 		InPanGesture = true;
 	}
 }
 
 void ABallPawn::OnLMBUp()
 {
-	InPanGesture = false;
+	if (isReceivingPanInput) {
+		InPanGesture = false;
+	}
 }
 
 void ABallPawn::OnRMBDown()
 {
 	//just show the IDE back
-	if (refGameMode) {
+	if (isReceivingPanInput && refGameMode) {
 		this->stopProcessingInput();
 		refGameMode->showIDE();
 	}
@@ -271,6 +271,9 @@ void ABallPawn::OnRMBDown()
 
 void ABallPawn::onWheelDown()
 {
+	if (!isReceivingPanInput) {
+		return;
+	}
 	//zoom out increase Z by 50 cap to 2230
 	FVector cameraCurrent = camera->GetRelativeLocation();
 	cameraCurrent.Z = std::min<float>(2230,cameraCurrent.Z + 50);
@@ -279,6 +282,9 @@ void ABallPawn::onWheelDown()
 
 void ABallPawn::onWheelUp()
 {
+	if (!isReceivingPanInput) {
+		return;
+	}
 	//zoom in decrease Z by 50 cap to 230
 	FVector cameraCurrent = camera->GetRelativeLocation();
 	cameraCurrent.Z = std::max<float>(230, cameraCurrent.Z - 50);
