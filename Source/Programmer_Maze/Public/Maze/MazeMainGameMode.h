@@ -36,6 +36,8 @@ public:
 	void onCheckpointHit(int id);
 	//when the level complemeted
 	void onLevelCompleted(AGoalPawn* buttonHit);
+	//show the game pause menu
+	void showPauseMenu();
 	UPROPERTY()
 	FScriptExecutionContext context;
 	//not used by this class but to allow ball, buttons and walls to sync its state
@@ -67,12 +69,17 @@ private:
 	TSubclassOf<UUserWidget> IDEWidgetClass;
 	TSubclassOf<UUserWidget> IDEHelpDialogClass;
 	TSubclassOf<UUserWidget> IDEDialogClass;
+	TSubclassOf<UUserWidget> PauseMenuClass;
+	//UI handles
 	UPROPERTY()
 	UUserWidget* IDEWidgetHandle;
 	UPROPERTY()
 	UUserWidget* IDEHelpDialogHandle;
 	UPROPERTY()
 	UUserWidget* IDEDialogHandle;
+	UPROPERTY()
+	UUserWidget* PauseMenuHandle;
+	//IDE controls
 	UPROPERTY()
 	UButton* IDECloseButton;
 	UPROPERTY()
@@ -81,6 +88,11 @@ private:
 	UButton* IDEHelpButton;
 	UPROPERTY()
 	UCodeBlockCPP* IDEStartBlock;
+	//Pause Menu controls
+	UPROPERTY()
+	UButton* PauseMenuTerminateButton;
+	UPROPERTY()
+	UButton* PauseMenuSaveButton;
 	bool evaluationRunning;
 	int lastCheckpointId;
 };

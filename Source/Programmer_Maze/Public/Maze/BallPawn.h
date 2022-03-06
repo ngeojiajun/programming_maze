@@ -80,6 +80,7 @@ private:
 	void OnRMBDown();
 	void onWheelUp();
 	void onWheelDown();
+	void onEscapeDown();
 	//scripting: the movement that the ball is possessing
 	FVector currentEffectiveMovement;
 	//original position for resetting it later

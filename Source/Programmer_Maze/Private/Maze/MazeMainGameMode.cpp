@@ -15,9 +15,11 @@ AMazeMainGameMode::AMazeMainGameMode() :AGameModeBase(),evaluationRunning(false)
 	static ConstructorHelpers::FClassFinder<UUserWidget> WidgetClassFinder(TEXT("/Game/UI/IDE/IDE.IDE_C"));
 	static ConstructorHelpers::FClassFinder<UUserWidget> HelpDialogClassFinder(TEXT("/Game/UI/Flow/DialogHelp.DialogHelp_C"));
 	static ConstructorHelpers::FClassFinder<UUserWidget> DialogClassFinder(TEXT("/Game/UI/Flow/DialogBase.DialogBase_C"));
+	static ConstructorHelpers::FClassFinder<UUserWidget> PauseMenuClassFinder(TEXT("/Game/UI/Flow/PauseMenu.PauseMenu_C"));
 	IDEWidgetClass = WidgetClassFinder.Class;
 	IDEHelpDialogClass = HelpDialogClassFinder.Class;
 	IDEDialogClass = DialogClassFinder.Class;
+	PauseMenuClass = PauseMenuClassFinder.Class;
 	DefaultPawnClass = ABallPawn::StaticClass();
 	currentLevelName = FName();
 }
@@ -178,6 +180,12 @@ void AMazeMainGameMode::onLevelCompleted(AGoalPawn* buttonHit)
 	}
 }
 
+void AMazeMainGameMode::showPauseMenu()
+{
+	//simply make the pause menu visib;e
+	PauseMenuHandle->SetVisibility(ESlateVisibility::Visible);
+}
+
 void AMazeMainGameMode::BeginPlay() {
 	//Step 1:
 	//Construct the IDE widget and add it to the viewport
@@ -231,9 +239,23 @@ void AMazeMainGameMode::BeginPlay() {
 	//By reflection get the IDE::LevelName
 	prop = FindFieldChecked<FObjectProperty>(IDEWidgetClass, FName(TEXT("LevelName")));
 	IDELevelNameBlock = Cast<UTextBlock>(prop->GetObjectPropertyValue(prop->ContainerPtrToValuePtr<UObject>(IDEWidgetHandle)));
+	//Step 13: If the level name is set by the GoalButton then set it here (RACE CONDITION)
 	if (!currentLevelName.IsNone()) {
 		IDELevelNameBlock->SetText(FText::FromName(currentLevelName));
 	}
+	//Step 14:
+	//Create pause menu and add it to the screen as hidden
+	PauseMenuHandle = NewObject<UUserWidget>(this, PauseMenuClass);
+	PauseMenuHandle->SetVisibility(ESlateVisibility::Collapsed);
+	PauseMenuHandle->AddToViewport(3);
+	//Step 15:
+	//By reflection get the PauseMenu::ButtonTerminate
+	prop = FindFieldChecked<FObjectProperty>(PauseMenuClass, FName(TEXT("ButtonTerminate")));
+	PauseMenuTerminateButton = Cast<UButton>(prop->GetObjectPropertyValue(prop->ContainerPtrToValuePtr<UObject>(PauseMenuHandle)));
+	//Step 16:
+	//By reflection get the PauseMenu::SaveGameButton
+	prop = FindFieldChecked<FObjectProperty>(PauseMenuClass, FName(TEXT("SaveGameButton")));
+	PauseMenuSaveButton = Cast<UButton>(prop->GetObjectPropertyValue(prop->ContainerPtrToValuePtr<UObject>(PauseMenuHandle)));
 }
 
 void AMazeMainGameMode::hidePanel()

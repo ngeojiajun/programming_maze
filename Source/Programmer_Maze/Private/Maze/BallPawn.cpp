@@ -200,6 +200,8 @@ void ABallPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 	//wheels
 	PlayerInputComponent->BindKey(EKeys::MouseScrollUp, EInputEvent::IE_Pressed, this, &ABallPawn::onWheelUp);
 	PlayerInputComponent->BindKey(EKeys::MouseScrollDown, EInputEvent::IE_Pressed, this, &ABallPawn::onWheelDown);
+	//Escape Button
+	PlayerInputComponent->BindKey(EKeys::Escape, EInputEvent::IE_Pressed, this, &ABallPawn::onEscapeDown);
 }
 
 UPawnMovementComponent* ABallPawn::GetMovementComponent() const
@@ -278,6 +280,13 @@ void ABallPawn::onWheelDown()
 	FVector cameraCurrent = camera->GetRelativeLocation();
 	cameraCurrent.Z = std::min<float>(2230,cameraCurrent.Z + 50);
 	camera->SetRelativeLocation(cameraCurrent);
+}
+
+void ABallPawn::onEscapeDown()
+{
+	if (refGameMode) {
+		refGameMode->showPauseMenu();
+	}
 }
 
 void ABallPawn::onWheelUp()
