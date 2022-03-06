@@ -6,7 +6,11 @@
 #include "Kismet/GameplayStatics.h"
 #include "GeneralUtilities.h"
 
-UMazeGameInstance::UMazeGameInstance(const FObjectInitializer& ObjectInitializer):UGameInstance(ObjectInitializer) {
+#define GAME_SETTINGS_SLOT_NAME TEXT("PROGRAMMING_MAZE_SETTINGS")
+
+UMazeGameInstance::UMazeGameInstance(const FObjectInitializer& ObjectInitializer):UGameInstance(ObjectInitializer) ,
+initializationDone(false)
+{
 	static ConstructorHelpers::FObjectFinder<USoundMix> SC_Asset(TEXT("/Game/Sounds/Classes/SCMix_Master.SCMix_Master"));
 	static ConstructorHelpers::FObjectFinder<USoundClass> SCMaster(TEXT("/Game/Sounds/Classes/SC_Master.SC_Master"));
 	static ConstructorHelpers::FObjectFinder<USoundClass> SCBGM(TEXT("/Game/Sounds/Classes/SC_BGM.SC_BGM"));
@@ -35,9 +39,32 @@ void UMazeGameInstance::Init() {
 		GeneralUtilities::LogBoolean(this, !SFXClass, TEXT("!SFXClass"));
 	}
 	else {
+		//set the mixer as the base mixer
 		UGameplayStatics::SetBaseSoundMix(this, mixer);
+		//mark the initialization as done
 		initializationDone = true;
+		//try load the game settings
+		if (UGameplayStatics::DoesSaveGameExist(GAME_SETTINGS_SLOT_NAME, 0)) {
+			USaveGame* baseData = UGameplayStatics::LoadGameFromSlot(GAME_SETTINGS_SLOT_NAME, 0);
+			settings = Cast<UProgrammingMazeSettings>(baseData);
+		}
+		//if not exists create a new one
+		if (!settings) {
+			GeneralUtilities::Log(this, TEXT("Settings not found.... creating a new object"));
+			settings = Cast<UProgrammingMazeSettings>(UGameplayStatics::CreateSaveGameObject(UProgrammingMazeSettings::StaticClass()));
+		}
+		//apply the settings to the current instance
+		setVolume(SoundType::Master, settings->MasterVolume);
+		setVolume(SoundType::SFX, settings->SFXVolume);
+		setVolume(SoundType::BGM, settings->BGMVolume);
 	}
+}
+
+void UMazeGameInstance::Shutdown()
+{
+	//save the game when shutdown is initiated
+	check(settings != NULL);
+	UGameplayStatics::SaveGameToSlot(settings, GAME_SETTINGS_SLOT_NAME, 0);
 }
 
 void UMazeGameInstance::setVolume(SoundType type, float volume)
@@ -49,17 +76,19 @@ void UMazeGameInstance::setVolume(SoundType type, float volume)
 	switch (type) {
 	case SoundType::BGM:
 		clzz = BGMClass;
+		settings->BGMVolume = volume;
 		break;
 	case SoundType::Master:
 		clzz = masterClass;
+		settings->MasterVolume = volume;
 		break;
 	case SoundType::SFX:
 		clzz = SFXClass;
+		settings->SFXVolume = volume;
 		break;
 	default:
 		checkNoEntry();
 	}
 	//set the override with the original values except the volume to the requested and the fade in time to zero to enforce it immediately
 	UGameplayStatics::SetSoundMixClassOverride(this, mixer, clzz, volume, 1.0f, 0.0f, true);
-	//TODO save this setting
 }

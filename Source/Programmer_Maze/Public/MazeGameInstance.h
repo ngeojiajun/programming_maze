@@ -6,6 +6,7 @@
 #include "Engine/GameInstance.h"
 #include "Sound/SoundMix.h"
 #include "Sound/SoundClass.h"
+#include "ProgrammingMazeGameSaves.h"
 #include "MazeGameInstance.generated.h"
 
 enum class SoundType {
@@ -23,6 +24,8 @@ public:
 	UMazeGameInstance(const FObjectInitializer& ObjectInitializer);
 	//initialize the instance
 	virtual void Init();
+	//shutdown the instance
+	virtual void Shutdown();
 	//adjust the volume
 	void setVolume(SoundType type, float volume);
 	//checkpoint id that the map shall teleports to
@@ -40,6 +43,9 @@ private:
 	//SFX sound class
 	UPROPERTY()
 	USoundClass* SFXClass;
+	//the save object that this game setting use
+	UPROPERTY()
+	UProgrammingMazeSettings* settings;
 	//weather the resolution succeeded
 	bool initializationDone;
 };

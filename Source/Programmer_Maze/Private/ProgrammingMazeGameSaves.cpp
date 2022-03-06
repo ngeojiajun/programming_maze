@@ -5,7 +5,7 @@
 
 UProgrammingMazeSettings::UProgrammingMazeSettings(const FObjectInitializer& ObjectInitializer):USaveGame(ObjectInitializer),
 MasterVolume(1.0f),
-BGMVolume(1.0f),
-SFXVolume(1.0f)
+BGMVolume(0.6f),
+SFXVolume(0.6f)
 {
 }
