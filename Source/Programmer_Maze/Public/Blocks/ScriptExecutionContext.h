@@ -25,6 +25,8 @@ struct FScriptExecutionContext{
   bool yielding;
   //current sp that the engine is restoring
   int sp;
+  //should the code returns as soon as possible
+  bool forceUnwind;
 };
 
 #define PUSH_NEAR_VALUE(ctx,v) ctx.runtimeStack.Push((void*)v);ctx.sp++;

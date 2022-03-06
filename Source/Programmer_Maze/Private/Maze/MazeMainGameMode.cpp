@@ -33,6 +33,7 @@ void AMazeMainGameMode::gogogo()
 		context.sp = 0;
 		context.contextRestore = false;
 		context.yielding = false;
+		context.forceUnwind = false;
 		evaluationRunning = true;
 		//prevent the movement
 		IDEStartBlock->SetVisibility(ESlateVisibility::HitTestInvisible);
@@ -44,6 +45,22 @@ void AMazeMainGameMode::gogogo()
 		//fire it
 		IDEStartBlock->eval(context);
 	}
+}
+
+void AMazeMainGameMode::terminateEvaluation()
+{
+	//this function should terminate the execution of the block
+	//to do this
+	//Stop signal must be sent to all the participants
+	if (!this->evaluationRunning) {
+		return; //nothing to do
+	}
+	//ask the ball to stop moving
+	context.ptrPawn->stopMovement();
+	//set the forceUnwind flag to notify all the functions to not continue
+	context.forceUnwind = true;
+	//unyield the script now
+	context.yielding = false;
 }
 
 void AMazeMainGameMode::wrapPawnToLastCheckpoint()

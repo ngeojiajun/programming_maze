@@ -56,6 +56,8 @@ private:
 	void showHelp();
 	UFUNCTION()
 	void gogogo();
+	//terminate the block evaluation
+	void terminateEvaluation();
 	//warp the player pawn to the last checkpoint that the engine has taken note
 	void wrapPawnToLastCheckpoint();
 	//show the dialog

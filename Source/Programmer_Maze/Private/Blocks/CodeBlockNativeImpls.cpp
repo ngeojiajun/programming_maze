@@ -111,7 +111,7 @@ FEvalResult UCodeBlockNativeImpls::WhileBlockImpl(UCodeBlockCPP* block,FScriptEx
 		switch (state) {
 		case 0: {
 			//no state storing here because the expression cannot be latern function
-			state = result.succeeded && (result = slot->eval(ctx), !!(result.AsBoolValue())) ? 1 : -1;
+			state = result.succeeded && (result = slot->eval(ctx), !!(result.AsBoolValue())) && (!ctx.forceUnwind) ? 1 : -1;
 			continue;
 		}
 		case 1: {
@@ -263,7 +263,8 @@ FEvalResult UCodeBlockNativeImpls::runAll(UCodeBlockCPP* block,FScriptExecutionC
 		return FEvalResult::AsVoidResult();
 	}
 	//stop code execution when the exception happened
-	for (; i < block->Childs.Num() && result.succeeded; i++) {
+	//the forceUnwind is the flag that is set by the host to ask all functions to quit ASAP
+	for (; i < block->Childs.Num() && result.succeeded &&!ctx.forceUnwind; i++) {
 		if (!shouldRestore) {
 			PUSH_NEAR_VALUE(ctx, i);
 			PUSH_FAR_VALUE(ctx, FEvalResult, result);
