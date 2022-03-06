@@ -13,6 +13,7 @@
 
 class UCodeBlockCPP;
 class AGoalPawn;
+class UProgrammingMazeLevelSaves;
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnCharacterStatusChanged, int, groupId);
 /**
  *
@@ -59,6 +60,8 @@ private:
 	void wrapPawnToLastCheckpoint();
 	//show the dialog
 	void showDialog(FString name, FString content);
+	//Create a game save object representing current game state
+	UProgrammingMazeLevelSaves* serializeCurrentGame();
 	TSubclassOf<UUserWidget> IDEWidgetClass;
 	TSubclassOf<UUserWidget> IDEHelpDialogClass;
 	TSubclassOf<UUserWidget> IDEDialogClass;

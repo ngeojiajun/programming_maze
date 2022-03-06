@@ -8,6 +8,7 @@
 #include "Maze/ButtonInstantiations.h"
 #include "Blocks/CodeBlockCPP.h"
 #include "Components/MultiLineEditableText.h"
+#include "ProgrammingMazeGameSaves.h"
 #include "GeneralUtilities.h"
 
 AMazeMainGameMode::AMazeMainGameMode() :AGameModeBase(),evaluationRunning(false),lastCheckpointId(-1) {
@@ -94,6 +95,17 @@ void AMazeMainGameMode::showDialog(FString name, FString content)
 		IDEDialogHandle->SetVisibility(ESlateVisibility::Visible);
 		IDEDialogHandle->AddToViewport(3);
 	}
+}
+
+UProgrammingMazeLevelSaves* AMazeMainGameMode::serializeCurrentGame()
+{
+	UProgrammingMazeLevelSaves* retVal= Cast<UProgrammingMazeLevelSaves>(UGameplayStatics::CreateSaveGameObject(UProgrammingMazeLevelSaves::StaticClass()));
+	//save current level name
+	retVal->LevelName = FName(UGameplayStatics::GetCurrentLevelName(this));
+	//save current checkpoint ID
+	retVal->checkpointID = this->lastCheckpointId;
+	//return it to caller
+	return retVal;
 }
 
 void AMazeMainGameMode::executionDone(FEvalResult result)
