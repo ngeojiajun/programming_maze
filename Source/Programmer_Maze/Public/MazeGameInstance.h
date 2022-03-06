@@ -26,7 +26,6 @@ public:
 	//adjust the volume
 	void setVolume(SoundType type, float volume);
 	//checkpoint id that the map shall teleports to
-	UPROPERTY()
 	int checkpointID;
 private:
 	//the global sound mixer for the volume control
