@@ -10,7 +10,7 @@
 #include "MazeGameInstance.generated.h"
 
 UENUM()
-enum ESoundType {
+enum EGameSoundType {
 	BGM,SFX,Master
 };
 
@@ -29,7 +29,7 @@ public:
 	virtual void Shutdown();
 	//adjust the volume
 	UFUNCTION(BlueprintCallable)
-	void setVolume(TEnumAsByte<ESoundType> type, float volume);
+	void setVolume(TEnumAsByte<EGameSoundType> type, float volume);
 	//checkpoint id that the map shall teleports to
 	int checkpointID;
 	//the save object that this game setting use

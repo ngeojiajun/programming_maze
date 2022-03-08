@@ -66,6 +66,9 @@ private:
 	void showDialog(FString name, FString content);
 	//Create a game save object representing current game state
 	UProgrammingMazeLevelSaves* serializeCurrentGame();
+	//save current state
+	UFUNCTION()
+	void saveCurrentGame();
 	TSubclassOf<UUserWidget> IDEWidgetClass;
 	TSubclassOf<UUserWidget> IDEHelpDialogClass;
 	TSubclassOf<UUserWidget> IDEDialogClass;

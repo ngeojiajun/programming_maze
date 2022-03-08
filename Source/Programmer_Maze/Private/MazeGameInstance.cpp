@@ -54,9 +54,9 @@ void UMazeGameInstance::Init() {
 			settings = Cast<UProgrammingMazeSettings>(UGameplayStatics::CreateSaveGameObject(UProgrammingMazeSettings::StaticClass()));
 		}
 		//apply the settings to the current instance
-		setVolume(ESoundType::Master, settings->MasterVolume);
-		setVolume(ESoundType::SFX, settings->SFXVolume);
-		setVolume(ESoundType::BGM, settings->BGMVolume);
+		setVolume(EGameSoundType::Master, settings->MasterVolume);
+		setVolume(EGameSoundType::SFX, settings->SFXVolume);
+		setVolume(EGameSoundType::BGM, settings->BGMVolume);
 	}
 }
 
@@ -67,22 +67,22 @@ void UMazeGameInstance::Shutdown()
 	UGameplayStatics::SaveGameToSlot(settings, GAME_SETTINGS_SLOT_NAME, 0);
 }
 
-void UMazeGameInstance::setVolume(TEnumAsByte<ESoundType> type, float volume)
+void UMazeGameInstance::setVolume(TEnumAsByte<EGameSoundType> type, float volume)
 {
 	if (!initializationDone) {
 		return;
 	}
 	USoundClass* clzz = NULL;
 	switch (type) {
-	case ESoundType::BGM:
+	case EGameSoundType::BGM:
 		clzz = BGMClass;
 		settings->BGMVolume = volume;
 		break;
-	case ESoundType::Master:
+	case EGameSoundType::Master:
 		clzz = masterClass;
 		settings->MasterVolume = volume;
 		break;
-	case ESoundType::SFX:
+	case EGameSoundType::SFX:
 		clzz = SFXClass;
 		settings->SFXVolume = volume;
 		break;

@@ -9,6 +9,7 @@
 #include "Blocks/CodeBlockCPP.h"
 #include "Components/MultiLineEditableText.h"
 #include "ProgrammingMazeGameSaves.h"
+#include "MazeGameInstance.h"
 #include "GeneralUtilities.h"
 
 AMazeMainGameMode::AMazeMainGameMode() :AGameModeBase(),evaluationRunning(false),lastCheckpointId(-1) {
@@ -123,8 +124,33 @@ UProgrammingMazeLevelSaves* AMazeMainGameMode::serializeCurrentGame()
 	retVal->LevelName = FName(UGameplayStatics::GetCurrentLevelName(this));
 	//save current checkpoint ID
 	retVal->checkpointID = this->lastCheckpointId;
+	//save the current time
+	retVal->SaveTime = FDateTime::Now();
 	//return it to caller
 	return retVal;
+}
+
+void AMazeMainGameMode::saveCurrentGame()
+{
+	//serialize the data
+	UProgrammingMazeLevelSaves* data = serializeCurrentGame();
+	//instance
+	UMazeGameInstance* instance = Cast<UMazeGameInstance>(UGameplayStatics::GetGameInstance(this));
+	if (instance) {
+		//file name here
+		FString name = FString::Printf(TEXT("PROGRAMMING_MAZE_SAV_%d"), instance->settings->savefileIndex);
+		//save it
+		bool ok = UGameplayStatics::SaveGameToSlot(data, name, 0);
+		if (ok) {
+			//update the index when it is done succeessfully
+			//cap it to eight
+			instance->settings->savefileIndex = (instance->settings->savefileIndex + 1) %8;
+			//disable the save button and write saved to the button
+			PauseMenuSaveButton->SetIsEnabled(false);
+			UTextBlock* txt = Cast<UTextBlock>(PauseMenuSaveButton->GetChildAt(0));
+			txt->SetText(FText::FromString(TEXT("Saved")));
+		}
+	}
 }
 
 void AMazeMainGameMode::executionDone(FEvalResult result)
@@ -182,8 +208,17 @@ void AMazeMainGameMode::onLevelCompleted(AGoalPawn* buttonHit)
 
 void AMazeMainGameMode::showPauseMenu()
 {
-	//simply make the pause menu visib;e
-	PauseMenuHandle->SetVisibility(ESlateVisibility::Visible);
+	if (PauseMenuHandle->GetVisibility() == ESlateVisibility::Visible) {
+		//hide it if it is shown currently
+		PauseMenuHandle->SetVisibility(ESlateVisibility::Collapsed);
+	}
+	else {
+		//restore thg original text of the save button
+		PauseMenuSaveButton->SetIsEnabled(!evaluationRunning); //allow save only if it is not executing
+		UTextBlock* txt = Cast<UTextBlock>(PauseMenuSaveButton->GetChildAt(0));
+		txt->SetText(FText::FromString(TEXT("Save Game")));
+		PauseMenuHandle->SetVisibility(ESlateVisibility::Visible);
+	}
 }
 
 void AMazeMainGameMode::BeginPlay() {
@@ -256,6 +291,9 @@ void AMazeMainGameMode::BeginPlay() {
 	//By reflection get the PauseMenu::SaveGameButton
 	prop = FindFieldChecked<FObjectProperty>(PauseMenuClass, FName(TEXT("SaveGameButton")));
 	PauseMenuSaveButton = Cast<UButton>(prop->GetObjectPropertyValue(prop->ContainerPtrToValuePtr<UObject>(PauseMenuHandle)));
+	//Step 17:
+	//Add event handler to the SaveGameButton
+	PauseMenuSaveButton->OnClicked.AddDynamic(this, &AMazeMainGameMode::saveCurrentGame);
 }
 
 void AMazeMainGameMode::hidePanel()

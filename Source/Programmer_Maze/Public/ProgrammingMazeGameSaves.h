@@ -18,6 +18,8 @@ public:
 	FName LevelName;
 	UPROPERTY()
 	int checkpointID;
+	UPROPERTY()
+	FDateTime SaveTime;
 };
 
 /**
@@ -35,4 +37,6 @@ public:
 	float BGMVolume;
 	UPROPERTY(BlueprintReadOnly)
 	float SFXVolume;
+	UPROPERTY()
+	int savefileIndex;
 };
