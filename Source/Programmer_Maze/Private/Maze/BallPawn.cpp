@@ -14,7 +14,7 @@
 #include "GeneralUtilities.h"
 
 //the rate that the camera shall move per second
-const float panRate = 2000.f;
+const float panRate = 2500.f;
 const FVector cameraInitialPosition = FVector(0.f, 0.f, 430.f);
 
 // Sets default values
