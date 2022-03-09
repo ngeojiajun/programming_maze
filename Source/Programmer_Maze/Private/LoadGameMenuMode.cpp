@@ -67,7 +67,7 @@ void ALoadGameMenuMode::fillPanel(UGridPanel* panel)
 
 			//get the name and replace _ with spaces
 			FString levelNameTxt = save->LevelName.ToString();
-			levelNameTxt = levelNameTxt.Replace(TEXT("_"), TEXT(""));
+			levelNameTxt = levelNameTxt.Replace(TEXT("_"), TEXT(" "));
 
 			levelName->SetText(FText::FromString(levelNameTxt));
 			//Save time
