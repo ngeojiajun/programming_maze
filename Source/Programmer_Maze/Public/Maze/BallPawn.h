@@ -10,8 +10,6 @@
 #include "Components/AudioComponent.h"
 #include "BallPawn.generated.h"
 
-class AMazeMainGameCode;
-
 UCLASS()
 class PROGRAMMER_MAZE_API ABallPawn : public APawn
 {
