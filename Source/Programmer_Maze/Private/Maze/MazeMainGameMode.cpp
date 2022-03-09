@@ -222,6 +222,7 @@ void AMazeMainGameMode::showPauseMenu()
 }
 
 void AMazeMainGameMode::BeginPlay() {
+	Super::BeginPlay();
 	//Step 1:
 	//Construct the IDE widget and add it to the viewport
 	IDEWidgetHandle = NewObject<UUserWidget>(this, IDEWidgetClass);
@@ -294,6 +295,15 @@ void AMazeMainGameMode::BeginPlay() {
 	//Step 17:
 	//Add event handler to the SaveGameButton
 	PauseMenuSaveButton->OnClicked.AddDynamic(this, &AMazeMainGameMode::saveCurrentGame);
+	//Step 18:
+	//Sync the checkpointID from the game instance
+	UMazeGameInstance* instance = Cast<UMazeGameInstance>(UGameplayStatics::GetGameInstance(this));
+	lastCheckpointId = instance->checkpointID;
+	if (lastCheckpointId >= 0) { //if the id is valid wrap the ball to there
+		wrapPawnToLastCheckpoint();
+	}
+	//clear the checkpointID of the game instance
+	instance->checkpointID = -1;
 }
 
 void AMazeMainGameMode::hidePanel()
