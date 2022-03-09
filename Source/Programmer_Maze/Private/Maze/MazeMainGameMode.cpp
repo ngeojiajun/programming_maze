@@ -64,6 +64,8 @@ void AMazeMainGameMode::terminateEvaluation()
 	context.forceUnwind = true;
 	//unyield the script now
 	context.yielding = false;
+	//hide the pause menu
+	PauseMenuHandle->SetVisibility(ESlateVisibility::Collapsed);
 }
 
 void AMazeMainGameMode::wrapPawnToLastCheckpoint()
@@ -218,6 +220,8 @@ void AMazeMainGameMode::showPauseMenu()
 		UTextBlock* txt = Cast<UTextBlock>(PauseMenuSaveButton->GetChildAt(0));
 		txt->SetText(FText::FromString(TEXT("Save Game")));
 		PauseMenuHandle->SetVisibility(ESlateVisibility::Visible);
+		//allow terminate only if it is executing
+		PauseMenuTerminateButton->SetIsEnabled(evaluationRunning);
 	}
 }
 
@@ -304,6 +308,9 @@ void AMazeMainGameMode::BeginPlay() {
 	}
 	//clear the checkpointID of the game instance
 	instance->checkpointID = -1;
+	//Step 19:
+	//Add event handler to ButtonTerminate
+	PauseMenuTerminateButton->OnClicked.AddDynamic(this,&AMazeMainGameMode::terminateEvaluation);
 }
 
 void AMazeMainGameMode::hidePanel()

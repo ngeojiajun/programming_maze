@@ -59,6 +59,7 @@ private:
 	UFUNCTION()
 	void gogogo();
 	//terminate the block evaluation
+	UFUNCTION()
 	void terminateEvaluation();
 	//warp the player pawn to the last checkpoint that the engine has taken note
 	void wrapPawnToLastCheckpoint();

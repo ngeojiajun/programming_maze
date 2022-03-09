@@ -115,7 +115,6 @@ FEvalResult UCodeBlockNativeImpls::WhileBlockImpl(UCodeBlockCPP* block,FScriptEx
 			continue;
 		}
 		case 1: {
-			state = 0;
 			if (!shouldRestore) {
 				//dont brother to mangle the stack because it should never happens
 				//save the current status
@@ -132,6 +131,7 @@ FEvalResult UCodeBlockNativeImpls::WhileBlockImpl(UCodeBlockCPP* block,FScriptEx
 				//
 				DESTROY_FAR_VALUE(ctx, FEvalResult);
 				DESTROY_NEAR_VALUE(ctx);
+				state = 0; //next iteration
 			}
 			else {
 				return FEvalResult::AsVoidResult(); //yielding up
@@ -263,8 +263,7 @@ FEvalResult UCodeBlockNativeImpls::runAll(UCodeBlockCPP* block,FScriptExecutionC
 		return FEvalResult::AsVoidResult();
 	}
 	//stop code execution when the exception happened
-	//the forceUnwind is the flag that is set by the host to ask all functions to quit ASAP
-	for (; i < block->Childs.Num() && result.succeeded &&!ctx.forceUnwind; i++) {
+	for (; i < block->Childs.Num() && result.succeeded; i++) {
 		if (!shouldRestore) {
 			PUSH_NEAR_VALUE(ctx, i);
 			PUSH_FAR_VALUE(ctx, FEvalResult, result);
@@ -282,6 +281,10 @@ FEvalResult UCodeBlockNativeImpls::runAll(UCodeBlockCPP* block,FScriptExecutionC
 		}
 		else {
 			return FEvalResult::AsVoidResult(); //yielding up
+		}
+		//the forceUnwind is the flag that is set by the host to ask all functions to quit ASAP
+		if (ctx.forceUnwind) {
+			break;
 		}
 	}
 	if (!ctx.yielding) {
