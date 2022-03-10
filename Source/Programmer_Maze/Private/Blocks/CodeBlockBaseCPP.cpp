@@ -43,7 +43,7 @@ FLinearColor UCodeBlockBaseCPP::GetCurrentBGColor() const
 	}
 	checkNoEntry();
 	//This should never happen
-	return FColor(0,0,0); //Fuck you
+	return FColor(0,0,0); 
 #undef DEFINE_DIRECT_COLOR
 }
 
