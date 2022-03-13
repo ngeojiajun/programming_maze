@@ -61,6 +61,9 @@ private:
 	//terminate the block evaluation
 	UFUNCTION()
 	void terminateEvaluation();
+	//listener for the characterStatusBroadcast
+	UFUNCTION()
+	void onCharacterStatusChanged(int group);
 	//warp the player pawn to the last checkpoint that the engine has taken note
 	void wrapPawnToLastCheckpoint();
 	//show the dialog
@@ -99,4 +102,5 @@ private:
 	UButton* PauseMenuSaveButton;
 	bool evaluationRunning;
 	int lastCheckpointId;
+	int currentConditionalGroupID;
 };

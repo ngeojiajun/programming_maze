@@ -68,6 +68,11 @@ void AMazeMainGameMode::terminateEvaluation()
 	PauseMenuHandle->SetVisibility(ESlateVisibility::Collapsed);
 }
 
+void AMazeMainGameMode::onCharacterStatusChanged(int group)
+{
+	currentConditionalGroupID = group ;
+}
+
 void AMazeMainGameMode::wrapPawnToLastCheckpoint()
 {
 	FVector initial = context.ptrPawn->getInitialLocation();
@@ -88,7 +93,7 @@ void AMazeMainGameMode::wrapPawnToLastCheckpoint()
 				//set the Z (height) to the initial height
 				vec.Z = initial.Z;
 				//teleport
-				context.ptrPawn->TeleportTo(vec, FRotator(), false, true);
+				context.ptrPawn->TeleportTo(vec, context.ptrPawn->GetActorRotation(), false, true);
 				return;
 			}
 		}
@@ -128,6 +133,8 @@ UProgrammingMazeLevelSaves* AMazeMainGameMode::serializeCurrentGame()
 	retVal->checkpointID = this->lastCheckpointId;
 	//save the current time
 	retVal->SaveTime = FDateTime::Now();
+	//save the current group id
+	retVal->conditionalGroupID = currentConditionalGroupID;
 	//return it to caller
 	return retVal;
 }
@@ -267,48 +274,51 @@ void AMazeMainGameMode::BeginPlay() {
 	context.ptrGameMode = this;
 	context.contextRestore = false;
 	context.ptrPawn = Cast<ABallPawn>(UGameplayStatics::GetPlayerPawn(this, 0));
-	//Step10:
+	//Step10: install the group event listener
+	characterStatusBroadcast.AddDynamic(this, &AMazeMainGameMode::onCharacterStatusChanged);
+	//Step11:
 	//Broadcast a characterStatusBroadcast (-1) to force all walls to be deassociated
 	characterStatusBroadcast.Broadcast(-1);
-	//Step11:
+	//Step12:
 	//Construct the help dialog then add it into the tree but make it hidden by default
 	IDEHelpDialogHandle = NewObject<UUserWidget>(this, IDEHelpDialogClass);
 	IDEHelpDialogHandle->SetVisibility(ESlateVisibility::Collapsed);
 	IDEHelpDialogHandle->AddToViewport(1);
-	//Step12:
+	//Step13:
 	//By reflection get the IDE::LevelName
 	prop = FindFieldChecked<FObjectProperty>(IDEWidgetClass, FName(TEXT("LevelName")));
 	IDELevelNameBlock = Cast<UTextBlock>(prop->GetObjectPropertyValue(prop->ContainerPtrToValuePtr<UObject>(IDEWidgetHandle)));
-	//Step 13: If the level name is set by the GoalButton then set it here (RACE CONDITION)
+	//Step 14: If the level name is set by the GoalButton then set it here (RACE CONDITION)
 	if (!currentLevelName.IsNone()) {
 		IDELevelNameBlock->SetText(FText::FromName(currentLevelName));
 	}
-	//Step 14:
+	//Step 15:
 	//Create pause menu and add it to the screen as hidden
 	PauseMenuHandle = NewObject<UUserWidget>(this, PauseMenuClass);
 	PauseMenuHandle->SetVisibility(ESlateVisibility::Collapsed);
 	PauseMenuHandle->AddToViewport(3);
-	//Step 15:
+	//Step 16:
 	//By reflection get the PauseMenu::ButtonTerminate
 	prop = FindFieldChecked<FObjectProperty>(PauseMenuClass, FName(TEXT("ButtonTerminate")));
 	PauseMenuTerminateButton = Cast<UButton>(prop->GetObjectPropertyValue(prop->ContainerPtrToValuePtr<UObject>(PauseMenuHandle)));
-	//Step 16:
+	//Step 17:
 	//By reflection get the PauseMenu::SaveGameButton
 	prop = FindFieldChecked<FObjectProperty>(PauseMenuClass, FName(TEXT("SaveGameButton")));
 	PauseMenuSaveButton = Cast<UButton>(prop->GetObjectPropertyValue(prop->ContainerPtrToValuePtr<UObject>(PauseMenuHandle)));
-	//Step 17:
+	//Step 18:
 	//Add event handler to the SaveGameButton
 	PauseMenuSaveButton->OnClicked.AddDynamic(this, &AMazeMainGameMode::saveCurrentGame);
-	//Step 18:
-	//Sync the checkpointID from the game instance
-	UMazeGameInstance* instance = Cast<UMazeGameInstance>(UGameplayStatics::GetGameInstance(this));
-	lastCheckpointId = instance->checkpointID;
-	if (lastCheckpointId >= 0) { //if the id is valid wrap the ball to there
-		wrapPawnToLastCheckpoint();
-	}
-	//clear the checkpointID of the game instance
-	instance->checkpointID = -1;
 	//Step 19:
+	//Load the game save if there is
+	UMazeGameInstance* instance = Cast<UMazeGameInstance>(UGameplayStatics::GetGameInstance(this));
+	UProgrammingMazeLevelSaves* save = instance->saveLoading;
+	if (save) {
+		lastCheckpointId = save->checkpointID; //last checkpoint
+		wrapPawnToLastCheckpoint();
+		characterStatusBroadcast.Broadcast(save->conditionalGroupID); //reassociate the wall is there are
+		instance->saveLoading = NULL;
+	}
+	//Step 20:
 	//Add event handler to ButtonTerminate
 	PauseMenuTerminateButton->OnClicked.AddDynamic(this,&AMazeMainGameMode::terminateEvaluation);
 }

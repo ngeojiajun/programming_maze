@@ -15,7 +15,6 @@ initializationDone(false)
 	static ConstructorHelpers::FObjectFinder<USoundClass> SCMaster(TEXT("/Game/Sounds/Classes/SC_Master.SC_Master"));
 	static ConstructorHelpers::FObjectFinder<USoundClass> SCBGM(TEXT("/Game/Sounds/Classes/SC_BGM.SC_BGM"));
 	static ConstructorHelpers::FObjectFinder<USoundClass> SCSFX(TEXT("/Game/Sounds/Classes/SC_SFX.SC_SFX"));
-	checkpointID = -1;
 	if (SC_Asset.Succeeded()) {
 		mixer = SC_Asset.Object;
 	}

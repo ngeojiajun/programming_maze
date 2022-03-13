@@ -18,7 +18,7 @@ const float panRate = 2500.f;
 const FVector cameraInitialPosition = FVector(0.f, 0.f, 430.f);
 
 // Sets default values
-ABallPawn::ABallPawn():APawn(),InPanGesture(false),Executing(false), isReceivingPanInput(false)
+ABallPawn::ABallPawn():APawn(),InPanGesture(false),Executing(false), isReceivingPanInput(false), resolutionFailed(false), groupID(-1)
 {
  	//setup the stuffs
 	AutoPossessPlayer = EAutoReceiveInput::Player0;
@@ -181,6 +181,18 @@ void ABallPawn::Tick(float DeltaTime)
 	if (refGameMode) {
 		refGameMode->TickScript();
 	}
+	//bug fix: there are race condition for the actor's beginplay
+	//making the operation unsafe to be done
+	//so if there are any failed resolution
+	//try to do it here
+	if (resolutionFailed) {
+
+		if (refGameMode->groupMaterialMap.Contains(groupID)) {
+			//set the material into the one which are registered
+			SphereVisual->SetMaterial(0, (refGameMode->groupMaterialMap[groupID]));
+		}
+		resolutionFailed = false;
+	}
 }
 
 // Called to bind functionality to input
@@ -211,15 +223,19 @@ UPawnMovementComponent* ABallPawn::GetMovementComponent() const
 
 void ABallPawn::onCharacterStatusChanged(int group)
 {
+	groupID = group;
 	if (group < 0 || !(refGameMode->groupMaterialMap.Contains(group))) {
 		//show the default material if the groupID is not registered into the map or it is invalid
 		if (defaultMaterial) {
 			SphereVisual->SetMaterial(0, defaultMaterial);
 		}
+		//if the material is not resolvable queue it for the first frame update
+		resolutionFailed = !(refGameMode->groupMaterialMap.Contains(group));
 	}
 	else {
 		//otherwise set the material into the one which are registered
 		SphereVisual->SetMaterial(0, (refGameMode->groupMaterialMap[group]));
+		resolutionFailed = false;
 	}
 }
 

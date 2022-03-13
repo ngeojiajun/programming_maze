@@ -67,6 +67,8 @@ private:
 	bool InPanGesture;
 	bool Executing;
 	bool isReceivingPanInput;
+	bool resolutionFailed;
+	int groupID;
 	//listener for the characterStatusBroadcast
 	UFUNCTION()
 	void onCharacterStatusChanged(int group);

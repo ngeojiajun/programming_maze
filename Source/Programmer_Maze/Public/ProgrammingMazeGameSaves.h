@@ -19,6 +19,8 @@ public:
 	UPROPERTY()
 	int checkpointID;
 	UPROPERTY()
+	int conditionalGroupID;
+	UPROPERTY()
 	FDateTime SaveTime;
 };
 

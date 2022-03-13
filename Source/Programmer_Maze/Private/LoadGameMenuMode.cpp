@@ -130,8 +130,8 @@ void ALoadGameMenuMode::loadSaveInternal(UProgrammingMazeLevelSaves* save)
 	check(save); //the button should not appear when the save is not here QwQ
 	//prepare for the loading
 	UMazeGameInstance* instance = Cast<UMazeGameInstance>(UGameplayStatics::GetGameInstance(this));
-	//write the checkpointID so the game will Teleport the player to there when it is loaded
-	instance->checkpointID = save->checkpointID;
+	//set the save ID so the main mode know what to load
+	instance->saveLoading = save;
 	//finally load it
 	UGameplayStatics::OpenLevel(this, save->LevelName);
 }

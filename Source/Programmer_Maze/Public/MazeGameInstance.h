@@ -30,8 +30,9 @@ public:
 	//adjust the volume
 	UFUNCTION(BlueprintCallable)
 	void setVolume(TEnumAsByte<EGameSoundType> type, float volume);
-	//checkpoint id that the map shall teleports to
-	int checkpointID;
+	//the game save that the game is loading from
+	UPROPERTY()
+	UProgrammingMazeLevelSaves* saveLoading;
 	//the save object that this game setting use
 	UPROPERTY(BlueprintReadOnly)
 	UProgrammingMazeSettings* settings;
