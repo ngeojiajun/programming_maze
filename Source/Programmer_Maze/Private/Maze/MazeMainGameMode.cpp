@@ -98,7 +98,7 @@ void AMazeMainGameMode::wrapPawnToLastCheckpoint()
 			}
 		}
 		//none found teleport to the initial
-		context.ptrPawn->TeleportTo(initial, FRotator(), false, true);
+		context.ptrPawn->TeleportTo(initial, context.ptrPawn->GetActorRotation(), false, true);
 	}
 }
 
