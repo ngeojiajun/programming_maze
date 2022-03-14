@@ -6,7 +6,7 @@
 #include "Engine/GameInstance.h"
 #include "Sound/SoundMix.h"
 #include "Sound/SoundClass.h"
-#include "ProgrammingMazeGameSaves.h"
+#include "Maze/ProgrammingMazeGameSaves.h"
 #include "MazeGameInstance.generated.h"
 
 UENUM()
