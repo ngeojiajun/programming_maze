@@ -48,6 +48,7 @@ public:
 	UPROPERTY()
 	UTextBlock* IDELevelNameBlock;
 	FName currentLevelName;
+	int currentConditionalGroupID;
 protected:
 	//called when the game starts
 	virtual void BeginPlay() override;
@@ -102,5 +103,4 @@ private:
 	UButton* PauseMenuSaveButton;
 	bool evaluationRunning;
 	int lastCheckpointId;
-	int currentConditionalGroupID;
 };

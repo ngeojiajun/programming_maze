@@ -102,10 +102,10 @@ void ALoadGameMenuMode::fillPanel(UGridPanel* panel)
 				root->OnClicked.AddDynamic(this, &ALoadGameMenuMode::LoadSave3);
 				break;
 			case 4:
-				root->OnClicked.AddDynamic(this, &ALoadGameMenuMode::LoadSave5);
+				root->OnClicked.AddDynamic(this, &ALoadGameMenuMode::LoadSave4);
 				break;
 			case 5:
-				root->OnClicked.AddDynamic(this, &ALoadGameMenuMode::LoadSave6);
+				root->OnClicked.AddDynamic(this, &ALoadGameMenuMode::LoadSave5);
 				break;
 			case 6:
 				root->OnClicked.AddDynamic(this, &ALoadGameMenuMode::LoadSave6);

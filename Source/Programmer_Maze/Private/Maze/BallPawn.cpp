@@ -156,6 +156,8 @@ void ABallPawn::BeginPlay()
 	//copy the initial position
 	initialPosition = this->GetActorLocation();
 	if (refGameMode) {
+		//load the current status from the mode
+		onCharacterStatusChanged(refGameMode->currentConditionalGroupID);
 		//register for the character status broadcast
 		refGameMode->characterStatusBroadcast.AddDynamic(this, &ABallPawn::onCharacterStatusChanged);
 	}

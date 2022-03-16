@@ -93,12 +93,12 @@ void AMazeMainGameMode::wrapPawnToLastCheckpoint()
 				//set the Z (height) to the initial height
 				vec.Z = initial.Z;
 				//teleport
-				context.ptrPawn->TeleportTo(vec, context.ptrPawn->GetActorRotation(), false, true);
+				context.ptrPawn->TeleportTo(vec, FRotator(), false, true);
 				return;
 			}
 		}
 		//none found teleport to the initial
-		context.ptrPawn->TeleportTo(initial, context.ptrPawn->GetActorRotation(), false, true);
+		context.ptrPawn->TeleportTo(initial, FRotator(), false, true);
 	}
 }
 
